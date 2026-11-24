@@ -14,6 +14,12 @@ export const configurationSchema = z.discriminatedUnion('key', [
       .array(
         z.object({
           id: z.string(),
+          voiceServer: z
+            .object({
+              categoryId: z.string(),
+              lobbyChannelId: z.string(),
+            })
+            .optional(),
           substituteNotifications: z
             .object({
               channel: z.string(),

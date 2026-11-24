@@ -87,6 +87,22 @@ export async function VoiceServerPage() {
             </p>
           </div>
 
+          <div class="form-checkbox">
+            <input
+              type="radio"
+              name="type"
+              value={VoiceServerType.discord}
+              id="voice-server-discord"
+              checked={type === VoiceServerType.discord}
+            />
+            <label for="voice-server-discord">Discord</label>
+            <p class="description" id="voice-server-discord-desc">
+              Each game gets private BLU and RED voice channels. Configure the category and shared
+              LOBBY in the Discord settings first. Players must link their Steam and Discord
+              accounts from the website before they can join a team channel.
+            </p>
+          </div>
+
           <fieldset
             class="ml-[22px]"
             id="mumble-server-data"

@@ -105,6 +105,8 @@ export interface PlayerModel {
   }[]
   preReadyUntil?: Date
   mumbleCertificate?: PlayerMumbleCertificate
+  discordLink?: { userId: string; linkedAt: Date }
+  discordLinkCode?: { hash: string; expiresAt: Date }
   preferences: PlayerPreferences
   bans?: PlayerBan[]
   chatMutes?: PlayerBan[]

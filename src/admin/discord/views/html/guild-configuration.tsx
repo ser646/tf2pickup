@@ -1,4 +1,4 @@
-import { TextChannel, type Guild } from 'discord.js'
+import { ChannelType, TextChannel, type Guild } from 'discord.js'
 import { SaveButton } from '../../../views/html/save-button'
 import { configuration } from '../../../../configuration'
 
@@ -40,6 +40,36 @@ export async function GuildConfiguration(props: { guild: Guild; enabled: boolean
           name="substituteNotificationsMentionRole"
           current={config?.substituteNotifications?.role}
         />
+      </div>
+
+      <div class="mt-4 border-t border-zinc-700 pt-4">
+        <h4 class="mb-2 font-medium">Game voice channels</h4>
+        <p class="description mb-2">
+          Select the category for private match channels and the shared voice lobby. The bot creates
+          one BLU and one RED channel for each game inside this category. The bot needs View
+          Channel, Connect, Manage Channels, Manage Roles, and Move Members in the server; View
+          Channel in TF2 MATCHES; and View Channel, Connect, and Move Members in LOBBY. Ordinary
+          roles are denied View Channel, Connect, Move Members, and Manage Channels in match rooms.
+          The bot receives those channel permissions directly. Keep Manage Roles limited to trusted
+          moderators: Discord grants it server-wide, so those members can edit permission
+          overwrites.
+        </p>
+        <div class="flex flex-row flex-wrap gap-2">
+          <label for={`${props.guild.id}-voice-category`}>Category (TF2 MATCHES):</label>
+          <SelectCategory
+            guild={props.guild}
+            id={`${props.guild.id}-voice-category`}
+            name="voiceServerCategoryId"
+            current={config?.voiceServer?.categoryId}
+          />
+          <label for={`${props.guild.id}-voice-lobby`}>Lobby (LOBBY):</label>
+          <SelectVoiceChannel
+            guild={props.guild}
+            id={`${props.guild.id}-voice-lobby`}
+            name="voiceServerLobbyChannelId"
+            current={config?.voiceServer?.lobbyChannelId}
+          />
+        </div>
       </div>
 
       <div class="flex flex-row gap-2">
@@ -107,6 +137,45 @@ function SelectRole(props: { guild: Guild; current: string | undefined } & JSX.H
       {roles.map(({ name, id }) => (
         <option value={id} selected={current === id} safe>
           {name}
+        </option>
+      ))}
+    </select>
+  )
+}
+
+
+function SelectCategory(
+  props: { guild: Guild; current: string | undefined } & JSX.HtmlSelectTag,
+) {
+  const { guild, current, ...rest } = props
+  const categories = guild.channels.cache.filter(
+    channel => channel.type === ChannelType.GuildCategory,
+  )
+
+  return (
+    <select {...rest}>
+      <option value="">disabled</option>
+      {categories.map(({ id, name }) => (
+        <option value={id} selected={current === id} safe>
+          {name}
+        </option>
+      ))}
+    </select>
+  )
+}
+
+function SelectVoiceChannel(
+  props: { guild: Guild; current: string | undefined } & JSX.HtmlSelectTag,
+) {
+  const { guild, current, ...rest } = props
+  const channels = guild.channels.cache.filter(channel => channel.type === ChannelType.GuildVoice)
+
+  return (
+    <select {...rest}>
+      <option value="">disabled</option>
+      {channels.map(({ id, name, parent }) => (
+        <option value={id} selected={current === id} safe>
+          {parent?.name ? `${parent.name} / ${name}` : name}
         </option>
       ))}
     </select>
