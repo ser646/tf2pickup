@@ -1,10 +1,6 @@
 import fp from 'fastify-plugin'
 import { createHash } from 'node:crypto'
-import {
-  MessageFlags,
-  SlashCommandBuilder,
-  type ChatInputCommandInteraction,
-} from 'discord.js'
+import { MessageFlags, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js'
 import { discord } from '../index'
 import { configuration } from '../../configuration'
 import { collections } from '../../database/collections'
