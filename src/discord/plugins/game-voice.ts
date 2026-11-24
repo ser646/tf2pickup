@@ -23,10 +23,7 @@ export default fp(
   async () => {
     tasks.register('discord.cleanupGameVoice', async ({ gameNumber }) => {
       const game = await collections.games.findOne({ number: gameNumber })
-      if (
-        game &&
-        (game.state === GameState.ended || game.state === GameState.interrupted)
-      ) {
+      if (game && (game.state === GameState.ended || game.state === GameState.interrupted)) {
         await gameVoice.close(game)
       }
     })
@@ -175,12 +172,10 @@ export default fp(
   { name: 'discord game voice' },
 )
 
-
 function voiceRosterKey(game: GameModel): string {
   return game.slots
     .filter(
-      ({ status }) =>
-        status === SlotStatus.active || status === SlotStatus.waitingForSubstitute,
+      ({ status }) => status === SlotStatus.active || status === SlotStatus.waitingForSubstitute,
     )
     .map(({ id, player, team, status }) => `${id}:${player}:${team}:${status}`)
     .join('|')

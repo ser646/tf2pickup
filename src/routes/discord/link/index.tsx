@@ -19,10 +19,7 @@ export default routes(async app => {
       }
       reply.header('Cache-Control', 'no-store')
 
-      const player = await players.bySteamId(request.user.player.steamId, [
-        'name',
-        'discordLink',
-      ])
+      const player = await players.bySteamId(request.user.player.steamId, ['name', 'discordLink'])
       const configuredGuilds = (await configuration.get('discord.guilds')).filter(
         ({ voiceServer }) => voiceServer !== undefined,
       )
@@ -50,10 +47,7 @@ export default routes(async app => {
         )
       }
 
-      const player = await players.bySteamId(request.user.player.steamId, [
-        'name',
-        'discordLink',
-      ])
+      const player = await players.bySteamId(request.user.player.steamId, ['name', 'discordLink'])
       if (player.discordLink) {
         return reply.badRequest('A Discord account is already linked. Unlink it first.')
       }
@@ -120,8 +114,8 @@ function DiscordLinkPage(props: {
         <section class="mx-auto flex max-w-2xl flex-col gap-4">
           <h1 class="text-3xl font-bold">Link your Discord account</h1>
           <p>
-            Signed in as <strong safe>{props.name}</strong> through Steam. Link your Discord
-            account so the match bot can give you access to your team's private voice channel.
+            Signed in as <strong safe>{props.name}</strong> through Steam. Link your Discord account
+            so the match bot can give you access to your team's private voice channel.
           </p>
           {props.discordLink ? (
             <>
@@ -142,20 +136,20 @@ function DiscordLinkPage(props: {
             </>
           ) : !props.voiceConfigured ? (
             <p class="text-sm text-zinc-200">
-              Discord match voice is not configured yet. An administrator must select the TF2 MATCHES
-              category and LOBBY channel in Admin &gt; Discord first.
+              Discord match voice is not configured yet. An administrator must select the TF2
+              MATCHES category and LOBBY channel in Admin &gt; Discord first.
             </p>
           ) : (
             <>
               {props.generatedCode ? (
                 <div class="rounded-lg border border-zinc-700 bg-zinc-900 p-4">
                   <p class="font-semibold">Your one-time linking code</p>
-                  <p class="my-3 break-all font-mono text-2xl tracking-widest" safe>
+                  <p class="my-3 font-mono text-2xl tracking-widest break-all" safe>
                     {props.generatedCode}
                   </p>
                   <p class="text-sm text-zinc-200">
-                    In the configured Discord server, run <code>/link</code> and paste this code.
-                    It expires in 10 minutes. This code is shown only once.
+                    In the configured Discord server, run <code>/link</code> and paste this code. It
+                    expires in 10 minutes. This code is shown only once.
                   </p>
                 </div>
               ) : (

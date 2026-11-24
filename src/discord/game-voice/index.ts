@@ -63,20 +63,12 @@ async function runForGame<T>(gameNumber: number, operation: () => Promise<T>): P
 
 async function scheduleCleanup(gameNumber: GameNumber): Promise<void> {
   await tasks.cancel('discord.cleanupGameVoice', { gameNumber })
-  await tasks.schedule(
-    'discord.cleanupGameVoice',
-    minutesToMilliseconds(1),
-    { gameNumber },
-  )
+  await tasks.schedule('discord.cleanupGameVoice', minutesToMilliseconds(1), { gameNumber })
 }
 
 async function scheduleSync(gameNumber: GameNumber): Promise<void> {
   await tasks.cancel('discord.syncGameVoice', { gameNumber })
-  await tasks.schedule(
-    'discord.syncGameVoice',
-    minutesToMilliseconds(1),
-    { gameNumber },
-  )
+  await tasks.schedule('discord.syncGameVoice', minutesToMilliseconds(1), { gameNumber })
 }
 
 async function selectedVoiceSetup(): Promise<VoiceSetup> {
@@ -104,12 +96,7 @@ async function fetchChannelOrMissing(guild: Guild, channelId: string) {
   try {
     return await guild.channels.fetch(channelId)
   } catch (error) {
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      error.code === 10003
-    ) {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 10003) {
       return null
     }
     throw error
@@ -166,7 +153,9 @@ async function ensureLobby(
       allow: lobbyPermissionBits,
     })
     if (lobbyOverwrites.length > 100) {
-      throw new Error('The TF2 MATCHES category has too many permission overwrites to recreate LOBBY')
+      throw new Error(
+        'The TF2 MATCHES category has too many permission overwrites to recreate LOBBY',
+      )
     }
 
     lobby = await guild.channels.create({
@@ -284,10 +273,7 @@ async function teamUserIds(game: GameModel): Promise<TeamUserIds> {
   }
 }
 
-async function usersPresentInGuild(
-  ctx: VoiceContext,
-  users: TeamUserIds,
-): Promise<TeamUserIds> {
+async function usersPresentInGuild(ctx: VoiceContext, users: TeamUserIds): Promise<TeamUserIds> {
   const present = new Set<string>()
   const ids = [...new Set([...users[Tf2Team.blu], ...users[Tf2Team.red]])]
 
@@ -337,10 +323,7 @@ async function lockChannelForCleanup(
   return occupants
 }
 
-async function ensureBotChannelAccess(
-  ctx: VoiceContext,
-  channel: VoiceChannel,
-): Promise<void> {
+async function ensureBotChannelAccess(ctx: VoiceContext, channel: VoiceChannel): Promise<void> {
   const client = discord.client
   if (!client?.isReady()) {
     throw new Error('Discord bot disconnected while preparing a match voice channel')
@@ -564,10 +547,7 @@ async function syncUnlocked(game: GameModel): Promise<void> {
   if (!latest) {
     return
   }
-  if (
-    latest.state === GameState.ended ||
-    latest.state === GameState.interrupted
-  ) {
+  if (latest.state === GameState.ended || latest.state === GameState.interrupted) {
     await closeUnlocked(latest)
     return
   }
@@ -756,11 +736,7 @@ export async function seatFromLobby(
   try {
     await runForGame(game.number, async () => {
       const latest = await collections.games.findOne({ number: game.number })
-      if (
-        !latest ||
-        latest.state !== GameState.started ||
-        !latest.discordVoiceChannels
-      ) {
+      if (!latest || latest.state !== GameState.started || !latest.discordVoiceChannels) {
         return
       }
 
@@ -939,10 +915,7 @@ async function closeUnlocked(game: GameModel): Promise<void> {
           if (guild.voiceStates.cache.get(userId)?.channelId === channel.id) {
             allMembersReturned = false
           }
-          logger.warn(
-            { error, userId },
-            'failed to return player to Discord lobby',
-          )
+          logger.warn({ error, userId }, 'failed to return player to Discord lobby')
         }
       }),
     )
@@ -977,10 +950,7 @@ async function closeUnlocked(game: GameModel): Promise<void> {
       game.number,
       {
         $unset: Object.fromEntries(
-          discordSlots.map((slot, index) => [
-            `slots.$[s${index}].voiceServerUrl`,
-            1,
-          ]),
+          discordSlots.map((slot, index) => [`slots.$[s${index}].voiceServerUrl`, 1]),
         ),
       },
       {

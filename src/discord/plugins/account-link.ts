@@ -1,10 +1,6 @@
 import fp from 'fastify-plugin'
 import { createHash } from 'node:crypto'
-import {
-  MessageFlags,
-  SlashCommandBuilder,
-  type ChatInputCommandInteraction,
-} from 'discord.js'
+import { MessageFlags, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js'
 import { discord } from '../index'
 import { configuration } from '../../configuration'
 import { collections } from '../../database/collections'
@@ -70,7 +66,8 @@ async function linkAccount(interaction: ChatInputCommandInteraction) {
 
   if (!player) {
     await interaction.reply({
-      content: 'That linking code is invalid or has expired. Generate a new one on the tf2pickup website.',
+      content:
+        'That linking code is invalid or has expired. Generate a new one on the tf2pickup website.',
       flags: MessageFlags.Ephemeral,
     })
     return
@@ -92,25 +89,17 @@ async function linkAccount(interaction: ChatInputCommandInteraction) {
   }
 
   try {
-    const linked = await players.linkDiscordAccount(
-      player.steamId,
-      codeHash,
-      interaction.user.id,
-    )
+    const linked = await players.linkDiscordAccount(player.steamId, codeHash, interaction.user.id)
     if (!linked) {
       await interaction.reply({
-        content: 'That linking code was already used or has expired. Generate a new one on the tf2pickup website.',
+        content:
+          'That linking code was already used or has expired. Generate a new one on the tf2pickup website.',
         flags: MessageFlags.Ephemeral,
       })
       return
     }
   } catch (error) {
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'code' in error &&
-      error.code === 11000
-    ) {
+    if (typeof error === 'object' && error !== null && 'code' in error && error.code === 11000) {
       await interaction.reply({
         content: 'This Discord account is already linked to another Steam account.',
         flags: MessageFlags.Ephemeral,
@@ -121,7 +110,8 @@ async function linkAccount(interaction: ChatInputCommandInteraction) {
   }
 
   await interaction.reply({
-    content: 'Your Discord account has been linked successfully. You can now join your match voice channel.',
+    content:
+      'Your Discord account has been linked successfully. You can now join your match voice channel.',
     flags: MessageFlags.Ephemeral,
   })
   logger.info(
@@ -148,12 +138,14 @@ export default fp(
         logger.error(error, 'failed to link Discord account')
         if (interaction.replied || interaction.deferred) {
           await interaction.followUp({
-            content: 'The account could not be linked due to an internal error. Please try again later.',
+            content:
+              'The account could not be linked due to an internal error. Please try again later.',
             flags: MessageFlags.Ephemeral,
           })
         } else {
           await interaction.reply({
-            content: 'The account could not be linked due to an internal error. Please try again later.',
+            content:
+              'The account could not be linked due to an internal error. Please try again later.',
             flags: MessageFlags.Ephemeral,
           })
         }

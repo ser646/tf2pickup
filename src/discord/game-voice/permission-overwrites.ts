@@ -7,10 +7,7 @@ const channelPermissions = [
   PermissionFlagsBits.ManageChannels,
 ]
 
-const playerPermissions = [
-  PermissionFlagsBits.ViewChannel,
-  PermissionFlagsBits.Connect,
-]
+const playerPermissions = [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect]
 
 /**
  * Build a complete permission-overwrite set for a private match voice channel.
@@ -39,22 +36,18 @@ export function buildPrivateVoiceChannelOverwrites(
     },
     ...[...allowedUsers]
       .filter(userId => userId !== botUserId)
-      .map(
-        (userId): OverwriteResolvable => ({
-          id: userId,
-          type: OverwriteType.Member,
-          allow: playerPermissions,
-        }),
-      ),
+      .map((userId): OverwriteResolvable => ({
+        id: userId,
+        type: OverwriteType.Member,
+        allow: playerPermissions,
+      })),
     ...[...deniedUsers]
       .filter(userId => userId !== botUserId && !allowedUsers.has(userId))
-      .map(
-        (userId): OverwriteResolvable => ({
-          id: userId,
-          type: OverwriteType.Member,
-          deny: playerPermissions,
-        }),
-      ),
+      .map((userId): OverwriteResolvable => ({
+        id: userId,
+        type: OverwriteType.Member,
+        deny: playerPermissions,
+      })),
   ]
 
   if (overwrites.length > 100) {

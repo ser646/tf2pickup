@@ -143,10 +143,7 @@ function SelectRole(props: { guild: Guild; current: string | undefined } & JSX.H
   )
 }
 
-
-function SelectCategory(
-  props: { guild: Guild; current: string | undefined } & JSX.HtmlSelectTag,
-) {
+function SelectCategory(props: { guild: Guild; current: string | undefined } & JSX.HtmlSelectTag) {
   const { guild, current, ...rest } = props
   const categories = guild.channels.cache.filter(
     channel => channel.type === ChannelType.GuildCategory,

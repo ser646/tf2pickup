@@ -56,9 +56,7 @@ export default routes(async app => {
             lobby.name !== 'LOBBY' ||
             lobby.parentId !== category.id
           ) {
-            return reply.badRequest(
-              'select the TF2 MATCHES category and its LOBBY voice channel',
-            )
+            return reply.badRequest('select the TF2 MATCHES category and its LOBBY voice channel')
           }
 
           const botMember = await guild.members.fetch(discord.client!.user!.id)

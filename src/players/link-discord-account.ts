@@ -10,10 +10,7 @@ export async function linkDiscordAccount(
   discordUserId: string,
 ): Promise<boolean> {
   const now = new Date()
-  const before = await collections.players.findOne(
-    { steamId },
-    { projection: historyProjection },
-  )
+  const before = await collections.players.findOne({ steamId }, { projection: historyProjection })
   if (!before) {
     return false
   }

@@ -4,10 +4,7 @@ import { configuration } from '../../../configuration'
 import { players } from '../../../players'
 import { isVerificationEnabled } from '../../../mumble/is-verification-enabled'
 import { GameState, type GameNumber } from '../../../database/models/game.model'
-import {
-  PlayerConnectionStatus,
-  SlotStatus,
-} from '../../../database/models/game-slot.model'
+import { PlayerConnectionStatus, SlotStatus } from '../../../database/models/game-slot.model'
 import type { GameSlotId } from '../../../shared/types/game-slot-id'
 import { Tf2ClassName } from '../../../shared/types/tf2-class-name'
 import { Tf2Team } from '../../../shared/types/tf2-team'

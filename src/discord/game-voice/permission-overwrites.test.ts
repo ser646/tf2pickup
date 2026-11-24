@@ -35,11 +35,10 @@ describe('buildPrivateVoiceChannelOverwrites', () => {
   })
 
   it('grants assigned players only view and connect permissions', () => {
-    const overwrites = buildPrivateVoiceChannelOverwrites(
-      guildId,
-      botUserId,
-      ['blu-player', 'red-player'],
-    )
+    const overwrites = buildPrivateVoiceChannelOverwrites(guildId, botUserId, [
+      'blu-player',
+      'red-player',
+    ])
 
     expect(overwriteFor(overwrites, 'blu-player')).toMatchObject({
       type: OverwriteType.Member,
@@ -73,11 +72,11 @@ describe('buildPrivateVoiceChannelOverwrites', () => {
   })
 
   it('deduplicates users and excludes the bot from player-level grants', () => {
-    const overwrites = buildPrivateVoiceChannelOverwrites(
-      guildId,
+    const overwrites = buildPrivateVoiceChannelOverwrites(guildId, botUserId, [
+      'player',
+      'player',
       botUserId,
-      ['player', 'player', botUserId],
-    )
+    ])
 
     expect(overwrites.filter(overwrite => overwrite.id === 'player')).toHaveLength(1)
     expect(overwrites.filter(overwrite => overwrite.id === botUserId)).toHaveLength(1)
@@ -90,8 +89,8 @@ describe('buildPrivateVoiceChannelOverwrites', () => {
     ).toHaveLength(100)
 
     const tooManyUsers = [...maximumAllowedUsers, 'player-over-limit']
-    expect(() =>
-      buildPrivateVoiceChannelOverwrites(guildId, botUserId, tooManyUsers),
-    ).toThrow(/at most 100 permission overwrites/)
+    expect(() => buildPrivateVoiceChannelOverwrites(guildId, botUserId, tooManyUsers)).toThrow(
+      /at most 100 permission overwrites/,
+    )
   })
 })
