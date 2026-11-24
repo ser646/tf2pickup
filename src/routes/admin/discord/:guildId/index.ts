@@ -59,7 +59,7 @@ export default routes(async app => {
             return reply.badRequest('select the TF2 MATCHES category and its LOBBY voice channel')
           }
 
-          const botMember = await guild.members.fetch(discord.client!.user!.id)
+          const botMember = await guild.members.fetch(discord.client.user!.id)
           if (botMember.permissions.has(PermissionFlagsBits.Administrator)) {
             return reply.badRequest(
               'Do not grant Administrator to the bot; use the explicit voice permissions listed above',

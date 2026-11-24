@@ -137,7 +137,7 @@ export default routes(async app => {
             )
           }
 
-          const botMember = await guild.members.fetch(discordClient.user!.id)
+          const botMember = await guild.members.fetch(discordClient.user.id)
           if (botMember.permissions.has(PermissionFlagsBits.Administrator)) {
             return reply.badRequest(
               'Remove Administrator from the bot and grant only the explicit Discord voice permissions',

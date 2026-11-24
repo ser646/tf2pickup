@@ -19,7 +19,6 @@ const activeGameStates: GameState[] = [
 ]
 
 export default fp(
-  // eslint-disable-next-line @typescript-eslint/require-await
   async () => {
     tasks.register('discord.cleanupGameVoice', async ({ gameNumber }) => {
       const game = await collections.games.findOne({ number: gameNumber })
@@ -61,9 +60,9 @@ export default fp(
 
       void gameVoice
         .seatFromLobby(after.guild.id, after.id, after.channelId)
-        .catch(error =>
-          logger.warn({ error, userId: after.id }, 'failed to route Discord lobby member'),
-        )
+        .catch((error: unknown) => {
+          logger.warn({ error, userId: after.id }, 'failed to route Discord lobby member')
+        })
     })
 
     events.on(
@@ -174,9 +173,6 @@ export default fp(
 
 function voiceRosterKey(game: GameModel): string {
   return game.slots
-    .filter(
-      ({ status }) => status === SlotStatus.active || status === SlotStatus.waitingForSubstitute,
-    )
     .map(({ id, player, team, status }) => `${id}:${player}:${team}:${status}`)
     .join('|')
 }

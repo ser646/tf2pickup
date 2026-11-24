@@ -1,6 +1,7 @@
 import { minutesToMilliseconds } from 'date-fns'
 import {
   ChannelType,
+  OverwriteType,
   PermissionFlagsBits,
   type CategoryChannel,
   type Guild,
@@ -130,7 +131,7 @@ async function ensureLobby(
       channel.name === 'LOBBY',
   )
 
-  if (!lobby || lobby.type !== ChannelType.GuildVoice) {
+  if (lobby?.type !== ChannelType.GuildVoice) {
     const botId = discord.client!.user!.id
     const lobbyPermissionBits = [
       PermissionFlagsBits.ViewChannel,
@@ -205,7 +206,7 @@ async function context(setup: VoiceSetup): Promise<VoiceContext> {
   }
 
   let category = await guild.channels.fetch(setup.categoryId)
-  if (!category || category.type !== ChannelType.GuildCategory) {
+  if (category?.type !== ChannelType.GuildCategory) {
     throw new Error('Configured Discord voice category does not exist')
   }
   if (category.name !== 'TF2 MATCHES') {
@@ -216,7 +217,7 @@ async function context(setup: VoiceSetup): Promise<VoiceContext> {
   }
 
   const lobby = await ensureLobby(guild, category, setup)
-  const botMember = guild.members.me ?? (await guild.members.fetch(client.user!.id))
+  const botMember = guild.members.me ?? (await guild.members.fetch(client.user.id))
   const lobbyPermissions = botMember.permissionsIn(lobby)
   if (
     !lobbyPermissions.has(PermissionFlagsBits.ViewChannel) ||
@@ -328,7 +329,7 @@ async function ensureBotChannelAccess(ctx: VoiceContext, channel: VoiceChannel):
   if (!client?.isReady()) {
     throw new Error('Discord bot disconnected while preparing a match voice channel')
   }
-  const botMember = ctx.guild.members.me ?? (await ctx.guild.members.fetch(client.user!.id))
+  const botMember = ctx.guild.members.me ?? (await ctx.guild.members.fetch(client.user.id))
   const permissions = botMember.permissionsIn(channel)
   if (
     !permissions.has(PermissionFlagsBits.ViewChannel) ||
@@ -574,9 +575,8 @@ async function syncUnlocked(game: GameModel): Promise<void> {
     entries.map(entry => fetchChannelOrMissing(ctx.guild, entry.channelId)),
   )
   const repairedChannels = await Promise.all(
-    existingChannels.map(async (channel, index) => {
-      const entry = entries[index]!
-      if (!channel || channel.type !== ChannelType.GuildVoice) {
+    existingChannels.map(async channel => {
+      if (channel?.type !== ChannelType.GuildVoice) {
         return null
       }
 
@@ -616,7 +616,7 @@ async function syncUnlocked(game: GameModel): Promise<void> {
   await Promise.all(
     entries.map(async (entry, index) => {
       const channel = repairedChannels[index]
-      if (!channel || channel.type !== ChannelType.GuildVoice) {
+      if (channel?.type !== ChannelType.GuildVoice) {
         throw new Error(`Discord match voice channel is missing: ${entry.channelId}`)
       }
       const botId = discord.client!.user!.id
@@ -639,7 +639,7 @@ async function syncUnlocked(game: GameModel): Promise<void> {
   // If a move fails, the denies remain in place and the scheduled retry can continue.
   for (const [index, entry] of entries.entries()) {
     const channel = repairedChannels[index]
-    if (!channel || channel.type !== ChannelType.GuildVoice) {
+    if (channel?.type !== ChannelType.GuildVoice) {
       throw new Error(`Discord match voice channel is missing: ${entry.channelId}`)
     }
 
@@ -680,7 +680,7 @@ async function syncUnlocked(game: GameModel): Promise<void> {
   await Promise.all(
     entries.map((entry, index) => {
       const channel = repairedChannels[index]
-      if (!channel || channel.type !== ChannelType.GuildVoice) {
+      if (channel?.type !== ChannelType.GuildVoice) {
         throw new Error(`Discord match voice channel is missing: ${entry.channelId}`)
       }
       return channel.permissionOverwrites.set(
@@ -723,20 +723,20 @@ export async function seatFromLobby(
   let game = player.activeGame
     ? await collections.games.findOne({ number: player.activeGame })
     : null
-  if (!game || game.state !== GameState.started) {
+  if (game?.state !== GameState.started) {
     game = await collections.games.findOne({
       state: GameState.started,
       'slots.player': player.steamId,
     })
   }
-  if (!game || game.state !== GameState.started || !game.discordVoiceChannels) {
+  if (game?.state !== GameState.started || !game.discordVoiceChannels) {
     return
   }
 
   try {
     await runForGame(game.number, async () => {
       const latest = await collections.games.findOne({ number: game.number })
-      if (!latest || latest.state !== GameState.started || !latest.discordVoiceChannels) {
+      if (latest?.state !== GameState.started || !latest.discordVoiceChannels) {
         return
       }
 
@@ -900,7 +900,7 @@ async function closeUnlocked(game: GameModel): Promise<void> {
     await ensureBotChannelAccess(ctx, channel)
 
     const occupants = await lockChannelForCleanup(ctx, channel, game.number)
-    let allMembersReturned = true
+    const failedMemberReturns = new Set<string>()
     await Promise.all(
       occupants.map(async userId => {
         try {
@@ -913,14 +913,14 @@ async function closeUnlocked(game: GameModel): Promise<void> {
           }
         } catch (error) {
           if (guild.voiceStates.cache.get(userId)?.channelId === channel.id) {
-            allMembersReturned = false
+            failedMemberReturns.add(userId)
           }
           logger.warn({ error, userId }, 'failed to return player to Discord lobby')
         }
       }),
     )
 
-    if (!allMembersReturned) {
+    if (failedMemberReturns.size > 0) {
       allChannelsDeleted = false
       continue
     }
