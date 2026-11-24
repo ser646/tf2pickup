@@ -120,7 +120,7 @@ function DiscordLinkPage(props: {
         <section class="mx-auto flex max-w-2xl flex-col gap-4">
           <h1 class="text-3xl font-bold">Link your Discord account</h1>
           <p>
-            Signed in as <strong>{props.name}</strong> through Steam. Link your Discord
+            Signed in as <strong safe>{props.name}</strong> through Steam. Link your Discord
             account so the match bot can give you access to your team's private voice channel.
           </p>
           {props.discordLink ? (
@@ -128,9 +128,9 @@ function DiscordLinkPage(props: {
               <div class="rounded-lg border border-zinc-700 bg-zinc-900 p-4">
                 <p class="font-semibold">Discord account linked</p>
                 <p class="mt-1 text-sm text-zinc-200">
-                  Discord user ID: <code>{props.discordLink.userId}</code>
+                  Discord user ID: <code safe>{props.discordLink.userId}</code>
                 </p>
-                <p class="text-sm text-zinc-200">
+                <p class="text-sm text-zinc-200" safe>
                   Linked at {format(props.discordLink.linkedAt, 'yyyy-MM-dd HH:mm')}
                 </p>
               </div>
@@ -150,7 +150,7 @@ function DiscordLinkPage(props: {
               {props.generatedCode ? (
                 <div class="rounded-lg border border-zinc-700 bg-zinc-900 p-4">
                   <p class="font-semibold">Your one-time linking code</p>
-                  <p class="my-3 break-all font-mono text-2xl tracking-widest">
+                  <p class="my-3 break-all font-mono text-2xl tracking-widest" safe>
                     {props.generatedCode}
                   </p>
                   <p class="text-sm text-zinc-200">
