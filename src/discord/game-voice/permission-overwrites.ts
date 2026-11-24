@@ -1,8 +1,4 @@
-import {
-  OverwriteType,
-  PermissionFlagsBits,
-  type OverwriteResolvable,
-} from 'discord.js'
+import { OverwriteType, PermissionFlagsBits, type OverwriteResolvable } from 'discord.js'
 
 const channelPermissions = [
   PermissionFlagsBits.ViewChannel,
