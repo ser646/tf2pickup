@@ -103,9 +103,9 @@ export default routes(async app => {
 
 function DiscordLinkPage(props: {
   name: string
-  discordLink?: { userId: string; linkedAt: Date }
+  discordLink?: { userId: string; linkedAt: Date } | undefined
   voiceConfigured: boolean
-  generatedCode?: string
+  generatedCode?: string | undefined
 }) {
   return (
     <Layout title={makeTitle('Link Discord account')}>

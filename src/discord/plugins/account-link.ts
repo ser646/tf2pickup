@@ -1,6 +1,11 @@
 import fp from 'fastify-plugin'
 import { createHash } from 'node:crypto'
-import { MessageFlags, SlashCommandBuilder, type ChatInputCommandInteraction } from 'discord.js'
+import {
+  ApplicationCommandType,
+  MessageFlags,
+  SlashCommandBuilder,
+  type ChatInputCommandInteraction,
+} from 'discord.js'
 import { discord } from '../index'
 import { configuration } from '../../configuration'
 import { collections } from '../../database/collections'
@@ -35,13 +40,14 @@ async function registerLinkCommand() {
         .setMaxLength(24),
     )
     .toJSON()
+  const commandData = { ...command, type: ApplicationCommandType.ChatInput }
 
   const commands = await guild.commands.fetch()
   const existing = commands.find(({ name }) => name === 'link')
   if (existing) {
-    await existing.edit(command)
+    await existing.edit(commandData)
   } else {
-    await guild.commands.create(command)
+    await guild.commands.create(commandData)
   }
 }
 

@@ -6,6 +6,7 @@ import {
   type CategoryChannel,
   type Guild,
   type GuildMember,
+  type OverwriteResolvable,
   type VoiceChannel,
 } from 'discord.js'
 import { collections } from '../../database/collections'
@@ -124,12 +125,13 @@ async function ensureLobby(
     return lobby
   }
 
-  lobby = guild.channels.cache.find(
-    channel =>
-      channel.type === ChannelType.GuildVoice &&
-      channel.parentId === category.id &&
-      channel.name === 'LOBBY',
-  )
+  lobby =
+    guild.channels.cache.find(
+      channel =>
+        channel.type === ChannelType.GuildVoice &&
+        channel.parentId === category.id &&
+        channel.name === 'LOBBY',
+    ) ?? null
 
   if (lobby?.type !== ChannelType.GuildVoice) {
     const botId = discord.client!.user!.id
@@ -233,7 +235,7 @@ async function context(setup: VoiceSetup): Promise<VoiceContext> {
         MoveMembers: true,
         ManageChannels: true,
       },
-      'Restore the bot permissions required to manage the match lobby',
+      { reason: 'Restore the bot permissions required to manage the match lobby' },
     )
   }
   return { ...setup, lobbyChannelId: lobby.id, guild, category, lobby }
@@ -345,7 +347,7 @@ async function ensureBotChannelAccess(ctx: VoiceContext, channel: VoiceChannel):
         ManageChannels: true,
         MoveMembers: true,
       },
-      'Restore the bot permissions required to manage this match voice channel',
+      { reason: 'Restore the bot permissions required to manage this match voice channel' },
     )
   }
 }
@@ -575,7 +577,7 @@ async function syncUnlocked(game: GameModel): Promise<void> {
     entries.map(entry => fetchChannelOrMissing(ctx.guild, entry.channelId)),
   )
   const repairedChannels = await Promise.all(
-    existingChannels.map(async channel => {
+    existingChannels.map(async (channel, index) => {
       if (channel?.type !== ChannelType.GuildVoice) {
         return null
       }
@@ -786,13 +788,13 @@ export async function seatFromLobby(
         await otherTeamChannel.permissionOverwrites.edit(
           userId,
           { ViewChannel: false, Connect: false },
-          'Remove a player from their previous team channel',
+          { reason: 'Remove a player from their previous team channel' },
         )
       }
       await destination.permissionOverwrites.edit(
         userId,
         { ViewChannel: true, Connect: true },
-        'Grant the assigned player access to their team channel',
+        { reason: 'Grant the assigned player access to their team channel' },
       )
       await moveMemberToChannel(ctx, userId, destination.id)
     })
@@ -846,7 +848,7 @@ async function closeUnlocked(game: GameModel): Promise<void> {
     const orphanContext = await context(setup)
     const orphanNames = new Set([`${game.number}-BLU`, `${game.number}-RED`])
     const orphanChannels = [...orphanContext.guild.channels.cache.values()].filter(
-      channel =>
+      (channel): channel is VoiceChannel =>
         channel.type === ChannelType.GuildVoice &&
         channel.parentId === orphanContext.category.id &&
         orphanNames.has(channel.name),
@@ -950,7 +952,7 @@ async function closeUnlocked(game: GameModel): Promise<void> {
       game.number,
       {
         $unset: Object.fromEntries(
-          discordSlots.map((slot, index) => [`slots.$[s${index}].voiceServerUrl`, 1]),
+          discordSlots.map((_, index) => [`slots.$[s${index}].voiceServerUrl`, 1]),
         ),
       },
       {
