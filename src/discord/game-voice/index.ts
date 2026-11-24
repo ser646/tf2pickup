@@ -2,11 +2,9 @@ import { minutesToMilliseconds } from 'date-fns'
 import {
   ChannelType,
   PermissionFlagsBits,
-  OverwriteType,
   type CategoryChannel,
   type Guild,
   type GuildMember,
-  type OverwriteResolvable,
   type VoiceChannel,
 } from 'discord.js'
 import { collections } from '../../database/collections'
@@ -19,6 +17,7 @@ import { Tf2Team } from '../../shared/types/tf2-team'
 import { VoiceServerType } from '../../shared/types/voice-server-type'
 import { tasks } from '../../tasks'
 import { discord } from '../index'
+import { buildPrivateVoiceChannelOverwrites } from './permission-overwrites'
 
 interface VoiceSetup {
   guildId: string
@@ -371,52 +370,14 @@ function permissionOverwrites(
   { guild }: VoiceContext,
   userIds: string[],
   deniedUserIds: string[] = [],
-): OverwriteResolvable[] {
-  const restrictedPermissions = [
-    PermissionFlagsBits.ViewChannel,
-    PermissionFlagsBits.Connect,
-    PermissionFlagsBits.MoveMembers,
-    PermissionFlagsBits.ManageChannels,
-  ]
-
-  // Replacing the full overwrite set removes any old role-specific grants.
-  // The @everyone deny blocks ordinary roles; member-specific allows are applied
-  // afterwards for the bot and currently assigned team players. Administrators
-  // retain Discord's administrator override.
-  const overwrites: OverwriteResolvable[] = [
-    {
-      id: guild.id,
-      type: OverwriteType.Role,
-      deny: restrictedPermissions,
-    },
-    {
-      id: discord.client!.user!.id,
-      type: OverwriteType.Member,
-      allow: restrictedPermissions,
-    },
-    ...userIds.map(id => ({
-      id,
-      type: OverwriteType.Member,
-      allow: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect],
-    })),
-    ...[...new Set(deniedUserIds)]
-      .filter(id => id !== discord.client!.user!.id && !userIds.includes(id))
-      .map(id => ({
-        id,
-        type: OverwriteType.Member,
-        deny: [PermissionFlagsBits.ViewChannel, PermissionFlagsBits.Connect],
-      })),
-  ]
-
-  if (overwrites.length > 100) {
-    throw new Error(
-      'Too many linked players or stale member permissions to create private match voice channels (Discord allows at most 100 permission overwrites per channel)',
-    )
-  }
-
-  return overwrites
+) {
+  return buildPrivateVoiceChannelOverwrites(
+    guild.id,
+    discord.client!.user!.id,
+    userIds,
+    deniedUserIds,
+  )
 }
-
 async function findOrCreateTeamChannel(
   ctx: VoiceContext,
   game: GameModel,
