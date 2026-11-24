@@ -40,7 +40,7 @@ async function registerLinkCommand() {
         .setMaxLength(24),
     )
     .toJSON()
-  const commandData = { ...command, type: ApplicationCommandType.ChatInput }
+  const commandData = { ...command, type: ApplicationCommandType.ChatInput as const }
 
   const commands = await guild.commands.fetch()
   const existing = commands.find(({ name }) => name === 'link')
