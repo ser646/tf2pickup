@@ -1,9 +1,8 @@
 import fp from 'fastify-plugin'
 import { createHash } from 'node:crypto'
 import {
-  ApplicationCommandOptionType,
-  ApplicationCommandType,
   MessageFlags,
+  SlashCommandBuilder,
   type ChatInputCommandInteraction,
 } from 'discord.js'
 import { discord } from '../index'
@@ -28,28 +27,21 @@ async function registerLinkCommand() {
   }
 
   const guild = await client.guilds.fetch(guildConfigs[0]!.id)
-  const command = {
-    type: ApplicationCommandType.ChatInput,
-    name: 'link',
-    description: 'Link your Steam account to your Discord account',
-    options: [
-      {
-        type: ApplicationCommandOptionType.String,
-        name: 'code',
-        description: 'The one-time code from the tf2pickup website',
-        required: true,
-        minLength: 24,
-        maxLength: 24,
-      },
-    ],
-  }
+  const command = new SlashCommandBuilder()
+    .setName('link')
+    .setDescription('Link your Steam account to your Discord account')
+    .addStringOption(option =>
+      option
+        .setName('code')
+        .setDescription('The one-time code from the tf2pickup website')
+        .setRequired(true)
+        .setMinLength(24)
+        .setMaxLength(24),
+    )
 
   const commands = await guild.commands.fetch()
-  const existing = commands.find(({ name }) => name === 'link')
-  if (existing) {
-    await existing.edit(commandData)
-  } else {
-    await guild.commands.create(commandData)
+  if (!commands.some(({ name }) => name === 'link')) {
+    await guild.commands.create(command)
   }
 }
 
