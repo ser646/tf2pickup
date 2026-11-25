@@ -18,9 +18,7 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
 
   const selectClasses = async (queuePage: QueuePage, classes: string[]) => {
     for (const gameClass of classes) {
-      await queuePage.page
-        .locator(`#queue-class-preferences input[value="${gameClass}"]`)
-        .check()
+      await queuePage.page.locator(`#queue-class-preferences input[value="${gameClass}"]`).check()
     }
   }
 
