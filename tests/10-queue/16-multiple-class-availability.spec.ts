@@ -16,6 +16,10 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
     }),
   )) as [QueuePage, QueuePage, QueuePage]
 
+  await expect(flexible1Page.page.locator('.queue-class-selection-hint')).toContainText(
+    'Click a class name',
+  )
+
   // Flexible players tick "Also available: Scout", then click Medic as their primary class.
   for (const page of [flexible1Page, flexible2Page]) {
     await page.page.locator('[data-class-preference][value="scout"]').first().check()
@@ -30,6 +34,12 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
     await medicPage.slot('medic-2').locator.getAttribute('data-player'),
     await medicPage.slot('scout-1').locator.getAttribute('data-player'),
   ]).toEqual(expect.arrayContaining([flexible1.steamId, flexible2.steamId]))
+
+  // Alternate availability is a hint for empty slots only, never content below a player.
+  for (const slotId of ['medic-1', 'medic-2', 'scout-1'] as const) {
+    await expect(medicPage.slot(slotId).locator.locator('.queue-slot-alternates')).toHaveCount(0)
+  }
+  await expect(medicPage.slot('scout-2').locator.locator('.queue-slot-alternates')).toHaveCount(1)
 
   await Promise.all([
     flexible1Page.leaveQueue(),
