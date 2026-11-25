@@ -82,7 +82,7 @@ function JoinButton(props: { slotId: QueueSlotId; disabled: string | undefined }
       data-umami-event="join-queue"
       data-umami-event-slot-id={props.slotId}
     >
-      <span class="sr-only">Join queue using the selected class availability</span>
+      <span class="sr-only">Join queue on slot {props.slotId} using the selected class availability</span>
       {props.disabled ? <IconLock /> : <IconPlus />}
       {!!props.disabled && (
         <span class="tooltip whitespace-nowrap" safe>
