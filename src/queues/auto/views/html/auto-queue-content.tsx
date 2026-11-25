@@ -102,10 +102,18 @@ async function Queue(props: {
 
   // fixed teams fit in rows, one per team
   const teams = teamSlots(props.queue.gamemode, props.slots)
+  const classSelectionHint = (
+    <p class="queue-class-selection-hint">
+      <strong>Click a class name</strong> to join as that class. Use <strong>Also available</strong> to mark
+      other classes you can play.
+    </p>
+  )
   if (teams.length > 0) {
     const teamNames = ['BLU', 'RED'] as const
 
     return (
+      <>
+      {classSelectionHint}
       <form
         id="queue"
         class="queue-compact-grid"
@@ -152,10 +160,13 @@ async function Queue(props: {
           </div>
         ))}
       </form>
+      </>
     )
   }
 
   return (
+    <>
+    {classSelectionHint}
     <form
       id="queue"
       class={['queue-class-grid grid grid-cols-1 gap-4 md:grid-cols-2', gridCols]}
@@ -189,6 +200,7 @@ async function Queue(props: {
           </div>
         ))}
     </form>
+    </>
   )
 }
 
