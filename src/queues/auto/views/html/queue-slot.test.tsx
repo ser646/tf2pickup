@@ -58,6 +58,31 @@ describe('QueueSlot', () => {
       expect(slot!.getAttribute('data-player')).toBeUndefined()
     })
 
+    it('shows players who are also available for this empty class slot', async () => {
+      const flexibleSlot = {
+        ...emptySlot,
+        id: 'medic-0' as QueueSlotId,
+        gameClass: Tf2ClassName.medic,
+        player: {
+          steamId: '76561198000000003' as SteamId64,
+          name: 'Flexible Player',
+          avatarUrl: 'https://example.com/flexible.jpg',
+        },
+        availableClasses: [Tf2ClassName.medic, Tf2ClassName.soldier],
+      } as typeof emptySlot
+
+      const html = await QueueSlot({
+        slot: emptySlot,
+        allSlots: [emptySlot, flexibleSlot],
+        defaultSkill: undefined,
+      })
+      const root = parse(html)
+
+      expect(root.querySelector('.queue-slot-alternates-label')?.text).toBe('Also available')
+      expect(root.querySelector('.queue-slot-alternate .player-name-text')).toBeNull()
+      expect(root.querySelector('.queue-slot-alternate')?.text).toBe('Flexible Player')
+    })
+
     it('renders no join button', async () => {
       const html = await QueueSlot({ queue, slot: emptySlot, defaultSkill: undefined })
       const root = parse(html)
