@@ -140,7 +140,9 @@ test('does not ready up if switching classes as 11th player @6v6 @9v9', async ({
 }) => {
   const polemic = users.byName('Polemic')
   const firstSlot = desiredSlots.get('Polemic')!
-  const secondSlot = desiredSlots.get('Shadowhunter')!
+  // Use a free slot from a different class; Shadowhunter's slot is the same class as Polemic's
+  // in both 6v6 and 9v9, so selecting it would not change class availability.
+  const secondSlot = desiredSlots.get('BellBoy')!
 
   await Promise.all(
     players
