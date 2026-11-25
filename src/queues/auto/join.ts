@@ -65,14 +65,9 @@ export async function join(
     }
 
     const configuredClasses = gamemodeConfigs[settings.gamemode].classes.map(({ name }) => name)
-    const requestedClasses = [
-      ...new Set([
-        ...(selectedClasses.length > 0 ? selectedClasses : [clickedSlot.gameClass]),
-        ...(clickedSlot.player && clickedSlot.player.steamId !== steamId
-          ? [clickedSlot.gameClass]
-          : []),
-      ]),
-    ]
+    // The clicked class heading chooses the primary class. Submitted checkboxes
+    // represent only additional classes the player is also willing to play.
+    const requestedClasses = [...new Set([clickedSlot.gameClass, ...selectedClasses])]
     const invalidClass = requestedClasses.find(gameClass => !configuredClasses.includes(gameClass))
     if (invalidClass) {
       throw errors.badRequest('class ' + invalidClass + ' is not available in this queue')
