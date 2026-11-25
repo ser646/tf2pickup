@@ -143,6 +143,7 @@ async function Queue(props: {
               <QueueSlot
                 queue={props.queue}
                 slot={slot}
+                allSlots={props.slots}
                 actor={actor}
                 defaultSkill={defaultSkill}
               />
@@ -181,6 +182,7 @@ async function Queue(props: {
                 <QueueSlot
                   queue={props.queue}
                   slot={slot}
+                  allSlots={props.slots}
                   actor={actor}
                   defaultSkill={defaultSkill}
                 />
