@@ -7,7 +7,6 @@ import type { QueueModel } from '../../../../database/models/queue.model'
 import type { QueueSlotModel } from '../../../../database/models/queue-slot.model'
 import { gamemodeConfigs } from '../../../../gamemodes/configs'
 import { Gamemode } from '../../../../shared/types/gamemode'
-import { GameClassIcon } from '../../../../html/components/game-class-icon'
 import { players } from '../../../../players'
 import { PreReadyUpButton } from '../../../../pre-ready/views/html/pre-ready-up-button'
 import type { SteamId64 } from '../../../../shared/types/steam-id-64'
@@ -114,18 +113,15 @@ async function Queue(props: {
         ws-send
         data-disable-when-offline
       >
-        <ClassPreferences
-          queue={props.queue}
-          slots={props.slots}
-          actor={actor}
-          defaultSkill={defaultSkill}
-        />
         <div class="queue-team-heading-spacer" aria-hidden="true"></div>
         {positions.map(position => (
-          <h2 class="queue-class-heading">
-            <GameClassIcon gameClass={position.gameClass} size={32} />
-            <span>{position.gameClass}</span>
-          </h2>
+          <ClassPreferences
+            queue={props.queue}
+            slots={props.slots}
+            actor={actor}
+            defaultSkill={defaultSkill}
+            gameClass={position.gameClass}
+          />
         ))}
 
         {teamNames.map((teamName, teamIndex) => (
@@ -161,20 +157,17 @@ async function Queue(props: {
       ws-send
       data-disable-when-offline
     >
-      <ClassPreferences
-        queue={props.queue}
-        slots={props.slots}
-        actor={actor}
-        defaultSkill={defaultSkill}
-      />
       {config.classes
         .map(gc => gc.name)
         .map(gameClass => (
           <div class="queue-class-column">
-            <h2 class="queue-class-heading">
-              <GameClassIcon gameClass={gameClass} size={32} />
-              <span>{gameClass}</span>
-            </h2>
+            <ClassPreferences
+              queue={props.queue}
+              slots={props.slots}
+              actor={actor}
+              defaultSkill={defaultSkill}
+              gameClass={gameClass}
+            />
 
             {props.slots
               .filter(slot => slot.gameClass === gameClass)
