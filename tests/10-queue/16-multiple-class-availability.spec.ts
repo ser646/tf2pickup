@@ -26,6 +26,10 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
   }
   // Clicking the class name chooses the primary class and joins the queue.
   await flexible1Page.slot('medic-1').join()
+  // A queue update from another player must not discard this unsaved local selection.
+  await expect(
+    flexible2Page.page.locator('[data-class-preference][value="scout"]').first(),
+  ).toBeChecked()
   await flexible2Page.slot('medic-2').join()
   await medicPage.slot('medic-1').join()
 
