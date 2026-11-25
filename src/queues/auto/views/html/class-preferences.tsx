@@ -64,7 +64,7 @@ export function ClassPreferences(props: {
         <GameClassIcon gameClass={props.gameClass} size={32} />
         <span>{props.gameClass}</span>
       </label>
-      {ownSlot ? (
+      {ownSlot && props.includeInForm !== false ? (
         <button
           type="submit"
           name="join"
