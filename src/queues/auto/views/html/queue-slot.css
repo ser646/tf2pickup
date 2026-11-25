@@ -2,35 +2,73 @@
 
 @layer components {
   .queue-class-heading-selectable {
-    position: relative;
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
     border-radius: 6px;
     transition: color 120ms ease, opacity 120ms ease;
 
-    > input {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    &:hover:not(.queue-class-heading-disabled) {
-      color: var(--color-zinc-50);
-    }
-
-    &:has(input:focus-visible) {
-      outline: 2px solid var(--color-zinc-200);
-      outline-offset: 4px;
-    }
-
-    &.queue-class-heading-selected {
+    &.queue-class-heading-primary {
       color: var(--color-emerald-300);
     }
 
+    &.queue-class-heading-selected {
+      color: var(--color-emerald-200);
+    }
+
     &.queue-class-heading-disabled {
-      cursor: not-allowed;
       opacity: 0.35;
+    }
+  }
+
+  .queue-class-primary-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 2px 4px;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      color: var(--color-zinc-50);
+      background: var(--color-surface-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-zinc-200);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .queue-class-also-available {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-zinc-400);
+    font-size: 11px;
+    line-height: 14px;
+    cursor: pointer;
+
+    input {
+      width: 13px;
+      height: 13px;
+      accent-color: var(--color-emerald-500);
+      cursor: pointer;
+
+      &:disabled {
+        cursor: not-allowed;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-zinc-200);
+        outline-offset: 2px;
+      }
     }
   }
 
