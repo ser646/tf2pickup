@@ -68,10 +68,16 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
   // fragments. Refresh this fieldset too, so the update button and selected classes stay in sync
   // after joining, leaving, or being moved to another slot.
   if (parts.slots) {
-    const currentSlots = allSlots ?? (await collections.queueSlots.find({ queue: queue._id }).toArray())
+    const currentSlots =
+      allSlots ?? (await collections.queueSlots.find({ queue: queue._id }).toArray())
     const defaultSkill = (await configuration.get('games.default_player_skill'))[queue.gamemode]
     fragments.push(async ({ actor }) =>
-      ClassPreferences({ queue, slots: currentSlots, actor: await actor(), defaultSkill }),
+      ClassPreferences({
+        queue,
+        slots: currentSlots,
+        actor: await actor(),
+        defaultSkill,
+      }),
     )
   }
 
