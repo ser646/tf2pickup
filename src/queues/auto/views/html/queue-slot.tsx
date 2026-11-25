@@ -16,7 +16,6 @@ import { Tf2ClassName } from '../../../../shared/types/tf2-class-name'
 import { GameClassIcon } from '../../../../html/components/game-class-icon'
 import { gamemodeConfigs } from '../../../../gamemodes/configs'
 import type { JoinBlockerPlayer } from '../../join-blocker'
-import type { QueueSlotId } from '../../../types/queue-slot-id'
 
 const enum MarkAsFriendButtonState {
   none,
