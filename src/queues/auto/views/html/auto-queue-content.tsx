@@ -110,7 +110,7 @@ async function Queue(props: {
       <form
         id="queue"
         class="queue-compact-grid"
-        style={\`--team-size: \${positions.length.toString()}\`}
+        style={'--team-size: ' + positions.length.toString()}
         ws-send
         data-disable-when-offline
       >
@@ -204,7 +204,7 @@ export async function ClearQueueButton(props: {
       class="button queue-clear-button max-lg:flex-1 max-lg:px-3 max-lg:text-sm max-lg:whitespace-nowrap"
       data-variant="accent"
       data-umami-event="clear-queue"
-      hx-delete={\`\${queues.queuePageUrl(props.queue.slug)}/players\`}
+      hx-delete={queues.queuePageUrl(props.queue.slug) + '/players'}
       hx-confirm="Are you sure you want to kick everyone from the queue?"
     >
       <span>Clear queue</span>

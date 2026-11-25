@@ -251,7 +251,7 @@ class BroadcastOperator {
   send(message: MessageFn, options: { key?: string } = {}) {
     const recipients = this.sockets()
     for (const socket of recipients) {
-      // lets the client drop messages addressed to a page it has already left
+      // lets the host drop messages addressed to a page it has already left
       void send(socket, message, this.filters.urls ? pageTag(socket) : '', options.key)
     }
     broadcastRecipients.record(recipients.length)
@@ -356,7 +356,7 @@ export class Gateway extends EventEmitter implements Broadcaster {
         this.emit('queue:audiostatus', socket, parsed.audioReady)
       }
     } catch (error) {
-      logger.error({ error }, \`failed to parse message: \${message}\`)
+      logger.error({ error }, 'failed to parse message: ' + message)
     }
   }
 }

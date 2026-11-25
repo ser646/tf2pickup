@@ -59,8 +59,8 @@ export async function QueueSlot(props: {
   return (
     <div
       class={['queue-slot', isOwnSlot && 'queue-slot-own', isReadySlot && 'queue-slot-ready']}
-      id={\`queue-slot-\${props.slot.id}\`}
-      aria-label={\`Queue slot \${props.slot.id}\`}
+      id={'queue-slot-' + props.slot.id}
+      aria-label={'Queue slot ' + props.slot.id}
       data-player={props.slot.player?.steamId}
     >
       {slotContent}
@@ -132,16 +132,16 @@ async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: A
   const allClasses = availableClasses.length >= gamemodeConfigs[props.queue.gamemode].classes.length
 
   return (
-    <div class="player-info" data-player-ready={\`\${props.slot.ready}\`}>
+    <div class="player-info" data-player-ready={String(props.slot.ready)}>
       <img
         src={props.slot.player.avatarUrl}
         width="64"
         height="64"
-        alt={\`\${props.slot.player.name}'s name\`}
+        alt={props.slot.player.name + "'s name"}
       />
       <div class="player-name-area">
         <a
-          href={\`/players/\${props.slot.player.steamId}\`}
+          href={'/players/' + props.slot.player.steamId}
           class="player-name-link"
           preload="mousedown"
         >
@@ -206,7 +206,7 @@ async function MarkAsFriendButton(props: { slot: QueueSlotModel; actor?: Actor }
     <label class="mark-as-friend-button">
       <input
         type="checkbox"
-        id={\`mark-as-friend-\${props.slot.id}\`}
+        id={'mark-as-friend-' + props.slot.id}
         disabled={markAsFriendButtonState === MarkAsFriendButtonState.disabled}
         checked={markAsFriendButtonState === MarkAsFriendButtonState.selected}
         ws-send
