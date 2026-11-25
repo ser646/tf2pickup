@@ -23,7 +23,10 @@ export function ClassPreferences(props: {
   )
   if (!props.actor || !classConfig) {
     return (
-      <h2 id={props.headingId ?? 'queue-class-preference-' + props.gameClass} class="queue-class-heading">
+      <h2
+        id={props.headingId ?? 'queue-class-preference-' + props.gameClass}
+        class="queue-class-heading"
+      >
         <GameClassIcon gameClass={props.gameClass} size={32} />
         <span>{props.gameClass}</span>
       </h2>
