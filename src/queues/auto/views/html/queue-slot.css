@@ -68,54 +68,6 @@
       background: var(--color-emerald-700);
     }
 
-    &:has(> .join-queue-button:disabled) {
-      border-color: transparent;
-      background: repeating-linear-gradient(
-        -45deg,
-        var(--color-zinc-900) 0,
-        var(--color-zinc-900) 14px,
-        var(--color-zinc-850) 14px,
-        var(--color-zinc-850) 28px
-      );
-    }
-
-    &:has(> .join-queue-button:hover:enabled),
-    &:has(> .join-queue-button:focus-visible) {
-      border-color: var(--color-zinc-600);
-    }
-
-    .join-queue-button {
-      display: flex;
-      flex: 1;
-      align-items: center;
-      justify-content: center;
-      border-radius: 7px;
-      color: var(--color-zinc-200);
-      background: transparent;
-
-      > svg {
-        opacity: 0;
-      }
-
-      &:hover:enabled,
-      &:focus-visible {
-        background: linear-gradient(180deg, var(--color-zinc-700), var(--color-zinc-600));
-
-        > svg {
-          opacity: 1;
-        }
-      }
-
-      &:disabled {
-        color: var(--color-text-muted);
-        background: transparent;
-
-        > svg {
-          opacity: 1;
-        }
-      }
-    }
-
     .player-info {
       display: grid;
       flex: 1;
@@ -181,8 +133,7 @@
     }
 
     .leave-queue-button,
-    .mark-as-friend-button .mark,
-    .take-queue-slot-button {
+    .mark-as-friend-button .mark {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -194,34 +145,8 @@
     }
 
     .leave-queue-button:hover,
-    .mark-as-friend-button:hover .mark,
-    .take-queue-slot-button:hover:enabled {
+    .mark-as-friend-button:hover .mark {
       background: var(--color-surface-hover);
-    }
-
-    .queue-slot-actions {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .take-queue-slot-button {
-      cursor: pointer;
-    }
-
-    .take-queue-slot-button:disabled {
-      cursor: not-allowed;
-      color: var(--color-text-muted);
-    }
-
-    &.queue-slot-ready .leave-queue-button,
-    &.queue-slot-ready .mark-as-friend-button .mark,
-    &.queue-slot-ready .take-queue-slot-button {
-      background: var(--color-emerald-900);
-
-      &:hover {
-        background: var(--color-emerald-800);
-      }
     }
 
     .mark-as-friend-button {
