@@ -200,7 +200,8 @@
     margin-top: 2px;
 
     @container (width < 110px) {
-      > .queue-class-primary-button > span {
+      > .queue-class-primary-button > span,
+      > .queue-class-also-available > span {
         display: none;
       }
     }
