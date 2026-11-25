@@ -104,8 +104,8 @@ async function Queue(props: {
   const teams = teamSlots(props.queue.gamemode, props.slots)
   const classSelectionHint = (
     <p class="queue-class-selection-hint">
-      <strong>Click a class name</strong> to join as that class. Use <strong>Also available</strong> to mark
-      other classes you can play.
+      <strong>Click a class name</strong> to join as that class. Use{' '}
+      <strong>Also available</strong> to mark other classes you can play.
     </p>
   )
   if (teams.length > 0) {
@@ -113,82 +113,43 @@ async function Queue(props: {
 
     return (
       <>
-      {classSelectionHint}
-      <form
-        id="queue"
-        class="queue-compact-grid"
-        style={'--team-size: ' + positions.length.toString()}
-        ws-send
-        data-disable-when-offline
-      >
-        <input type="hidden" name="join" value="" disabled data-class-preferences-join />
-        <div class="queue-team-heading-spacer" aria-hidden="true"></div>
-        {positions.map((position, index) => (
-          <ClassPreferences
-            queue={props.queue}
-            slots={props.slots}
-            actor={actor}
-            defaultSkill={defaultSkill}
-            gameClass={position.gameClass}
-            headingId={'queue-class-preference-' + position.gameClass + '-' + position.classIndex}
-            includeInForm={
-              positions.findIndex(candidate => candidate.gameClass === position.gameClass) === index
-            }
-          />
-        ))}
-
-        {teamNames.map((teamName, teamIndex) => (
-          <div class="queue-team-row">
-            <div
-              class={[
-                'queue-team-summary',
-                teamName === 'BLU' ? 'queue-team-blu' : 'queue-team-red',
-              ]}
-            >
-              <span>{teamName}</span>
-              <TeamPlayerCount teamIndex={teamIndex} slots={teams[teamIndex] ?? []} />
-            </div>
-            {teams[teamIndex]?.map(slot => (
-              <QueueSlot
-                queue={props.queue}
-                slot={slot}
-                allSlots={props.slots}
-                actor={actor}
-                defaultSkill={defaultSkill}
-              />
-            ))}
-          </div>
-        ))}
-      </form>
-      </>
-    )
-  }
-
-  return (
-    <>
-    {classSelectionHint}
-    <form
-      id="queue"
-      class={['queue-class-grid grid grid-cols-1 gap-4 md:grid-cols-2', gridCols]}
-      ws-send
-      data-disable-when-offline
-    >
-      <input type="hidden" name="join" value="" disabled data-class-preferences-join />
-      {config.classes
-        .map(gc => gc.name)
-        .map(gameClass => (
-          <div class="queue-class-column">
+        {classSelectionHint}
+        <form
+          id="queue"
+          class="queue-compact-grid"
+          style={'--team-size: ' + positions.length.toString()}
+          ws-send
+          data-disable-when-offline
+        >
+          <input type="hidden" name="join" value="" disabled data-class-preferences-join />
+          <div class="queue-team-heading-spacer" aria-hidden="true"></div>
+          {positions.map((position, index) => (
             <ClassPreferences
               queue={props.queue}
               slots={props.slots}
               actor={actor}
               defaultSkill={defaultSkill}
-              gameClass={gameClass}
+              gameClass={position.gameClass}
+              headingId={'queue-class-preference-' + position.gameClass + '-' + position.classIndex}
+              includeInForm={
+                positions.findIndex(candidate => candidate.gameClass === position.gameClass) ===
+                index
+              }
             />
+          ))}
 
-            {props.slots
-              .filter(slot => slot.gameClass === gameClass)
-              .map(slot => (
+          {teamNames.map((teamName, teamIndex) => (
+            <div class="queue-team-row">
+              <div
+                class={[
+                  'queue-team-summary',
+                  teamName === 'BLU' ? 'queue-team-blu' : 'queue-team-red',
+                ]}
+              >
+                <span>{teamName}</span>
+                <TeamPlayerCount teamIndex={teamIndex} slots={teams[teamIndex] ?? []} />
+              </div>
+              {teams[teamIndex]?.map(slot => (
                 <QueueSlot
                   queue={props.queue}
                   slot={slot}
@@ -197,9 +158,49 @@ async function Queue(props: {
                   defaultSkill={defaultSkill}
                 />
               ))}
-          </div>
-        ))}
-    </form>
+            </div>
+          ))}
+        </form>
+      </>
+    )
+  }
+
+  return (
+    <>
+      {classSelectionHint}
+      <form
+        id="queue"
+        class={['queue-class-grid grid grid-cols-1 gap-4 md:grid-cols-2', gridCols]}
+        ws-send
+        data-disable-when-offline
+      >
+        <input type="hidden" name="join" value="" disabled data-class-preferences-join />
+        {config.classes
+          .map(gc => gc.name)
+          .map(gameClass => (
+            <div class="queue-class-column">
+              <ClassPreferences
+                queue={props.queue}
+                slots={props.slots}
+                actor={actor}
+                defaultSkill={defaultSkill}
+                gameClass={gameClass}
+              />
+
+              {props.slots
+                .filter(slot => slot.gameClass === gameClass)
+                .map(slot => (
+                  <QueueSlot
+                    queue={props.queue}
+                    slot={slot}
+                    allSlots={props.slots}
+                    actor={actor}
+                    defaultSkill={defaultSkill}
+                  />
+                ))}
+            </div>
+          ))}
+      </form>
     </>
   )
 }
