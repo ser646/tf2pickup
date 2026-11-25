@@ -46,6 +46,31 @@ describe('ClassPreferences', () => {
     expect(html.querySelector('[data-select-all-classes]')).toBeNull()
   })
 
+  it('provides a join submitter for a class before the player has joined', () => {
+    const slots = [
+      {
+        queue: new ObjectId() as QueueId,
+        id: 'scout-1',
+        gameClass: Tf2ClassName.scout,
+        player: null,
+        ready: false,
+      },
+    ] as QueueSlotModel[]
+    const html = parse(
+      String(
+        ClassPreferences({
+          queue,
+          slots,
+          actor: actor as never,
+          defaultSkill: undefined,
+          gameClass: Tf2ClassName.scout,
+        }),
+      ),
+    )
+
+    expect(html.querySelector('button[data-class-preferences-submit="scout"][value="scout-1"]')).not.toBeNull()
+  })
+
   it('reflects saved availability and submits updates through the existing slot', () => {
     const slot = {
       queue: new ObjectId() as QueueId,
@@ -68,7 +93,7 @@ describe('ClassPreferences', () => {
     )
 
     expect(html.querySelector('input[name="classes"][value="scout"][checked]')).not.toBeNull()
-    expect(html.querySelector('button[data-class-preferences-submit][value="soldier-1"]')).not.toBeNull()
+    expect(html.querySelector('button[data-class-preferences-submit="scout"][value="soldier-1"]')).not.toBeNull()
   })
 
   it('renders the original heading unchanged for signed-out viewers', () => {
