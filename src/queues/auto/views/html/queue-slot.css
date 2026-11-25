@@ -1,45 +1,13 @@
 @reference '../../../../html/styles/main.css';
 
 @layer components {
-  .queue-class-preferences {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    border: 1px solid var(--color-zinc-800);
-    border-radius: 8px;
-    background: var(--color-zinc-900);
-  }
-
-  .queue-class-preferences-label {
-    color: var(--color-zinc-300);
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  .queue-class-preferences-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .queue-class-preferences-option {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 76px;
-    padding: 6px 9px;
-    border: 1px solid var(--color-zinc-700);
-    border-radius: 6px;
-    background: var(--color-zinc-950);
-    color: var(--color-zinc-400);
-    font-size: 12px;
+  .queue-class-heading-selectable {
+    position: relative;
     cursor: pointer;
-    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+    border-radius: 6px;
+    transition: color 120ms ease, opacity 120ms ease;
 
-    input {
+    > input {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -47,23 +15,20 @@
       pointer-events: none;
     }
 
+    &:hover:not(.queue-class-heading-disabled) {
+      color: var(--color-zinc-50);
+    }
+
     &:has(input:focus-visible) {
       outline: 2px solid var(--color-zinc-200);
-      outline-offset: 2px;
+      outline-offset: 4px;
     }
 
-    &:hover:not(.queue-class-preferences-option-disabled) {
-      border-color: var(--color-zinc-500);
-      color: var(--color-zinc-100);
-    }
-
-    &.queue-class-preferences-option-selected {
-      border-color: var(--color-emerald-600);
-      background: var(--color-emerald-950);
+    &.queue-class-heading-selected {
       color: var(--color-emerald-300);
     }
 
-    &.queue-class-preferences-option-disabled {
+    &.queue-class-heading-disabled {
       cursor: not-allowed;
       opacity: 0.35;
     }
