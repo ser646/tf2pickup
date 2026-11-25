@@ -6,66 +6,71 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
-    padding: 12px;
+    gap: 10px;
+    padding: 8px 12px;
     border: 1px solid var(--color-zinc-800);
     border-radius: 8px;
     background: var(--color-zinc-900);
+  }
 
-    legend {
-      padding: 0 4px;
-      color: var(--color-zinc-200);
-      font-size: 14px;
-      font-weight: 600;
+  .queue-class-preferences-label {
+    color: var(--color-zinc-300);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .queue-class-preferences-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .queue-class-preferences-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 76px;
+    padding: 6px 9px;
+    border: 1px solid var(--color-zinc-700);
+    border-radius: 6px;
+    background: var(--color-zinc-950);
+    color: var(--color-zinc-400);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+
+    input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
     }
 
-    .queue-class-preferences-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border: 1px solid var(--color-zinc-800);
-      border-radius: 6px;
-      background: var(--color-zinc-950);
-      color: var(--color-zinc-200);
-      font-size: 14px;
-      cursor: pointer;
+    &:has(input:focus-visible) {
+      outline: 2px solid var(--color-zinc-200);
+      outline-offset: 2px;
     }
 
-    .queue-class-preferences-option-all {
-      border-color: var(--color-zinc-700);
-      font-weight: 600;
-    }
-
-    .queue-class-preferences-option-disabled {
-      cursor: not-allowed;
-      opacity: 0.5;
-    }
-
-    .queue-class-preferences-update {
-      padding: 8px 12px;
-      border: 1px solid var(--color-zinc-700);
-      border-radius: 6px;
-      background: var(--color-zinc-800);
+    &:hover:not(.queue-class-preferences-option-disabled) {
+      border-color: var(--color-zinc-500);
       color: var(--color-zinc-100);
-      font-size: 14px;
-      font-weight: 600;
-
-      &:hover:not(:disabled) {
-        background: var(--color-zinc-700);
-      }
-
-      &:disabled {
-        cursor: not-allowed;
-        opacity: 0.5;
-      }
     }
 
-    .queue-class-preferences-help {
-      flex-basis: 100%;
-      color: var(--color-zinc-500);
-      font-size: 12px;
+    &.queue-class-preferences-option-selected {
+      border-color: var(--color-emerald-600);
+      background: var(--color-emerald-950);
+      color: var(--color-emerald-300);
     }
+
+    &.queue-class-preferences-option-disabled {
+      cursor: not-allowed;
+      opacity: 0.35;
+    }
+  }
+
+  .queue-class-preferences-submit {
+    display: none;
   }
 
   .queue-slot {
