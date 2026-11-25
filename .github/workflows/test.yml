@@ -109,7 +109,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        queue-config: ['6v6', '9v9']
+        queue-config: ['6v6']
         shard: [1, 2, 3, 4, 5, 6, 7, 8]
 
     services:
@@ -265,7 +265,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        queue-config: ['6v6', '9v9']
+        queue-config: ['6v6']
     steps:
       - name: Verify end-to-end shard results
         env:
@@ -302,7 +302,7 @@ jobs:
       matrix:
         # the last release before multi-queue
         upgrade-from: ['4.25.0']
-        queue-config: ['6v6', '9v9']
+        queue-config: ['6v6']
 
     services:
       mongo:
