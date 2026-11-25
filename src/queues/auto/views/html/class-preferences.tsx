@@ -31,7 +31,10 @@ export function ClassPreferences(props: {
   }
 
   const ownSlot = props.slots.find(slot => slot.player?.steamId === props.actor?.steamId)
-  const primarySlot = props.slots.find(slot => slot.gameClass === props.gameClass)
+  const primarySlot =
+    (ownSlot?.gameClass === props.gameClass ? ownSlot : undefined) ??
+    props.slots.find(slot => slot.gameClass === props.gameClass && !slot.player) ??
+    props.slots.find(slot => slot.gameClass === props.gameClass)
   const selected = ownSlot?.availableClasses ?? (ownSlot ? [ownSlot.gameClass] : [])
   const isPrimary = ownSlot?.gameClass === props.gameClass
   const blocker = joinBlocker(
