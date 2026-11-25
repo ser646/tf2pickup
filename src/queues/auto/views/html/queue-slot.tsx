@@ -42,14 +42,16 @@ export async function QueueSlot(props: {
     slotContent = <PlayerInfo {...props} />
   }
 
-  const alternativePlayers = (props.allSlots ?? [props.slot])
-    .filter(
-      candidate =>
-        candidate.player &&
-        candidate.gameClass !== props.slot.gameClass &&
-        (candidate.availableClasses ?? [candidate.gameClass]).includes(props.slot.gameClass),
-    )
-    .sort((a, b) => a.player!.name.localeCompare(b.player!.name))
+  const alternativePlayers = props.slot.player
+    ? []
+    : (props.allSlots ?? [props.slot])
+        .filter(
+          candidate =>
+            candidate.player &&
+            candidate.gameClass !== props.slot.gameClass &&
+            (candidate.availableClasses ?? [candidate.gameClass]).includes(props.slot.gameClass),
+        )
+        .sort((a, b) => a.player!.name.localeCompare(b.player!.name))
 
   return (
     <div
