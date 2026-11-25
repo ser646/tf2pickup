@@ -72,9 +72,8 @@ export function ClassPreferences(props: {
           </label>
         )
       })}
-      {ownSlot && (
+      {ownSlot === undefined ? null : (
         <button
-          safe
           type="submit"
           name="join"
           value={ownSlot.id}
