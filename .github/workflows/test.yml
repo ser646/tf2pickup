@@ -360,7 +360,7 @@ jobs:
           sudo echo "127.0.0.1 www.localhost" | sudo tee -a /etc/hosts
 
       - name: Start ${{ matrix.upgrade-from }}
-        run: tests/upgrade/start-app.sh ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.upgrade-from }}
+        run: tests/upgrade/start-app.sh ghcr.io/tf2pickup-org/tf2pickup:${{ matrix.upgrade-from }}
         env:
           MONGODB_URI: 'mongodb://mongo:27017/tf2pickup'
           NETWORK: ${{ job.services.mongo.network }}
