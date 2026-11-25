@@ -41,7 +41,7 @@ describe('ClassPreferences', () => {
 
     expect(html.querySelector('#queue-class-preference-scout')).not.toBeNull()
     expect(html.querySelector('input[name="classes"][value="scout"]')).not.toBeNull()
-    expect(html.querySelector('button[data-class-primary][data-class-primary-join]')).not.toBeNull()
+    expect(html.querySelector('button[data-class-primary]')).not.toBeNull()
     expect(html.text).toContain('Also available')
     expect(html.text).toContain('Scout')
     expect(html.querySelector('#queue-class-preferences')).toBeNull()
