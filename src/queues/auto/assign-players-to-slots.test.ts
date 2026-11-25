@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import type { QueueSlotId } from '../types/queue-slot-id'
 import type { SteamId64 } from '../../shared/types/steam-id-64'
 import { Tf2ClassName } from '../../shared/types/tf2-class-name'
@@ -42,6 +42,38 @@ describe('assignPlayersToSlots()', () => {
         [soldier, soldierPlayer],
       ]),
     )
+  })
+
+  it('randomizes the alternate class chosen when a flexible player must move', () => {
+    const medic = 'medic-1' as QueueSlotId
+    const expandedSlots = [
+      ...slots,
+      { id: medic, gameClass: Tf2ClassName.medic },
+    ]
+    const random = vi.spyOn(Math, 'random').mockReturnValue(0)
+
+    try {
+      const assignment = assignPlayersToSlots(expandedSlots, [
+        {
+          steamId: scoutPlayer,
+          availableClasses: [Tf2ClassName.scout, Tf2ClassName.soldier, Tf2ClassName.medic],
+          currentSlotId: soldier,
+        },
+        {
+          steamId: soldierPlayer,
+          availableClasses: [Tf2ClassName.soldier],
+        },
+      ])
+
+      expect(assignment).toEqual(
+        new Map([
+          [scout, scoutPlayer],
+          [soldier, soldierPlayer],
+        ]),
+      )
+    } finally {
+      random.mockRestore()
+    }
   })
 
   it('preserves an existing assignment when it does not need to move', () => {
