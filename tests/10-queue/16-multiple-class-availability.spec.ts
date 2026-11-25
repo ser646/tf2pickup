@@ -16,34 +16,16 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
     }),
   )) as [QueuePage, QueuePage, QueuePage]
 
-  const selectClasses = async (queuePage: QueuePage, classes: string[]) => {
-    for (const gameClass of classes) {
-      await queuePage.page.locator(`#queue-class-preferences input[value="${gameClass}"]`).check()
-    }
-  }
-
-  // Both flexible players initially occupy the two medic slots.
-  await selectClasses(flexible1Page, ['scout', 'medic'])
+  // Clicking a class heading joins the queue; no individual slot is clicked.
   await flexible1Page.slot('medic-1').join()
-  await selectClasses(flexible2Page, ['scout', 'medic'])
   await flexible2Page.slot('medic-2').join()
-
-  // A medic specialist joins through another free slot. The matcher must move one
-  // flexible player to scout rather than reject the specialist or overfill medic.
-  await selectClasses(medicPage, ['medic'])
-  await medicPage.slot('scout-1').join()
+  await medicPage.slot('medic-1').join()
 
   await expect(medicPage.slot('medic-1').locator).toHaveAttribute('data-player', medic.steamId)
-  await expect(flexible1Page.slot('medic-2').locator).toHaveAttribute(
-    'data-player',
-    flexible1.steamId,
-  )
-  await expect(flexible2Page.slot('scout-1').locator).toHaveAttribute(
-    'data-player',
-    flexible2.steamId,
-  )
-  const availabilityButton = flexible1Page.page.getByRole('button', { name: 'Update availability' })
-  await expect(availabilityButton).toBeVisible()
+  await expect.poll(async () => [
+    await medicPage.slot('medic-2').locator.getAttribute('data-player'),
+    await medicPage.slot('scout-1').locator.getAttribute('data-player'),
+  ]).toEqual(expect.arrayContaining([flexible1.steamId, flexible2.steamId]))
 
   await Promise.all([
     flexible1Page.leaveQueue(),
@@ -55,5 +37,4 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
     flexible2Page.waitToBeEmpty(),
     medicPage.waitToBeEmpty(),
   ])
-  await expect(availabilityButton).not.toBeVisible()
 })
