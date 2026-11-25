@@ -100,6 +100,7 @@ async function Queue(props: {
       ])
     : undefined
   const defaultSkill = (await configuration.get('games.default_player_skill'))[props.queue.gamemode]
+  const actorIsInQueue = !!actor && props.slots.some(slot => slot.player?.steamId === actor.steamId)
 
   // fixed teams fit in rows, one per team
   const teams = teamSlots(props.queue.gamemode, props.slots)
@@ -144,6 +145,7 @@ async function Queue(props: {
                 queue={props.queue}
                 slot={slot}
                 actor={actor}
+                isInQueue={actorIsInQueue}
                 defaultSkill={defaultSkill}
               />
             ))}
