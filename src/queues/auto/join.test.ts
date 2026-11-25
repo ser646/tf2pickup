@@ -128,6 +128,36 @@ describe('join()', () => {
     expect(emit).toHaveBeenCalledWith('queue/slots:updated', expect.objectContaining({ queue }))
   })
 
+  it('prefers the clicked class when joining with multiple available classes', async () => {
+    const scoutSlot: DbSlot = { ...slot }
+    const soldierSlot: DbSlot = {
+      _id: new ObjectId(),
+      queue,
+      id: otherSlotId,
+      gameClass: Tf2ClassName.soldier,
+      player: null,
+      ready: false,
+    }
+    vi.mocked(collections.queueSlots.find).mockReturnValue(
+      cursor([scoutSlot, soldierSlot]) as never,
+    )
+    vi.mocked(collections.queueSlots.countDocuments).mockResolvedValue(0)
+    mockUpdates([scoutSlot, soldierSlot])
+
+    await join(queue, otherSlotId, steamId, [Tf2ClassName.scout, Tf2ClassName.soldier])
+
+    expect(collections.queueSlots.findOneAndUpdate).toHaveBeenCalledWith(
+      { _id: soldierSlot._id },
+      expect.objectContaining({
+        $set: expect.objectContaining({
+          player: expect.objectContaining({ steamId }),
+          availableClasses: [Tf2ClassName.scout, Tf2ClassName.soldier],
+        }),
+      }),
+      { returnDocument: 'after' },
+    )
+  })
+
   it('keeps the player in the other queue when the clicked slot is occupied', async () => {
     vi.mocked(collections.queueSlots.find).mockReturnValue(
       cursor([
