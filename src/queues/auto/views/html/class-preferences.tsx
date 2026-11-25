@@ -3,6 +3,7 @@ import type { QueueModel } from '../../../../database/models/queue.model'
 import type { QueueSlotModel } from '../../../../database/models/queue-slot.model'
 import { GameClassIcon } from '../../../../html/components/game-class-icon'
 import { gamemodeConfigs } from '../../../../gamemodes/configs'
+import type { Tf2ClassName } from '../../../../shared/types/tf2-class-name'
 import { joinBlocker, type JoinBlockerPlayer } from '../../join-blocker'
 
 type Actor = (JoinBlockerPlayer & Pick<PlayerModel, 'steamId' | 'roles'>) | undefined
@@ -13,56 +14,51 @@ export function ClassPreferences(props: {
   slots: QueueSlotModel[]
   actor: Actor
   defaultSkill: PlayerSkill | undefined
+  gameClass: Tf2ClassName
 }) {
-  if (!props.actor) {
-    return <></>
+  const gameClass = gamemodeConfigs[props.queue.gamemode].classes.find(
+    gameClass => gameClass.name === props.gameClass,
+  )
+  if (!props.actor || !gameClass) {
+    return (
+      <h2 class="queue-class-heading">
+        <GameClassIcon gameClass={props.gameClass} size={32} />
+        <span>{props.gameClass}</span>
+      </h2>
+    )
   }
 
-  const classes = gamemodeConfigs[props.queue.gamemode].classes
   const ownSlot = props.slots.find(slot => slot.player?.steamId === props.actor?.steamId)
   const selected = ownSlot?.availableClasses ?? (ownSlot ? [ownSlot.gameClass] : [])
+  const blocker = joinBlocker(
+    props.actor,
+    { gameClass: props.gameClass },
+    props.queue,
+    props.defaultSkill,
+  )
+  const checked = selected.includes(props.gameClass)
 
   return (
-    <div
-      id="queue-class-preferences"
-      class="queue-class-preferences"
-      data-own-slot={ownSlot?.id}
-      aria-label="Select the classes you can play"
+    <label
+      class={[
+        'queue-class-heading',
+        'queue-class-heading-selectable',
+        checked && 'queue-class-heading-selected',
+        blocker && 'queue-class-heading-disabled',
+      ]}
+      title={blocker ?? ('Toggle ' + props.gameClass + ' availability')}
     >
-      <span class="queue-class-preferences-label">I can play:</span>
-      <div class="queue-class-preferences-options">
-        {classes.map(({ name }) => {
-          const blocker = joinBlocker(
-            props.actor!,
-            { gameClass: name },
-            props.queue,
-            props.defaultSkill,
-          )
-          const checked = selected.includes(name)
-          return (
-            <label
-              class={[
-                'queue-class-preferences-option',
-                checked && 'queue-class-preferences-option-selected',
-                blocker && 'queue-class-preferences-option-disabled',
-              ]}
-              title={blocker ?? name}
-            >
-              <input
-                type="checkbox"
-                name="classes"
-                value={name}
-                checked={checked}
-                disabled={!!blocker}
-                data-class-preference
-                aria-label={name}
-              />
-              <GameClassIcon gameClass={name} size={28} />
-              <span>{name}</span>
-            </label>
-          )
-        })}
-      </div>
+      <input
+        type="checkbox"
+        name="classes"
+        value={props.gameClass}
+        checked={checked}
+        disabled={!!blocker}
+        data-class-preference
+        aria-label={'I can play ' + props.gameClass}
+      />
+      <GameClassIcon gameClass={props.gameClass} size={32} />
+      <span>{props.gameClass}</span>
       {ownSlot ? (
         <button
           type="submit"
@@ -74,6 +70,6 @@ export function ClassPreferences(props: {
           aria-hidden="true"
         />
       ) : null}
-    </div>
+    </label>
   )
 }
