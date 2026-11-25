@@ -144,7 +144,7 @@ describe('join()', () => {
     vi.mocked(collections.queueSlots.countDocuments).mockResolvedValue(0)
     mockUpdates([scoutSlot, soldierSlot])
 
-    await join(queue, otherSlotId, steamId, [Tf2ClassName.scout, Tf2ClassName.soldier])
+    await join(queue, otherSlotId, steamId, [Tf2ClassName.scout])
 
     expect(collections.queueSlots.findOneAndUpdate).toHaveBeenCalledWith(
       { _id: soldierSlot._id },
