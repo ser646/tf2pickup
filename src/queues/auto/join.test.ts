@@ -199,6 +199,51 @@ describe('join()', () => {
     )
   })
 
+  it('removes a friendship when class reassignment makes it invalid', async () => {
+    const scoutSlot: DbSlot = {
+      ...slot,
+      player: { steamId, name: 'player', avatarUrl: 'avatar' },
+      availableClasses: [Tf2ClassName.scout],
+    }
+    const medicSlot: DbSlot = {
+      _id: new ObjectId(),
+      queue,
+      id: 'medic-1',
+      gameClass: Tf2ClassName.medic,
+      player: { steamId: otherSteamId, name: 'medic', avatarUrl: 'medic-avatar' },
+      ready: false,
+      canMakeFriendsWith: [Tf2ClassName.scout],
+    }
+    const soldierSlot: DbSlot = {
+      _id: new ObjectId(),
+      queue,
+      id: otherSlotId,
+      gameClass: Tf2ClassName.soldier,
+      player: null,
+      ready: false,
+    }
+    vi.mocked(collections.queueSlots.find).mockReturnValue(
+      cursor([scoutSlot, medicSlot, soldierSlot]) as never,
+    )
+    vi.mocked(collections.queueSlots.countDocuments).mockResolvedValue(0)
+    vi.mocked(collections.queueFriends.find).mockReturnValue(
+      cursor([{ queue, source: otherSteamId, target: steamId }]) as never,
+    )
+    mockUpdates([scoutSlot, medicSlot, soldierSlot])
+
+    await join(queue, slotId, steamId, [Tf2ClassName.soldier])
+
+    expect(collections.queueFriends.deleteOne).toHaveBeenCalledWith({
+      queue,
+      source: otherSteamId,
+    })
+    expect(emit).toHaveBeenCalledWith('queue/friendship:removed', {
+      queue,
+      source: otherSteamId,
+      target: steamId,
+    })
+  })
+
   it('moves a flexible queued player to make room for a class specialist', async () => {
     const scoutSlot: DbSlot = { ...slot, player: null }
     const soldierSlot: DbSlot = {
