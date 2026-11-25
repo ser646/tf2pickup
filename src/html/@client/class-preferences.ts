@@ -4,27 +4,40 @@ document.addEventListener('change', event => {
     return
   }
 
-  const heading = target.closest<HTMLElement>('.queue-class-heading')
   const form = target.closest<HTMLFormElement>('#queue')
-  if (!form || !heading) {
+  if (!form) {
     return
   }
 
-  const selected = [...form.querySelectorAll<HTMLInputElement>('[data-class-preference]:checked')]
-  if (selected.length === 0) {
+  // In team layouts the same class can have multiple visible column headings.
+  // Keep their controls in sync and submit each available class only once.
+  const matchingInputs = [
+    ...form.querySelectorAll<HTMLInputElement>('[data-class-preference]'),
+  ].filter(input => input.value === target.value)
+  for (const input of matchingInputs) {
+    input.checked = target.checked
+    input.closest('.queue-class-heading')?.classList.toggle(
+      'queue-class-heading-selected',
+      target.checked,
+    )
+  }
+
+  const selectedClasses = new Set(
+    [...form.querySelectorAll<HTMLInputElement>('[data-class-preference]:checked')].map(
+      input => input.value,
+    ),
+  )
+  if (selectedClasses.size === 0) {
     // A player must always keep at least one available class.
-    target.checked = true
-    heading.classList.add('queue-class-heading-selected')
+    for (const input of matchingInputs) {
+      input.checked = true
+      input.closest('.queue-class-heading')?.classList.add('queue-class-heading-selected')
+    }
     return
   }
 
-  // The input is intentionally visually hidden, so reflect its state on the
-  // visible class heading immediately instead of waiting for a server render.
-  heading.classList.toggle('queue-class-heading-selected', target.checked)
-
-  // Before joining, the selected checkboxes are submitted together with the
-  // chosen slot. Once in the queue, reuse the player's current slot to persist
-  // availability changes without moving them to another slot.
+  // Before joining, the selected checkboxes are submitted with the chosen slot.
+  // Once in the queue, reuse the current slot to persist availability changes.
   const submitter = form.querySelector<HTMLButtonElement>('[data-class-preferences-submit]')
   if (submitter) {
     form.requestSubmit(submitter)
