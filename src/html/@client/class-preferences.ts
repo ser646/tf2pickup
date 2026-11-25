@@ -36,9 +36,15 @@ document.addEventListener('change', event => {
     return
   }
 
-  // Before joining, the selected checkboxes are submitted with the chosen slot.
-  // Once in the queue, reuse the current slot to persist availability changes.
-  const submitter = form.querySelector<HTMLButtonElement>('[data-class-preferences-submit]')
+  // Submitting the hidden button includes the required "join" field. For a
+  // player already in the queue it points at their current slot; for a new
+  // player it points at a slot of the class they just selected. The server
+  // then assigns one real slot and renders the player as an alternate on all
+  // other selected classes.
+  const submitter = [
+    ...form.querySelectorAll<HTMLButtonElement>('[data-class-preferences-submit]'),
+  ].find(button => button.dataset.classPreferencesSubmit === target.value)
+
   if (submitter) {
     form.requestSubmit(submitter)
   }
