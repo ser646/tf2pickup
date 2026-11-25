@@ -65,15 +65,37 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
     )
   }
 
-  // Refresh every existing class heading when membership changes, keeping the inline
+  // Refresh every class heading when membership changes, keeping the inline
   // availability toggles in sync with the player's saved classes and current slot.
   if (parts.slots) {
     const currentSlots =
       allSlots ?? (await collections.queueSlots.find({ queue: queue._id }).toArray())
     const defaultSkill = (await configuration.get('games.default_player_skill'))[queue.gamemode]
+    const config = gamemodeConfigs[queue.gamemode]
+    const positions = config.classes.flatMap(gameClass =>
+      Array.from({ length: gameClass.count }, (_, classIndex) => ({
+        gameClass: gameClass.name,
+        classIndex,
+      })),
+    )
+    const hasTeamLayout = teamSlots(queue.gamemode, currentSlots).length > 0
+    const headings = hasTeamLayout
+      ? positions.map((position, index) => ({
+          ...position,
+          headingId:
+            'queue-class-preference-' + position.gameClass + '-' + position.classIndex,
+          includeInForm:
+            positions.findIndex(candidate => candidate.gameClass === position.gameClass) === index,
+        }))
+      : config.classes.map(({ name: gameClass }) => ({
+          gameClass,
+          headingId: 'queue-class-preference-' + gameClass,
+          includeInForm: true,
+        }))
+
     fragments.push(
-      ...gamemodeConfigs[queue.gamemode].classes.map(
-        ({ name: gameClass }): Fragment =>
+      ...headings.map(
+        ({ gameClass, headingId, includeInForm }): Fragment =>
           async ({ actor }) =>
             ClassPreferences({
               queue,
@@ -81,6 +103,8 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
               actor: await actor(),
               defaultSkill,
               gameClass,
+              headingId,
+              includeInForm,
             }),
       ),
     )
