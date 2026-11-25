@@ -49,7 +49,8 @@ export async function QueueSlot(props: {
     slotContent = <JoinButton slotId={props.slot.id} disabled={disabled} />
   }
 
-  const alternativePlayers = (props.allSlots ?? [props.slot]).filter(
+  const alternativePlayers = (props.allSlots ?? [props.slot])
+    .filter(
       candidate =>
         candidate.player &&
         candidate.gameClass !== props.slot.gameClass &&
@@ -66,17 +67,14 @@ export async function QueueSlot(props: {
     >
       {slotContent}
       {alternativePlayers.length > 0 && (
-          <div
-            class="queue-slot-alternates"
-            aria-label={'Other players available for ' + props.slot.gameClass}
-          >
+        <div
+          class="queue-slot-alternates"
+          aria-label={'Other players available for ' + props.slot.gameClass}
+        >
           <span class="queue-slot-alternates-label">Also available</span>
           <div class="queue-slot-alternates-list">
-            {alternativePlayers.map(({ player, gameClass, availableClasses }) => (
-              <div
-                class="queue-slot-alternate"
-                title={player!.name}
-              >
+            {alternativePlayers.map(({ player }) => (
+              <div class="queue-slot-alternate" title={player!.name}>
                 <img src={player!.avatarUrl} width="24" height="24" alt="" />
                 <span safe>{player!.name}</span>
               </div>
