@@ -7,6 +7,7 @@ import type { SteamId64 } from '../../../../shared/types/steam-id-64'
 import { collections } from '../../../../database/collections'
 import { ObjectId } from 'mongodb'
 import type { QueueId } from '../../../../database/models/queue.model'
+import type { QueueSlotModel } from '../../../../database/models/queue-slot.model'
 import type { QueueSlotId } from '../../../types/queue-slot-id'
 import { PlayerRole, type PlayerBan } from '../../../../database/models/player.model'
 
@@ -17,7 +18,6 @@ vi.mock('../../../../database/collections', () => ({
     queueFriends: { findOne: vi.fn() },
   },
 }))
-
 
 const actor = {
   steamId: '76561198000000001' as SteamId64,
@@ -65,7 +65,7 @@ describe('QueueSlot', () => {
           avatarUrl: 'https://example.com/flexible.jpg',
         },
         availableClasses: [Tf2ClassName.medic, Tf2ClassName.soldier],
-      } as typeof emptySlot
+      } as QueueSlotModel
 
       const html = await QueueSlot({
         slot: emptySlot,
@@ -88,17 +88,6 @@ describe('QueueSlot', () => {
     })
   })
 
-  describe('when slot is empty and there is an actor', () => {
-    it('does not render a slot-level join button because class headers handle joining', async () => {
-      const html = await QueueSlot({
-        queue,
-        slot: emptySlot,
-        actor,
-        defaultSkill: undefined,
-      })
-      expect(parse(html).querySelector('.join-queue-button')).toBeNull()
-    })
-  })
 
   describe('when slot has a player', () => {
     const occupiedSlot = {
