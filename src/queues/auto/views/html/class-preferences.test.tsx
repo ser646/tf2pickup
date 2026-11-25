@@ -25,7 +25,7 @@ const actor = {
 }
 
 describe('ClassPreferences', () => {
-  it('shows the all-classes shortcut and one checkbox per class in the gamemode', () => {
+  it('renders one selectable class icon per class without a separate preferences panel', () => {
     const html = parse(
       String(
         ClassPreferences({
@@ -37,12 +37,15 @@ describe('ClassPreferences', () => {
       ),
     )
 
-    expect(html.querySelector('[data-select-all-classes]')).not.toBeNull()
+    expect(html.querySelector('#queue-class-preferences')).not.toBeNull()
     expect(html.querySelectorAll('input[name="classes"]')).toHaveLength(4)
-    expect(html.text).toContain('Select every class you are comfortable playing')
+    expect(html.querySelector('[data-select-all-classes]')).toBeNull()
+    expect(html.text).toContain('I can play:')
+    expect(html.text).not.toContain('Classes you can play')
+    expect(html.text).not.toContain('Update availability')
   })
 
-  it('preselects the classes saved for the current queue membership', () => {
+  it('marks the saved classes as selected and provides automatic update submission', () => {
     const slot = {
       queue: new ObjectId() as QueueId,
       id: 'soldier-1',
@@ -66,8 +69,7 @@ describe('ClassPreferences', () => {
       .querySelectorAll('input[name="classes"][checked]')
       .map(input => input.getAttribute('value'))
     expect(checked).toEqual([Tf2ClassName.scout, Tf2ClassName.soldier])
-    expect(html.querySelector('button[name="join"][value="soldier-1"]')?.text).toContain(
-      'Update availability',
-    )
+    expect(html.querySelector('[data-own-slot="soldier-1"]')).not.toBeNull()
+    expect(html.querySelector('button[data-class-preferences-submit][value="soldier-1"]')).not.toBeNull()
   })
 })
