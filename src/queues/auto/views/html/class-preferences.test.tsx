@@ -98,7 +98,9 @@ describe('ClassPreferences', () => {
 
     expect(html.querySelector('input[name="classes"][value="scout"][checked]')).not.toBeNull()
     expect(html.querySelector('button[data-class-primary-join="soldier-1"]')).not.toBeNull()
-    expect(html.querySelector('input[data-class-preference-join="soldier-1"][value="scout"]')).not.toBeNull()
+    expect(
+      html.querySelector('input[data-class-preference-join="soldier-1"][value="scout"]'),
+    ).not.toBeNull()
     expect(html.querySelector('input[value="soldier"][disabled]')).not.toBeNull()
   })
 
