@@ -158,17 +158,61 @@ describe('join()', () => {
     )
   })
 
-  it('keeps the player in the other queue when the clicked slot is occupied', async () => {
+  it('takes an occupied class slot and moves its flexible player to an alternate class', async () => {
+    const scoutSlot: DbSlot = { ...slot }
+    const soldierSlot: DbSlot = {
+      _id: new ObjectId(),
+      queue,
+      id: otherSlotId,
+      gameClass: Tf2ClassName.soldier,
+      player: { steamId: otherSteamId, name: 'flex', avatarUrl: 'flex-avatar' },
+      ready: false,
+      availableClasses: [Tf2ClassName.scout, Tf2ClassName.soldier],
+    }
     vi.mocked(collections.queueSlots.find).mockReturnValue(
-      cursor([
-        {
-          ...slot,
-          player: { steamId: otherSteamId, name: 'other', avatarUrl: '' },
-        },
-      ]) as never,
+      cursor([scoutSlot, soldierSlot]) as never,
     )
+    vi.mocked(collections.queueSlots.countDocuments).mockResolvedValue(0)
+    mockUpdates([scoutSlot, soldierSlot])
 
-    await expect(join(queue, slotId, steamId)).rejects.toThrow('slot occupied')
+    // No explicit class preferences: clicking the occupied Soldier slot means
+    // the newcomer wants Soldier, while the existing player can move to Scout.
+    await join(queue, otherSlotId, steamId)
+
+    expect(collections.queueSlots.findOneAndUpdate).toHaveBeenNthCalledWith(
+      1,
+      { _id: soldierSlot._id },
+      expect.objectContaining({ $set: { player: null, ready: false } }),
+      { returnDocument: 'after' },
+    )
+    expect(collections.queueSlots.findOneAndUpdate).toHaveBeenCalledWith(
+      { _id: scoutSlot._id },
+      expect.objectContaining({
+        $set: expect.objectContaining({ player: soldierSlot.player }),
+      }),
+      { returnDocument: 'after' },
+    )
+    expect(collections.queueSlots.findOneAndUpdate).toHaveBeenCalledWith(
+      { _id: soldierSlot._id },
+      expect.objectContaining({
+        $set: expect.objectContaining({ player: expect.objectContaining({ steamId }) }),
+      }),
+      { returnDocument: 'after' },
+    )
+  })
+
+  it('does not displace an occupied player when no alternate slot is available', async () => {
+    const occupiedSlot: DbSlot = {
+      ...slot,
+      player: { steamId: otherSteamId, name: 'specialist', avatarUrl: '' },
+      availableClasses: [Tf2ClassName.scout],
+    }
+    vi.mocked(collections.queueSlots.find).mockReturnValue(cursor([occupiedSlot]) as never)
+    vi.mocked(collections.queueSlots.countDocuments).mockResolvedValue(0)
+    mockUpdates([occupiedSlot])
+
+    await expect(join(queue, slotId, steamId)).rejects.toThrow('No valid class assignment')
+    expect(collections.queueSlots.findOneAndUpdate).not.toHaveBeenCalled()
     expect(vacateSlot).not.toHaveBeenCalled()
   })
 
