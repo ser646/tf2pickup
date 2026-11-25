@@ -53,6 +53,7 @@ export function ClassPreferences(props: {
         const checked = selected.includes(name)
         return (
           <label
+            title={blocker ?? undefined}
             class={[
               'flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm',
               blocker && !checked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',

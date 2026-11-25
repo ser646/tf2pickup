@@ -220,7 +220,9 @@ export async function join(
       }
     }
 
-    await collections.queueState.updateOne({ queue }, { $set: { last: steamId } })
+    if (!ownSlot) {
+      await collections.queueState.updateOne({ queue }, { $set: { last: steamId } })
+    }
     if (state === QueueState.ready && !ownSlot) {
       await preReady.start(steamId)
     }

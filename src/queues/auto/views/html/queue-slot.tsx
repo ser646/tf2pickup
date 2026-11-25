@@ -45,7 +45,7 @@ export async function QueueSlot(props: {
   } else if (props.actor) {
     // Class-specific skill requirements are checked against the selected availability list on the
     // server; an empty slot's button must not prevent joining through another selected class.
-    const disabled =
+    const globalBlocker =
       joinBlocker(
         props.actor,
         props.slot,
@@ -53,6 +53,18 @@ export async function QueueSlot(props: {
         props.defaultSkill,
         { skipSkillThreshold: true },
       ) ?? undefined
+    const noEligibleClass = gamemodeConfigs[props.queue.gamemode].classes.every(
+      ({ name }) =>
+        joinBlocker(
+          props.actor!,
+          { gameClass: name },
+          props.queue,
+          props.defaultSkill,
+        ) !== null,
+    )
+    const disabled =
+      globalBlocker ??
+      (noEligibleClass ? 'You do not meet skill requirements for any class' : undefined)
     slotContent = <JoinButton slotId={props.slot.id} disabled={disabled} />
   }
 
@@ -78,7 +90,7 @@ function JoinButton(props: { slotId: QueueSlotId; disabled: string | undefined }
       data-umami-event="join-queue"
       data-umami-event-slot-id={props.slotId}
     >
-      <span class="sr-only">Join queue on slot {props.slotId}</span>
+      <span class="sr-only">Join queue using the selected class availability</span>
       {props.disabled ? <IconLock /> : <IconPlus />}
       {!!props.disabled && (
         <span class="tooltip whitespace-nowrap" safe>
