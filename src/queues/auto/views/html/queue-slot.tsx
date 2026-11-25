@@ -59,7 +59,7 @@ export async function QueueSlot(props: {
       data-player={props.slot.player?.steamId}
     >
       {slotContent}
-      {alternativePlayers.length > 0 && (
+      {!props.slot.player && alternativePlayers.length > 0 && (
         <div
           class="queue-slot-alternates"
           aria-label={'Other players available for ' + props.slot.gameClass}
