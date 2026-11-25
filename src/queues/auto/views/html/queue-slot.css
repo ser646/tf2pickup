@@ -68,15 +68,10 @@
     }
   }
 
-  .player-available-classes {
-    color: var(--color-zinc-500);
-    font-size: 12px;
-    line-height: 16px;
-  }
-
   .queue-slot {
     position: relative;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     min-height: 58px;
     overflow: visible;
@@ -266,6 +261,57 @@
     .mark-as-friend-button input:focus-visible ~ .mark {
       outline: 2px solid var(--color-zinc-100);
       outline-offset: 2px;
+    }
+
+    .queue-slot-alternates {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 5px 8px 7px;
+      border-top: 1px dashed var(--color-zinc-600);
+    }
+
+    .queue-slot-alternates-label {
+      color: var(--color-zinc-400);
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .queue-slot-alternates-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .queue-slot-alternate {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 100%;
+      padding: 2px 5px 2px 2px;
+      border: 1px dashed var(--color-zinc-500);
+      border-radius: 5px;
+      color: var(--color-zinc-300);
+      opacity: 0.5;
+
+      > img {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        border-radius: 3px;
+        object-fit: cover;
+      }
+
+      > span {
+        overflow: hidden;
+        font-size: 11px;
+        line-height: 16px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
   }
 }
