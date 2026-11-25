@@ -98,6 +98,10 @@ vi.mock('../auto/views/html/queue-slot', () => ({
   QueueSlot: (props: { slot: { id: string }; actor?: { steamId: string } }) =>
     tag(`queue-slot-${props.slot.id}`)({ actor: props.actor?.steamId }),
 }))
+vi.mock('../auto/views/html/class-preferences', () => ({
+  ClassPreferences: (props: { actor?: { steamId: string } }) =>
+    props.actor ? tag('queue-class-preferences')() : undefined,
+}))
 vi.mock('../views/html/set-title', () => ({ SetTitle: () => tag('set-title')() }))
 vi.mock('../views/html/is-in-queue', () => ({ IsInQueue: tag('is-in-queue') }))
 vi.mock('../auto/views/html/map-vote-selection', () => ({
@@ -204,6 +208,14 @@ describe('queuePage.update', () => {
     expect(await received(onSixes)).toEqual(['queue-slot-soldier-0', 'queue-slot-soldier-1'])
     expect(await received(onUltiduo)).toEqual([])
     expect(await received(onGame)).toEqual([])
+  })
+
+  it('refreshes class preferences when slots change', async () => {
+    const socket = connect('/q/6v6', alice)
+
+    await queuePage.update(gateway, sixes._id as never, { slots: 'all' })
+
+    expect(await received(socket)).toContain('queue-class-preferences')
   })
 
   it('renders each slot for the player viewing it', async () => {
