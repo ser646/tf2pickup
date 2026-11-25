@@ -33,11 +33,11 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
   await medicPage.slot('scout-1').join()
 
   await expect(medicPage.slot('medic-1').locator).toHaveAttribute('data-player', medic.steamId)
-  await expect(flexible1Page.slot('scout-1').locator).toHaveAttribute(
+  await expect(flexible1Page.slot('medic-2').locator).toHaveAttribute(
     'data-player',
     flexible1.steamId,
   )
-  await expect(flexible2Page.slot('medic-2').locator).toHaveAttribute(
+  await expect(flexible2Page.slot('scout-1').locator).toHaveAttribute(
     'data-player',
     flexible2.steamId,
   )
