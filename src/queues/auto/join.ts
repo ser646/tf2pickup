@@ -129,7 +129,7 @@ export async function join(
       },
       ready: state === QueueState.ready ? (ownSlot?.ready ?? true) : false,
       availableClasses,
-      ...(ownSlot ? { currentSlotId: ownSlot.id } : {}),
+      currentSlotId: ownSlot?.id ?? clickedSlot.id,
     })
 
     const assignment = assignPlayersToSlots(
