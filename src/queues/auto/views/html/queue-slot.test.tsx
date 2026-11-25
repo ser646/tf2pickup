@@ -140,6 +140,37 @@ describe('QueueSlot', () => {
       expect(anotherPlayersSlot.querySelector('.queue-slot-own')).toBeNull()
     })
 
+    it('does not show alternate availability beneath an occupied slot', async () => {
+      const flexiblePlayer = {
+        steamId: '76561198000000003' as SteamId64,
+        name: 'Flexible Player',
+        avatarUrl: 'https://example.com/flexible.jpg',
+      }
+      const occupiedTarget = {
+        ...occupiedSlot,
+        player: {
+          steamId: actor.steamId,
+          name: 'Target Player',
+          avatarUrl: 'https://example.com/target.jpg',
+        },
+      }
+      const flexibleSlot = {
+        ...emptySlot,
+        id: 'medic-0' as QueueSlotId,
+        gameClass: Tf2ClassName.medic,
+        player: flexiblePlayer,
+        availableClasses: [Tf2ClassName.medic, Tf2ClassName.soldier],
+      } as typeof emptySlot
+
+      const html = await QueueSlot({
+        slot: occupiedTarget,
+        allSlots: [occupiedTarget, flexibleSlot],
+        defaultSkill: undefined,
+      })
+
+      expect(parse(html).querySelector('.queue-slot-alternates')).toBeNull()
+    })
+
     it('sets data-player attribute to the player steamId', async () => {
       const html = await QueueSlot({ queue, slot: occupiedSlot })
       const root = parse(html)
