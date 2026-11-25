@@ -36,16 +36,18 @@ document.addEventListener('change', event => {
     return
   }
 
-  // Submitting the hidden button includes the required "join" field. For a
-  // player already in the queue it points at their current slot; for a new
-  // player it points at a slot of the class they just selected. The server
-  // then assigns one real slot and renders the player as an alternate on all
-  // other selected classes.
-  const submitter = [
-    ...form.querySelectorAll<HTMLButtonElement>('[data-class-preferences-submit]'),
-  ].find(button => button.dataset.classPreferencesSubmit === target.value)
-
-  if (submitter) {
-    form.requestSubmit(submitter)
+  // The ws-send extension serializes successful form controls, but does not
+  // reliably include requestSubmit()'s submitter. Temporarily enable a normal
+  // hidden input so the required "join" field is included in FormData.
+  const joinInput = form.querySelector<HTMLInputElement>('[data-class-preferences-join]')
+  const joinSlot = target.dataset.classPreferenceJoin
+  if (!joinInput || !joinSlot) {
+    return
   }
+
+  joinInput.value = joinSlot
+  joinInput.disabled = false
+  form.requestSubmit()
+  // HTMX handles the submit event synchronously and has already built FormData.
+  joinInput.disabled = true
 })
