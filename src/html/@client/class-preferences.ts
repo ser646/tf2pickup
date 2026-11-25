@@ -1,31 +1,31 @@
 document.addEventListener('change', event => {
   const target = event.target
-  if (!(target instanceof HTMLInputElement)) {
+  if (!(target instanceof HTMLInputElement) || !target.matches('[data-class-preference]')) {
     return
   }
 
+  const preferences = target.closest<HTMLElement>('#queue-class-preferences')
   const form = target.closest<HTMLFormElement>('#queue')
-  if (!form) {
+  if (!preferences || !form) {
     return
   }
 
-  if (target.matches('[data-select-all-classes]')) {
-    const selected = target.checked
-    form
-      .querySelectorAll<HTMLInputElement>('[data-class-preference]:not(:disabled)')
-      .forEach(input => {
-        input.checked = selected
-      })
+  const selected = [
+    ...preferences.querySelectorAll<HTMLInputElement>('[data-class-preference]:checked'),
+  ]
+  if (selected.length === 0) {
+    target.checked = true
     return
   }
 
-  if (target.matches('[data-class-preference]')) {
-    const selectAll = form.querySelector<HTMLInputElement>('[data-select-all-classes]')
-    const eligible = [
-      ...form.querySelectorAll<HTMLInputElement>('[data-class-preference]:not(:disabled)'),
-    ]
-    if (selectAll) {
-      selectAll.checked = eligible.length > 0 && eligible.every(input => input.checked)
-    }
+  if (!preferences.dataset.ownSlot) {
+    return
+  }
+
+  const submitter = preferences.querySelector<HTMLButtonElement>(
+    '[data-class-preferences-submit]',
+  )
+  if (submitter) {
+    form.requestSubmit(submitter)
   }
 })
