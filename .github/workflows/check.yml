@@ -20,17 +20,6 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: pnpm/action-setup@v6.1.1
       - run: pnpm install
-      - name: Show formatted source for review
-        run: |
-          for file in \
-            src/queues/auto/join.ts \
-            src/queues/auto/join.test.ts \
-            src/queues/auto/views/html/class-preferences.tsx \
-            src/queues/auto/views/html/queue-slot.tsx
-          do
-            echo "=== PRETTIER OUTPUT: $file ==="
-            pnpm exec prettier "$file"
-          done
       - run: pnpm lint
 
   xss-scan:

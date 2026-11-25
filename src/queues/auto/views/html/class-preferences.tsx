@@ -6,10 +6,7 @@ import { gamemodeConfigs } from '../../../../gamemodes/configs'
 import { joinBlocker, type JoinBlockerPlayer } from '../../join-blocker'
 
 type Actor = (JoinBlockerPlayer & Pick<PlayerModel, 'steamId' | 'roles'>) | undefined
-type Queue = Pick<
-  QueueModel,
-  'enabled' | 'requireVerification' | 'skillThreshold' | 'gamemode'
->
+type Queue = Pick<QueueModel, 'enabled' | 'requireVerification' | 'skillThreshold' | 'gamemode'>
 
 export function ClassPreferences(props: {
   queue: Queue
@@ -25,11 +22,9 @@ export function ClassPreferences(props: {
   const ownSlot = props.slots.find(slot => slot.player?.steamId === props.actor?.steamId)
   const selected = ownSlot?.availableClasses ?? (ownSlot ? [ownSlot.gameClass] : [])
   const eligible = classes.filter(
-    ({ name }) =>
-      !joinBlocker(props.actor!, { gameClass: name }, props.queue, props.defaultSkill),
+    ({ name }) => !joinBlocker(props.actor!, { gameClass: name }, props.queue, props.defaultSkill),
   )
-  const allSelected =
-    eligible.length > 0 && eligible.every(({ name }) => selected.includes(name))
+  const allSelected = eligible.length > 0 && eligible.every(({ name }) => selected.includes(name))
 
   return (
     <fieldset id="queue-class-preferences" class="queue-class-preferences">

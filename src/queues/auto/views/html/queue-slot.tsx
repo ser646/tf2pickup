@@ -29,10 +29,7 @@ const enum MarkAsFriendButtonState {
 
 type Actor = (JoinBlockerPlayer & Pick<PlayerModel, 'steamId' | 'roles'>) | undefined
 
-type Queue = Pick<
-  QueueModel,
-  'enabled' | 'skillThreshold' | 'requireVerification' | 'gamemode'
->
+type Queue = Pick<QueueModel, 'enabled' | 'skillThreshold' | 'requireVerification' | 'gamemode'>
 
 export async function QueueSlot(props: {
   queue?: Queue
@@ -49,21 +46,12 @@ export async function QueueSlot(props: {
     // Class-specific skill requirements are checked against the selected availability list on the
     // server; an empty slot's button must not prevent joining through another selected class.
     const globalBlocker =
-      joinBlocker(
-        props.actor,
-        props.slot,
-        props.queue,
-        props.defaultSkill,
-        { skipSkillThreshold: true },
-      ) ?? undefined
+      joinBlocker(props.actor, props.slot, props.queue, props.defaultSkill, {
+        skipSkillThreshold: true,
+      }) ?? undefined
     const noEligibleClass = gamemodeConfigs[props.queue.gamemode].classes.every(({ name }) => {
       return (
-        joinBlocker(
-          props.actor!,
-          { gameClass: name },
-          props.queue!,
-          props.defaultSkill,
-        ) !== null
+        joinBlocker(props.actor!, { gameClass: name }, props.queue!, props.defaultSkill) !== null
       )
     })
     const disabled =
@@ -147,8 +135,7 @@ async function PlayerInfo(props: { queue?: Queue; slot: QueueSlotModel; actor?: 
   const availableClasses = props.slot.availableClasses ?? [props.slot.gameClass]
   const additionalClasses = availableClasses.filter(gameClass => gameClass !== props.slot.gameClass)
   const allClasses =
-    !!props.queue &&
-    availableClasses.length >= gamemodeConfigs[props.queue.gamemode].classes.length
+    !!props.queue && availableClasses.length >= gamemodeConfigs[props.queue.gamemode].classes.length
 
   return (
     <div class="player-info" data-player-ready={String(props.slot.ready)}>

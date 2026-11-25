@@ -26,9 +26,7 @@ vi.mock('./join-blocker', () => ({ joinBlocker: vi.fn().mockReturnValue(null) })
 vi.mock('./vacate-slot', () => ({ vacateSlot: vi.fn() }))
 vi.mock('../captain/leave-pools', () => ({ leavePools: vi.fn() }))
 vi.mock('../queue-command', () => ({
-  queueCommand: vi.fn(
-    async (_operation: string, fn: (emit: unknown) => unknown) => await fn(emit),
-  ),
+  queueCommand: vi.fn(async (_operation: string, fn: (emit: unknown) => unknown) => await fn(emit)),
 }))
 
 const emit = vi.fn()
@@ -75,18 +73,19 @@ function cursor(slots: unknown[]) {
 }
 
 function mockUpdates(slots: DbSlot[]) {
-  vi.mocked(collections.queueSlots.findOneAndUpdate).mockImplementation(
-    (async (filter: { _id: ObjectId }, update: Record<string, unknown>) => {
-      const original = slots.find(candidate => candidate._id.equals(filter._id))
-      if (!original) {
-        return null
-      }
-      return {
-        ...original,
-        ...(update.$set as object),
-      }
-    }) as never,
-  )
+  vi.mocked(collections.queueSlots.findOneAndUpdate).mockImplementation((async (
+    filter: { _id: ObjectId },
+    update: Record<string, unknown>,
+  ) => {
+    const original = slots.find(candidate => candidate._id.equals(filter._id))
+    if (!original) {
+      return null
+    }
+    return {
+      ...original,
+      ...(update.$set as object),
+    }
+  }) as never)
 }
 
 describe('join()', () => {
@@ -100,12 +99,10 @@ describe('join()', () => {
       launchMode: 'auto',
     } as never)
     vi.mocked(joinBlocker).mockReturnValue(null)
-    vi.mocked(players.bySteamId).mockImplementation(
-      (async (_: SteamId64, keys: string[]) =>
-        Object.fromEntries(
-          Object.entries(player).filter(([key]) => keys.some(k => k.split('.')[0] === key)),
-        )) as never,
-    )
+    vi.mocked(players.bySteamId).mockImplementation((async (_: SteamId64, keys: string[]) =>
+      Object.fromEntries(
+        Object.entries(player).filter(([key]) => keys.some(k => k.split('.')[0] === key)),
+      )) as never)
     vi.mocked(getState).mockResolvedValue(QueueState.waiting)
     vi.mocked(collections.queueSlots.find).mockReturnValue(cursor([slot]) as never)
     vi.mocked(collections.queueSlots.countDocuments).mockResolvedValue(1)
