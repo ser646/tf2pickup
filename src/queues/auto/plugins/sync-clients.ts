@@ -67,6 +67,7 @@ export default fp(
     events.on('queue:playerKicked', async ({ player }) => {
       const close = await ReadyUpDialog.close()
       app.gateway.to({ player }).send(() => close)
+      await queuePage.updateAll(app.gateway, { membership: true }, { players: [player] })
     })
 
     events.on(
