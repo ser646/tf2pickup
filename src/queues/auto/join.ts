@@ -1,3 +1,4 @@
+import type { UpdateFilter } from 'mongodb'
 import { configuration } from '../../configuration'
 import { collections } from '../../database/collections'
 import type { QueueId } from '../../database/models/queue.model'
@@ -121,12 +122,9 @@ export async function join(
         name: player.name,
         avatarUrl: playerAvatarUrl(player.avatar, 'medium'),
       },
-      ready:
-        state === QueueState.ready
-          ? (ownSlot?.ready ?? true)
-          : false,
+      ready: state === QueueState.ready ? (ownSlot?.ready ?? true) : false,
       availableClasses,
-      currentSlotId: ownSlot?.id,
+      ...(ownSlot ? { currentSlotId: ownSlot.id } : {}),
     })
 
     const assignment = assignPlayersToSlots(
@@ -134,7 +132,7 @@ export async function join(
       [...members].map(([memberSteamId, member]) => ({
         steamId: memberSteamId,
         availableClasses: member.availableClasses,
-        currentSlotId: member.currentSlotId,
+        ...(member.currentSlotId ? { currentSlotId: member.currentSlotId } : {}),
       })),
     )
     if (!assignment) {
@@ -178,7 +176,7 @@ export async function join(
         continue
       }
 
-      const update = member
+      const update: UpdateFilter<QueueSlotModel> = member
         ? {
             $set: {
               player: nextPlayer,
