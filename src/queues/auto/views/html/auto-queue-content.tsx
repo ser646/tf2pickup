@@ -113,6 +113,7 @@ async function Queue(props: {
         ws-send
         data-disable-when-offline
       >
+        <input type="hidden" name="join" value="" disabled data-class-preferences-join />
         <div class="queue-team-heading-spacer" aria-hidden="true"></div>
         {positions.map((position, index) => (
           <ClassPreferences
@@ -161,6 +162,7 @@ async function Queue(props: {
       ws-send
       data-disable-when-offline
     >
+      <input type="hidden" name="join" value="" disabled data-class-preferences-join />
       {config.classes
         .map(gc => gc.name)
         .map(gameClass => (
