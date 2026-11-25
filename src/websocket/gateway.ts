@@ -43,11 +43,7 @@ const htmxHeaders = z.object({
 
 const classes = z.preprocess(
   (value: unknown) =>
-    value === undefined
-      ? []
-      : Array.isArray(value)
-        ? value.map((item: unknown) => item)
-        : [value],
+    value === undefined ? [] : Array.isArray(value) ? value.map((item: unknown) => item) : [value],
   z.array(z.enum(Tf2ClassName)),
 )
 
