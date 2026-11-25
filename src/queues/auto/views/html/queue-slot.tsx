@@ -10,9 +10,7 @@ import {
   IconClover,
   IconHeart,
   IconHeartFilled,
-  IconLock,
   IconMinus,
-  IconPlus,
 } from '../../../../html/components/icons'
 import { Tf2ClassName } from '../../../../shared/types/tf2-class-name'
 import { GameClassIcon } from '../../../../html/components/game-class-icon'
@@ -46,11 +44,7 @@ export async function QueueSlot(props: {
       props.actor && props.queue
         ? joinBlocker(props.actor, props.slot, props.queue, props.defaultSkill) ?? undefined
         : undefined
-    slotContent = <PlayerInfo {...props} joinDisabled={joinDisabled} />
-  } else if (props.actor && props.queue) {
-    const disabled =
-      joinBlocker(props.actor, props.slot, props.queue, props.defaultSkill) ?? undefined
-    slotContent = <JoinButton slotId={props.slot.id} disabled={disabled} />
+    slotContent = <PlayerInfo {...props} />
   }
 
   const alternativePlayers = (props.allSlots ?? [props.slot])
@@ -87,50 +81,6 @@ export async function QueueSlot(props: {
         </div>
       )}
     </div>
-  )
-}
-
-function JoinButton(props: { slotId: QueueSlotId; disabled: string | undefined }) {
-  return (
-    <button
-      class="join-queue-button"
-      name="join"
-      value={props.slotId}
-      disabled={!!props.disabled}
-      data-umami-event="join-queue"
-      data-umami-event-slot-id={props.slotId}
-    >
-      <span class="sr-only">
-        Join queue on slot {props.slotId} using the selected class availability
-      </span>
-      {props.disabled ? <IconLock /> : <IconPlus />}
-      {!!props.disabled && (
-        <span class="tooltip whitespace-nowrap" safe>
-          {props.disabled}
-        </span>
-      )}
-    </button>
-  )
-}
-
-function TakeOccupiedSlotButton(props: {
-  slotId: QueueSlotId
-  disabled: string | undefined
-}) {
-  return (
-    <button
-      type="submit"
-      class="take-queue-slot-button"
-      name="join"
-      value={props.slotId}
-      disabled={!!props.disabled}
-      title={props.disabled ?? 'Take this class slot'}
-      aria-label={props.disabled ?? 'Take this class slot'}
-      data-umami-event="join-queue"
-      data-umami-event-slot-id={props.slotId}
-    >
-      {props.disabled ? <IconLock /> : <IconPlus />}
-    </button>
   )
 }
 
@@ -217,9 +167,6 @@ async function PlayerInfo(props: {
       </div>
       <div class="queue-slot-actions">
         {slotActionButton}
-        {props.actor && props.actor.steamId !== props.slot.player.steamId && props.queue ? (
-          <TakeOccupiedSlotButton slotId={props.slot.id} disabled={props.joinDisabled} />
-        ) : null}
       </div>
     </div>
   )
