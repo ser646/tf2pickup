@@ -33,7 +33,7 @@ class QueueSlot {
   }
 
   async join() {
-    const gameClass = this.slotId.replace(/-\\d+$/, '')
+    const gameClass = this.slotId.slice(0, this.slotId.lastIndexOf('-'))
     const preference = this.page.locator(`[data-class-preference][value="${gameClass}"]`).first()
     if (!(await preference.isChecked())) {
       await preference.check()
