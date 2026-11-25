@@ -31,6 +31,7 @@ export function ClassPreferences(props: {
   }
 
   const ownSlot = props.slots.find(slot => slot.player?.steamId === props.actor?.steamId)
+  const submitSlot = ownSlot ?? props.slots.find(slot => slot.gameClass === props.gameClass)
   const selected = ownSlot?.availableClasses ?? (ownSlot ? [ownSlot.gameClass] : [])
   const blocker = joinBlocker(
     props.actor,
@@ -64,13 +65,13 @@ export function ClassPreferences(props: {
         <GameClassIcon gameClass={props.gameClass} size={32} />
         <span>{props.gameClass}</span>
       </label>
-      {ownSlot && props.includeInForm !== false ? (
+      {submitSlot && props.includeInForm !== false ? (
         <button
           type="submit"
           name="join"
-          value={ownSlot.id}
+          value={submitSlot.id}
           class="queue-class-preferences-submit"
-          data-class-preferences-submit
+          data-class-preferences-submit={props.gameClass}
           tabindex={-1}
           aria-hidden="true"
         />
