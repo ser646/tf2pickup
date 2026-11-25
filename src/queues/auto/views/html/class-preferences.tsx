@@ -6,7 +6,10 @@ import { gamemodeConfigs } from '../../../../gamemodes/configs'
 import { joinBlocker, type JoinBlockerPlayer } from '../../join-blocker'
 
 type Actor = (JoinBlockerPlayer & Pick<PlayerModel, 'steamId' | 'roles'>) | undefined
-type Queue = Pick<QueueModel, 'enabled' | 'requireVerification' | 'skillThreshold' | 'gamemode'>
+type Queue = Pick<
+  QueueModel,
+  'enabled' | 'requireVerification' | 'skillThreshold' | 'gamemode'
+>
 
 export function ClassPreferences(props: {
   queue: Queue
@@ -29,12 +32,9 @@ export function ClassPreferences(props: {
     eligible.length > 0 && eligible.every(({ name }) => selected.includes(name))
 
   return (
-    <fieldset
-      id="queue-class-preferences"
-      class="col-span-full flex flex-wrap items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900 p-3"
-    >
-      <legend class="px-1 text-sm font-semibold text-zinc-200">Classes you can play</legend>
-      <label class="flex cursor-pointer items-center gap-2 rounded-md border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm font-semibold">
+    <fieldset id="queue-class-preferences" class="queue-class-preferences">
+      <legend>Classes you can play</legend>
+      <label class="queue-class-preferences-option queue-class-preferences-option-all">
         <input
           type="checkbox"
           data-select-all-classes
@@ -55,8 +55,8 @@ export function ClassPreferences(props: {
           <label
             title={blocker ?? undefined}
             class={[
-              'flex items-center gap-2 rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm',
-              blocker && !checked ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+              'queue-class-preferences-option',
+              blocker && !checked && 'queue-class-preferences-option-disabled',
             ]}
           >
             <input
@@ -77,14 +77,14 @@ export function ClassPreferences(props: {
           type="submit"
           name="join"
           value={ownSlot.id}
-          class="rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm font-semibold text-zinc-100 hover:bg-zinc-700 disabled:opacity-50"
+          class="queue-class-preferences-update"
           disabled={eligible.length === 0}
           data-umami-event="update-class-availability"
         >
           Update availability
         </button>
       )}
-      <p class="basis-full text-xs text-zinc-500">
+      <p class="queue-class-preferences-help">
         Select every class you are comfortable playing. The queue will assign you to one of them
         based on the available players. With no selection, the class of the slot you click is used.
       </p>

@@ -76,7 +76,9 @@ export async function join(
     const requestedClasses = [
       ...new Set(selectedClasses.length > 0 ? selectedClasses : [clickedSlot.gameClass]),
     ]
-    const invalidClass = requestedClasses.find(gameClass => !configuredClasses.includes(gameClass))
+    const invalidClass = requestedClasses.find(
+      gameClass => !configuredClasses.includes(gameClass),
+    )
     if (invalidClass) {
       throw errors.badRequest('class ' + invalidClass + ' is not available in this queue')
     }
@@ -98,7 +100,12 @@ export async function join(
       gameClass => !joinBlocker(player, { gameClass }, settings, defaultSkill),
     )
     if (availableClasses.length === 0) {
-      const blocker = joinBlocker(player, { gameClass: requestedClasses[0]! }, settings, defaultSkill)
+      const blocker = joinBlocker(
+        player,
+        { gameClass: requestedClasses[0]! },
+        settings,
+        defaultSkill,
+      )
       throw errors.badRequest(blocker ?? 'You are not eligible for the selected classes')
     }
 

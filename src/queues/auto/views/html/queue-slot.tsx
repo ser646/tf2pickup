@@ -29,7 +29,10 @@ const enum MarkAsFriendButtonState {
 
 type Actor = (JoinBlockerPlayer & Pick<PlayerModel, 'steamId' | 'roles'>) | undefined
 
-type Queue = Pick<QueueModel, 'enabled' | 'skillThreshold' | 'requireVerification' | 'gamemode'>
+type Queue = Pick<
+  QueueModel,
+  'enabled' | 'skillThreshold' | 'requireVerification' | 'gamemode'
+>
 
 export async function QueueSlot(props: {
   queue?: Queue
@@ -53,15 +56,16 @@ export async function QueueSlot(props: {
         props.defaultSkill,
         { skipSkillThreshold: true },
       ) ?? undefined
-    const noEligibleClass = gamemodeConfigs[props.queue.gamemode].classes.every(
-      ({ name }) =>
+    const noEligibleClass = gamemodeConfigs[props.queue.gamemode].classes.every(({ name }) => {
+      return (
         joinBlocker(
           props.actor!,
           { gameClass: name },
           props.queue!,
           props.defaultSkill,
-        ) !== null,
-    )
+        ) !== null
+      )
+    })
     const disabled =
       globalBlocker ??
       (noEligibleClass ? 'You do not meet skill requirements for any class' : undefined)
@@ -171,7 +175,7 @@ async function PlayerInfo(props: { queue?: Queue; slot: QueueSlotModel; actor?: 
         </a>
         {availableClasses.length > 1 && (
           <span
-            class="text-xs text-zinc-500"
+            class="player-available-classes"
             title={
               allClasses
                 ? 'Can play every class in this queue'
