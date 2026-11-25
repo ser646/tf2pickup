@@ -28,7 +28,10 @@ export async function kickFromQueue(
   for (const steamId of steamIds) {
     const slot = await collections.queueSlots.findOneAndUpdate(
       { queue, 'player.steamId': steamId },
-      { $set: { player: null, ready: false } },
+      {
+        $set: { player: null, ready: false },
+        $unset: { availableClasses: '' },
+      },
       { returnDocument: 'after' },
     )
 
