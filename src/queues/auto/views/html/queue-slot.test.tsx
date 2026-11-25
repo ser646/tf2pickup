@@ -7,7 +7,6 @@ import type { SteamId64 } from '../../../../shared/types/steam-id-64'
 import { collections } from '../../../../database/collections'
 import { ObjectId } from 'mongodb'
 import type { QueueId } from '../../../../database/models/queue.model'
-import { joinBlocker } from '../../join-blocker'
 import type { QueueSlotId } from '../../../types/queue-slot-id'
 import { PlayerRole, type PlayerBan } from '../../../../database/models/player.model'
 
@@ -19,9 +18,6 @@ vi.mock('../../../../database/collections', () => ({
   },
 }))
 
-vi.mock('../../join-blocker', () => ({
-  joinBlocker: vi.fn(),
-}))
 
 const actor = {
   steamId: '76561198000000001' as SteamId64,
@@ -79,7 +75,9 @@ describe('QueueSlot', () => {
       const root = parse(html)
 
       expect(root.querySelector('.queue-slot-alternates-label')?.text).toBe('Also available')
-      expect(root.querySelector('.queue-slot-alternate .player-name-text')).toBeNull()
+      expect(root.querySelector('.queue-slot-alternate img')?.getAttribute('src')).toBe(
+        'https://example.com/flexible.jpg',
+      )
       expect(root.querySelector('.queue-slot-alternate')?.text).toBe('Flexible Player')
     })
 
@@ -91,29 +89,14 @@ describe('QueueSlot', () => {
   })
 
   describe('when slot is empty and there is an actor', () => {
-    beforeEach(() => {
-      vi.mocked(joinBlocker).mockReturnValue(null)
-    })
-
-    it('renders a join button', async () => {
+    it('does not render a slot-level join button because class headers handle joining', async () => {
       const html = await QueueSlot({
         queue,
         slot: emptySlot,
-        actor: actor,
+        actor,
         defaultSkill: undefined,
       })
-      const root = parse(html)
-      const button = root.querySelector('.join-queue-button')
-      expect(button).not.toBeNull()
-      expect(button!.getAttribute('disabled')).toBeUndefined()
-    })
-
-    it('renders a disabled join button with the join blocker as its tooltip', async () => {
-      vi.mocked(joinBlocker).mockReturnValue('You have active bans')
-      const html = await QueueSlot({ queue, slot: emptySlot, actor, defaultSkill: undefined })
-      const button = parse(html).querySelector('.join-queue-button')
-      expect(button!.getAttribute('disabled')).toBeDefined()
-      expect(button!.text).toContain('You have active bans')
+      expect(parse(html).querySelector('.join-queue-button')).toBeNull()
     })
   })
 
