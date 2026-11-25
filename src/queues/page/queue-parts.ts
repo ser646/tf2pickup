@@ -4,6 +4,7 @@ import type { QueueSlotModel } from '../../database/models/queue-slot.model'
 import type { SteamId64 } from '../../shared/types/steam-id-64'
 import { configuration } from '../../configuration'
 import { QueueSlot } from '../auto/views/html/queue-slot'
+import { ClassPreferences } from '../auto/views/html/class-preferences'
 import { CurrentPlayerCount } from '../views/html/current-player-count'
 import { TeamPlayerCount } from '../auto/views/html/team-player-count'
 import { teamSlots } from '../auto/views/html/team-slots'
@@ -51,6 +52,17 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
           async ({ actor }) =>
             QueueSlot({ queue, slot, actor: await actor(), defaultSkill }),
       ),
+    )
+  }
+
+  // Class preferences are part of the queue form, but slot changes arrive as individual OOB
+  // fragments. Refresh this fieldset too, so the update button and selected classes stay in sync
+  // after joining, leaving, or being moved to another slot.
+  if (parts.slots) {
+    const allSlots = await collections.queueSlots.find({ queue: queue._id }).toArray()
+    const defaultSkill = (await configuration.get('games.default_player_skill'))[queue.gamemode]
+    fragments.push(async ({ actor }) =>
+      ClassPreferences({ queue, slots: allSlots, actor: await actor(), defaultSkill }),
     )
   }
 
