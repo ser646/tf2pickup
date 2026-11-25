@@ -22,10 +22,11 @@ const actor = {
   activeGame: undefined,
   verified: true,
   skill: undefined,
+  roles: [],
 }
 
 describe('ClassPreferences', () => {
-  it('renders one selectable class icon per class without a separate preferences panel', () => {
+  it('renders the existing class heading as the availability toggle', () => {
     const html = parse(
       String(
         ClassPreferences({
@@ -33,19 +34,19 @@ describe('ClassPreferences', () => {
           slots: [],
           actor: actor as never,
           defaultSkill: undefined,
+          gameClass: Tf2ClassName.scout,
         }),
       ),
     )
 
-    expect(html.querySelector('#queue-class-preferences')).not.toBeNull()
-    expect(html.querySelectorAll('input[name="classes"]')).toHaveLength(4)
+    expect(html.querySelector('#queue-class-preference-scout')).not.toBeNull()
+    expect(html.querySelector('input[name="classes"][value="scout"]')).not.toBeNull()
+    expect(html.text).toContain('Scout')
+    expect(html.querySelector('#queue-class-preferences')).toBeNull()
     expect(html.querySelector('[data-select-all-classes]')).toBeNull()
-    expect(html.text).toContain('I can play:')
-    expect(html.text).not.toContain('Classes you can play')
-    expect(html.text).not.toContain('Update availability')
   })
 
-  it('marks the saved classes as selected and provides automatic update submission', () => {
+  it('reflects saved availability and submits updates through the existing slot', () => {
     const slot = {
       queue: new ObjectId() as QueueId,
       id: 'soldier-1',
@@ -61,15 +62,30 @@ describe('ClassPreferences', () => {
           slots: [slot],
           actor: actor as never,
           defaultSkill: undefined,
+          gameClass: Tf2ClassName.scout,
         }),
       ),
     )
 
-    const checked = html
-      .querySelectorAll('input[name="classes"][checked]')
-      .map(input => input.getAttribute('value'))
-    expect(checked).toEqual([Tf2ClassName.scout, Tf2ClassName.soldier])
-    expect(html.querySelector('[data-own-slot="soldier-1"]')).not.toBeNull()
+    expect(html.querySelector('input[name="classes"][value="scout"][checked]')).not.toBeNull()
     expect(html.querySelector('button[data-class-preferences-submit][value="soldier-1"]')).not.toBeNull()
+  })
+
+  it('renders the original heading unchanged for signed-out viewers', () => {
+    const html = parse(
+      String(
+        ClassPreferences({
+          queue,
+          slots: [],
+          actor: undefined,
+          defaultSkill: undefined,
+          gameClass: Tf2ClassName.scout,
+        }),
+      ),
+    )
+
+    expect(html.querySelector('h2#queue-class-preference-scout')).not.toBeNull()
+    expect(html.querySelector('input[name="classes"]')).toBeNull()
+    expect(html.text).toContain('Scout')
   })
 })
