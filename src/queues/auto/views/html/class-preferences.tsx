@@ -42,40 +42,28 @@ export function ClassPreferences(props: {
   const checked = selected.includes(props.gameClass)
 
   return (
-    <>
-      <label
-        id={props.headingId ?? 'queue-class-preference-' + props.gameClass}
-        class={[
-          'queue-class-heading',
-          'queue-class-heading-selectable',
-          checked && 'queue-class-heading-selected',
-          blocker && 'queue-class-heading-disabled',
-        ]}
-        title={blocker ?? ('Toggle ' + props.gameClass + ' availability')}
-      >
-        <input
-          type="checkbox"
-          {...(props.includeInForm === false ? {} : { name: 'classes' })}
-          value={props.gameClass}
-          checked={checked}
-          disabled={!!blocker}
-          data-class-preference
-          aria-label={'I can play ' + props.gameClass}
-        />
-        <GameClassIcon gameClass={props.gameClass} size={32} />
-        <span>{props.gameClass}</span>
-      </label>
-      {submitSlot && props.includeInForm !== false ? (
-        <button
-          type="submit"
-          name="join"
-          value={submitSlot.id}
-          class="queue-class-preferences-submit"
-          data-class-preferences-submit={props.gameClass}
-          tabindex={-1}
-          aria-hidden="true"
-        />
-      ) : null}
-    </>
+    <label
+      id={props.headingId ?? 'queue-class-preference-' + props.gameClass}
+      class={[
+        'queue-class-heading',
+        'queue-class-heading-selectable',
+        checked && 'queue-class-heading-selected',
+        blocker && 'queue-class-heading-disabled',
+      ]}
+      title={blocker ?? ('Toggle ' + props.gameClass + ' availability')}
+    >
+      <input
+        type="checkbox"
+        {...(props.includeInForm === false ? {} : { name: 'classes' })}
+        value={props.gameClass}
+        checked={checked}
+        disabled={!!blocker}
+        data-class-preference
+        data-class-preference-join={submitSlot?.id}
+        aria-label={'I can play ' + props.gameClass}
+      />
+      <GameClassIcon gameClass={props.gameClass} size={32} />
+      <span>{props.gameClass}</span>
+    </label>
   )
 }
