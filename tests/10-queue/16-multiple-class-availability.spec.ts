@@ -42,6 +42,7 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
     'data-player',
     flexible2.steamId,
   )
+  await expect(flexible1Page.page.getByRole('button', { name: 'Update availability' })).toBeVisible()
 
   await Promise.all([
     flexible1Page.leaveQueue(),
@@ -53,4 +54,7 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
     flexible2Page.waitToBeEmpty(),
     medicPage.waitToBeEmpty(),
   ])
+  await expect(
+    flexible1Page.page.getByRole('button', { name: 'Update availability' }),
+  ).not.toBeVisible()
 })
