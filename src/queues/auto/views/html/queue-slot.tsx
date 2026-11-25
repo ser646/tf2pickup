@@ -34,7 +34,7 @@ type Queue = Pick<QueueModel, 'enabled' | 'skillThreshold' | 'requireVerificatio
 export async function QueueSlot(props: {
   queue?: Queue
   slot: QueueSlotModel
-  allSlots: QueueSlotModel[]
+  allSlots?: QueueSlotModel[]
   actor?: Actor
   defaultSkill: PlayerSkill | undefined
 }) {
@@ -49,8 +49,7 @@ export async function QueueSlot(props: {
     slotContent = <JoinButton slotId={props.slot.id} disabled={disabled} />
   }
 
-  const alternativePlayers = props.allSlots
-    .filter(
+  const alternativePlayers = (props.allSlots ?? [props.slot]).filter(
       candidate =>
         candidate.player &&
         candidate.gameClass !== props.slot.gameClass &&
@@ -76,7 +75,7 @@ export async function QueueSlot(props: {
                 title={player!.name + ' can also play ' + (availableClasses ?? [gameClass]).join(', ')}
               >
                 <img src={player!.avatarUrl} width="24" height="24" alt="" />
-                <span>{player!.name}</span>
+                <span safe>{player!.name}</span>
               </div>
             ))}
           </div>
