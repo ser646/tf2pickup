@@ -66,13 +66,16 @@ export async function QueueSlot(props: {
     >
       {slotContent}
       {alternativePlayers.length > 0 && (
-        <div class="queue-slot-alternates" aria-label={'Other players available for ' + props.slot.gameClass}>
+          <div
+            class="queue-slot-alternates"
+            aria-label={'Other players available for ' + props.slot.gameClass}
+          >
           <span class="queue-slot-alternates-label">Also available</span>
           <div class="queue-slot-alternates-list">
             {alternativePlayers.map(({ player, gameClass, availableClasses }) => (
               <div
                 class="queue-slot-alternate"
-                title={player!.name + ' can also play ' + (availableClasses ?? [gameClass]).join(', ')}
+                title={player!.name}
               >
                 <img src={player!.avatarUrl} width="24" height="24" alt="" />
                 <span safe>{player!.name}</span>
