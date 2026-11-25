@@ -43,6 +43,9 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
 
   const fragments: Fragment[] = []
 
+  const allSlots = parts.slots
+    ? await collections.queueSlots.find({ queue: queue._id }).toArray()
+    : undefined
   const slots = await pickSlots(queue, parts)
   if (slots.length > 0) {
     const defaultSkill = (await configuration.get('games.default_player_skill'))[queue.gamemode]
@@ -50,7 +53,13 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
       ...slots.map(
         (slot): Fragment =>
           async ({ actor }) =>
-            QueueSlot({ queue, slot, actor: await actor(), defaultSkill }),
+            QueueSlot({
+              queue,
+              slot,
+              allSlots: allSlots ?? slots,
+              actor: await actor(),
+              defaultSkill,
+            }),
       ),
     )
   }
@@ -59,10 +68,10 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
   // fragments. Refresh this fieldset too, so the update button and selected classes stay in sync
   // after joining, leaving, or being moved to another slot.
   if (parts.slots) {
-    const allSlots = await collections.queueSlots.find({ queue: queue._id }).toArray()
+    const currentSlots = allSlots ?? (await collections.queueSlots.find({ queue: queue._id }).toArray())
     const defaultSkill = (await configuration.get('games.default_player_skill'))[queue.gamemode]
     fragments.push(async ({ actor }) =>
-      ClassPreferences({ queue, slots: allSlots, actor: await actor(), defaultSkill }),
+      ClassPreferences({ queue, slots: currentSlots, actor: await actor(), defaultSkill }),
     )
   }
 
