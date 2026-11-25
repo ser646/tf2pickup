@@ -175,9 +175,9 @@ describe('join()', () => {
     vi.mocked(collections.queueSlots.countDocuments).mockResolvedValue(0)
     mockUpdates([scoutSlot, soldierSlot])
 
-    // No explicit class preferences: clicking the occupied Soldier slot means
-    // the newcomer wants Soldier, while the existing player can move to Scout.
-    await join(queue, otherSlotId, steamId)
+    // The newcomer currently prefers Scout, but clicking the occupied Soldier slot
+    // explicitly requests Soldier and the flexible player is moved to Scout.
+    await join(queue, otherSlotId, steamId, [Tf2ClassName.scout])
 
     expect(collections.queueSlots.findOneAndUpdate).toHaveBeenNthCalledWith(
       1,
@@ -195,7 +195,10 @@ describe('join()', () => {
     expect(collections.queueSlots.findOneAndUpdate).toHaveBeenCalledWith(
       { _id: soldierSlot._id },
       expect.objectContaining({
-        $set: expect.objectContaining({ player: expect.objectContaining({ steamId }) }),
+        $set: expect.objectContaining({
+          player: expect.objectContaining({ steamId }),
+          availableClasses: [Tf2ClassName.scout, Tf2ClassName.soldier],
+        }),
       }),
       { returnDocument: 'after' },
     )
