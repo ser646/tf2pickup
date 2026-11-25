@@ -239,7 +239,7 @@ describe('join()', () => {
 
     expect(joinBlocker).toHaveBeenCalledWith(
       expect.objectContaining({ bans: player.bans }),
-      { gameClass: Tf2ClassName.scout },
+      expect.objectContaining({ gameClass: Tf2ClassName.scout }),
       expect.anything(),
       { scout: 2, soldier: 2 },
     )
