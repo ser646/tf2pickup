@@ -101,6 +101,21 @@ describe('joinBlocker()', () => {
         joinBlocker(player, slot, { ...thresholdQueue, gamemode: Gamemode.ultiduo }, defaultSkill),
       ).toBeNull()
     })
+
+    it('can skip only the class skill check for a multi-class join control', () => {
+      expect(
+        joinBlocker(player, slot, thresholdQueue, { soldier: 1 }, { skipSkillThreshold: true }),
+      ).toBeNull()
+      expect(
+        joinBlocker(
+          { hasAcceptedRules: false },
+          slot,
+          thresholdQueue,
+          { soldier: 1 },
+          { skipSkillThreshold: true },
+        ),
+      ).toBe('You have not accepted the rules')
+    })
   })
 
   it('reports the first blocker in a fixed order', () => {

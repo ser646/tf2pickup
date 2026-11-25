@@ -13,7 +13,7 @@ export default fp(
   async app => {
     app.gateway.on(
       'queue:join',
-      wsSafe('join', async (socket, slotId) => {
+      wsSafe('join', async (socket, slotId, classes) => {
         if (!socket.player) {
           throw errors.unauthorized('unauthorized')
         }
@@ -23,7 +23,7 @@ export default fp(
           throw errors.badRequest('not on a queue page')
         }
         const actor = socket.player.steamId
-        const slots = await join(queue._id, slotId, actor)
+        const slots = await join(queue._id, slotId, actor, classes)
         if (slots.find(s => s.canMakeFriendsWith?.length)) {
           await queuePage.update(app.gateway, queue._id, { slots: 'taken' }, { players: [actor] })
         }

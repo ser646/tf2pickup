@@ -14,6 +14,7 @@ import './phase-timer'
 import './notifications'
 import './play-sound'
 import './sync-attribute'
+import './class-preferences'
 
 htmx.config.wsReconnectDelay = () => 1000 // 1 second
 

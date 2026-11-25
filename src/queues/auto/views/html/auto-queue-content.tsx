@@ -21,6 +21,7 @@ import { QueueSwitcher } from '../../../views/html/queue-switcher'
 import { StreamList } from '../../../views/html/stream-list'
 import { TeamPlayerCount } from './team-player-count'
 import { teamSlots } from './team-slots'
+import { ClassPreferences } from './class-preferences'
 
 export async function AutoQueueContent(props: { queue: QueueModel }) {
   const { queue } = props
@@ -109,10 +110,16 @@ async function Queue(props: {
       <form
         id="queue"
         class="queue-compact-grid"
-        style={`--team-size: ${positions.length.toString()}`}
+        style={\`--team-size: \${positions.length.toString()}\`}
         ws-send
         data-disable-when-offline
       >
+        <ClassPreferences
+          queue={props.queue}
+          slots={props.slots}
+          actor={actor}
+          defaultSkill={defaultSkill}
+        />
         <div class="queue-team-heading-spacer" aria-hidden="true"></div>
         {positions.map(position => (
           <h2 class="queue-class-heading">
@@ -153,6 +160,12 @@ async function Queue(props: {
       ws-send
       data-disable-when-offline
     >
+      <ClassPreferences
+        queue={props.queue}
+        slots={props.slots}
+        actor={actor}
+        defaultSkill={defaultSkill}
+      />
       {config.classes
         .map(gc => gc.name)
         .map(gameClass => (
@@ -191,7 +204,7 @@ export async function ClearQueueButton(props: {
       class="button queue-clear-button max-lg:flex-1 max-lg:px-3 max-lg:text-sm max-lg:whitespace-nowrap"
       data-variant="accent"
       data-umami-event="clear-queue"
-      hx-delete={`${queues.queuePageUrl(props.queue.slug)}/players`}
+      hx-delete={\`\${queues.queuePageUrl(props.queue.slug)}/players\`}
       hx-confirm="Are you sure you want to kick everyone from the queue?"
     >
       <span>Clear queue</span>

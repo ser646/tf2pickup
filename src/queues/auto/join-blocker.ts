@@ -15,6 +15,7 @@ export function joinBlocker(
   slot: Pick<QueueSlotModel, 'gameClass'>,
   queue: Pick<QueueModel, 'enabled' | 'requireVerification' | 'skillThreshold' | 'gamemode'>,
   defaultSkill: PlayerSkill | undefined,
+  options: { skipSkillThreshold?: boolean } = {},
 ): string | null {
   if (!queue.enabled) {
     return 'This queue is disabled'
@@ -36,10 +37,14 @@ export function joinBlocker(
     return 'You are not verified to join the queue'
   }
 
-  if (queue.skillThreshold !== null && gamemodeConfigs[queue.gamemode].autoBalance) {
+  if (
+    !options.skipSkillThreshold &&
+    queue.skillThreshold !== null &&
+    gamemodeConfigs[queue.gamemode].autoBalance
+  ) {
     const skill = effectiveSkill(player.skill?.[queue.gamemode], defaultSkill, slot.gameClass)
     if (skill < queue.skillThreshold) {
-      return `You do not meet skill requirements to play ${slot.gameClass}`
+      return 'You do not meet skill requirements to play ' + slot.gameClass
     }
   }
 

@@ -43,16 +43,24 @@ export async function QueueSlot(props: {
   if (props.slot.player) {
     slotContent = <PlayerInfo {...props} />
   } else if (props.actor) {
+    // Class-specific skill requirements are checked against the selected availability list on the
+    // server; an empty slot's button must not prevent joining through another selected class.
     const disabled =
-      joinBlocker(props.actor, props.slot, props.queue, props.defaultSkill) ?? undefined
+      joinBlocker(
+        props.actor,
+        props.slot,
+        props.queue,
+        props.defaultSkill,
+        { skipSkillThreshold: true },
+      ) ?? undefined
     slotContent = <JoinButton slotId={props.slot.id} disabled={disabled} />
   }
 
   return (
     <div
       class={['queue-slot', isOwnSlot && 'queue-slot-own', isReadySlot && 'queue-slot-ready']}
-      id={`queue-slot-${props.slot.id}`}
-      aria-label={`Queue slot ${props.slot.id}`}
+      id={\`queue-slot-\${props.slot.id}\`}
+      aria-label={\`Queue slot \${props.slot.id}\`}
       data-player={props.slot.player?.steamId}
     >
       {slotContent}
@@ -119,18 +127,21 @@ async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: A
           skill[c] === undefined ? [] : [[c, skill[c]] as const],
         )
       : []
+  const availableClasses = props.slot.availableClasses ?? [props.slot.gameClass]
+  const additionalClasses = availableClasses.filter(gameClass => gameClass !== props.slot.gameClass)
+  const allClasses = availableClasses.length >= gamemodeConfigs[props.queue.gamemode].classes.length
 
   return (
-    <div class="player-info" data-player-ready={`${props.slot.ready}`}>
+    <div class="player-info" data-player-ready={\`\${props.slot.ready}\`}>
       <img
         src={props.slot.player.avatarUrl}
         width="64"
         height="64"
-        alt={`${props.slot.player.name}'s name`}
+        alt={\`\${props.slot.player.name}'s name\`}
       />
       <div class="player-name-area">
         <a
-          href={`/players/${props.slot.player.steamId}`}
+          href={\`/players/\${props.slot.player.steamId}\`}
           class="player-name-link"
           preload="mousedown"
         >
@@ -143,6 +154,30 @@ async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: A
             </span>
           )}
         </a>
+        {availableClasses.length > 1 && (
+          <span
+            class="text-xs text-zinc-500"
+            title={
+              allClasses
+                ? 'Can play every class in this queue'
+                : 'Can also play ' + additionalClasses.join(', ')
+            }
+          >
+            {allClasses ? (
+              'All classes'
+            ) : (
+              <>
+                Also:{' '}
+                {additionalClasses.map((gameClass, index) => (
+                  <>
+                    <GameClassIcon gameClass={gameClass} size={14} /> {gameClass}
+                    {index < additionalClasses.length - 1 ? ', ' : ''}
+                  </>
+                ))}
+              </>
+            )}
+          </span>
+        )}
         {showSkill && (
           <span class="tooltip">
             {skillEntries.length === 0
@@ -171,7 +206,7 @@ async function MarkAsFriendButton(props: { slot: QueueSlotModel; actor?: Actor }
     <label class="mark-as-friend-button">
       <input
         type="checkbox"
-        id={`mark-as-friend-${props.slot.id}`}
+        id={\`mark-as-friend-\${props.slot.id}\`}
         disabled={markAsFriendButtonState === MarkAsFriendButtonState.disabled}
         checked={markAsFriendButtonState === MarkAsFriendButtonState.selected}
         ws-send
