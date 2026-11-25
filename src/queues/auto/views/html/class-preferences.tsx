@@ -43,7 +43,7 @@ export function ClassPreferences(props: {
   return (
     <>
       <label
-        id={'queue-class-preference-' + props.gameClass}
+        id={props.headingId ?? 'queue-class-preference-' + props.gameClass}
         class={[
           'queue-class-heading',
           'queue-class-heading-selectable',
