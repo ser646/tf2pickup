@@ -72,8 +72,10 @@ export default fp(
 
     events.on(
       'queue/slots:updated',
-      safe(async ({ queue, slots }) => {
-        await queuePage.update(app.gateway, queue, { slots, counts: true })
+      safe(async ({ queue }) => {
+        // Alternative candidates can appear on several class slots, so a membership or
+        // availability change must refresh every slot in the queue, not only changed slots.
+        await queuePage.update(app.gateway, queue, { slots: 'all', counts: true })
       }),
     )
 
