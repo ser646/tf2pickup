@@ -16,10 +16,10 @@ export function ClassPreferences(props: {
   defaultSkill: PlayerSkill | undefined
   gameClass: Tf2ClassName
 }) {
-  const gameClass = gamemodeConfigs[props.queue.gamemode].classes.find(
-    gameClass => gameClass.name === props.gameClass,
+  const classConfig = gamemodeConfigs[props.queue.gamemode].classes.find(
+    item => item.name === props.gameClass,
   )
-  if (!props.actor || !gameClass) {
+  if (!props.actor || !classConfig) {
     return (
       <h2 id={'queue-class-preference-' + props.gameClass} class="queue-class-heading">
         <GameClassIcon gameClass={props.gameClass} size={32} />
@@ -39,28 +39,29 @@ export function ClassPreferences(props: {
   const checked = selected.includes(props.gameClass)
 
   return (
-    <label
-      id={'queue-class-preference-' + props.gameClass}
-      class={[
-        'queue-class-heading',
-        'queue-class-preference-' + props.gameClass,
-        'queue-class-heading-selectable',
-        checked && 'queue-class-heading-selected',
-        blocker && 'queue-class-heading-disabled',
-      ]}
-      title={blocker ?? ('Toggle ' + props.gameClass + ' availability')}
-    >
-      <input
-        type="checkbox"
-        name="classes"
-        value={props.gameClass}
-        checked={checked}
-        disabled={!!blocker}
-        data-class-preference
-        aria-label={'I can play ' + props.gameClass}
-      />
-      <GameClassIcon gameClass={props.gameClass} size={32} />
-      <span>{props.gameClass}</span>
+    <>
+      <label
+        id={'queue-class-preference-' + props.gameClass}
+        class={[
+          'queue-class-heading',
+          'queue-class-heading-selectable',
+          checked && 'queue-class-heading-selected',
+          blocker && 'queue-class-heading-disabled',
+        ]}
+        title={blocker ?? ('Toggle ' + props.gameClass + ' availability')}
+      >
+        <input
+          type="checkbox"
+          name="classes"
+          value={props.gameClass}
+          checked={checked}
+          disabled={!!blocker}
+          data-class-preference
+          aria-label={'I can play ' + props.gameClass}
+        />
+        <GameClassIcon gameClass={props.gameClass} size={32} />
+        <span>{props.gameClass}</span>
+      </label>
       {ownSlot ? (
         <button
           type="submit"
@@ -72,6 +73,6 @@ export function ClassPreferences(props: {
           aria-hidden="true"
         />
       ) : null}
-    </label>
+    </>
   )
 }
