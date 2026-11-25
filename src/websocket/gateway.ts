@@ -42,7 +42,7 @@ const htmxHeaders = z.object({
 })
 
 const classes = z.preprocess(
-  value => (value === undefined ? [] : Array.isArray(value) ? value : [value]),
+  (value: unknown) => (value === undefined ? [] : Array.isArray(value) ? value : [value]),
   z.array(z.enum(Tf2ClassName)),
 )
 
@@ -331,7 +331,7 @@ export class Gateway extends EventEmitter implements Broadcaster {
 
       // all the other calls are for authenticated clients only
       if ('join' in parsed) {
-        this.emit('queue:join', socket, parsed.join as QueueSlotId, parsed.classes)
+        this.emit('queue:join', socket, parsed.join, parsed.classes)
       } else if ('leave' in parsed) {
         this.emit('queue:leave', socket)
       } else if ('ready' in parsed) {
