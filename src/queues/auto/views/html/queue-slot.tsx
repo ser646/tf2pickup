@@ -34,6 +34,7 @@ type Queue = Pick<QueueModel, 'enabled' | 'skillThreshold' | 'requireVerificatio
 export async function QueueSlot(props: {
   queue?: Queue
   slot: QueueSlotModel
+  allSlots: QueueSlotModel[]
   actor?: Actor
   defaultSkill: PlayerSkill | undefined
 }) {
@@ -48,6 +49,15 @@ export async function QueueSlot(props: {
     slotContent = <JoinButton slotId={props.slot.id} disabled={disabled} />
   }
 
+  const alternativePlayers = props.allSlots
+    .filter(
+      candidate =>
+        candidate.player &&
+        candidate.gameClass !== props.slot.gameClass &&
+        (candidate.availableClasses ?? [candidate.gameClass]).includes(props.slot.gameClass),
+    )
+    .sort((a, b) => a.player!.name.localeCompare(b.player!.name))
+
   return (
     <div
       class={['queue-slot', isOwnSlot && 'queue-slot-own', isReadySlot && 'queue-slot-ready']}
@@ -56,6 +66,22 @@ export async function QueueSlot(props: {
       data-player={props.slot.player?.steamId}
     >
       {slotContent}
+      {alternativePlayers.length > 0 && (
+        <div class="queue-slot-alternates" aria-label={'Other players available for ' + props.slot.gameClass}>
+          <span class="queue-slot-alternates-label">Also available</span>
+          <div class="queue-slot-alternates-list">
+            {alternativePlayers.map(({ player, gameClass, availableClasses }) => (
+              <div
+                class="queue-slot-alternate"
+                title={player!.name + ' can also play ' + (availableClasses ?? [gameClass]).join(', ')}
+              >
+                <img src={player!.avatarUrl} width="24" height="24" alt="" />
+                <span>{player!.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -122,10 +148,6 @@ async function PlayerInfo(props: { queue?: Queue; slot: QueueSlotModel; actor?: 
           skill[c] === undefined ? [] : [[c, skill[c]] as const],
         )
       : []
-  const availableClasses = props.slot.availableClasses ?? [props.slot.gameClass]
-  const additionalClasses = availableClasses.filter(gameClass => gameClass !== props.slot.gameClass)
-  const allClasses =
-    !!props.queue && availableClasses.length >= gamemodeConfigs[props.queue.gamemode].classes.length
 
   return (
     <div class="player-info" data-player-ready={String(props.slot.ready)}>
@@ -150,30 +172,6 @@ async function PlayerInfo(props: { queue?: Queue; slot: QueueSlotModel; actor?: 
             </span>
           )}
         </a>
-        {availableClasses.length > 1 && (
-          <span
-            class="player-available-classes"
-            title={
-              allClasses
-                ? 'Can play every class in this queue'
-                : 'Can also play ' + additionalClasses.join(', ')
-            }
-          >
-            {allClasses ? (
-              'All classes'
-            ) : (
-              <>
-                Also:{' '}
-                {additionalClasses.map((gameClass, index) => (
-                  <>
-                    <GameClassIcon gameClass={gameClass} size={14} /> {gameClass}
-                    {index < additionalClasses.length - 1 ? ', ' : ''}
-                  </>
-                ))}
-              </>
-            )}
-          </span>
-        )}
         {showSkill && (
           <span class="tooltip">
             {skillEntries.length === 0
