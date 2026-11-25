@@ -288,7 +288,7 @@ describe('queuePage.updateAll', () => {
 
     await queuePage.updateAll(gateway, { banAlerts: true, slots: 'all' }, { players: [alice] })
 
-    expect(await received(aliceOnUltiduo)).toEqual(['ban-alerts', 'queue-slot-soldier-0'])
+    expect(await received(aliceOnUltiduo)).toEqual(['ban-alerts', 'queue-slot-soldier-0', 'queue-class-preferences'])
     expect(await received(bobOnUltiduo)).toEqual([])
   })
 })
@@ -302,6 +302,7 @@ describe('queuePage.render', () => {
     expect(await received(socket)).toEqual([
       'queue-slot-soldier-0',
       'queue-slot-soldier-1',
+      'queue-class-preferences',
       'pre-ready-up-button',
       'queue-current-player-count',
       'set-title',
