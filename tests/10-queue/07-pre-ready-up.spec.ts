@@ -157,7 +157,15 @@ test('does not ready up if switching classes as 11th player @6v6 @9v9', async ({
   const page = await polemic.queuePage()
   await page.goto()
   await page.slot(firstSlot).join()
-  const slot = page.slot(secondSlot)
-  await slot.join()
-  expect(await slot.isReady()).toBe(false)
+
+  const firstClass = firstSlot.split('-')[0]!
+  const secondClass = secondSlot.split('-')[0]!
+  const preferences = page.page.locator('#queue-class-preferences')
+  await preferences.locator(`input[name="classes"][value="${firstClass}"]`).uncheck()
+  await preferences.locator(`input[name="classes"][value="${secondClass}"]`).check()
+  await page.page.getByRole('button', { name: 'Update availability' }).click()
+
+  const reassignedSlot = page.slot(secondSlot)
+  await expect(reassignedSlot.locator).toHaveAttribute('data-player', polemic.steamId)
+  expect(await reassignedSlot.isReady()).toBe(false)
 })
