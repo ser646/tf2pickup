@@ -76,7 +76,9 @@ export async function join(
     const requestedClasses = [
       ...new Set(selectedClasses.length > 0 ? selectedClasses : [clickedSlot.gameClass]),
     ]
-    const invalidClass = requestedClasses.find(gameClass => !configuredClasses.includes(gameClass))
+    const invalidClass = requestedClasses.find(
+      gameClass => !configuredClasses.includes(gameClass),
+    )
     if (invalidClass) {
       throw errors.badRequest('class ' + invalidClass + ' is not available in this queue')
     }
@@ -141,11 +143,13 @@ export async function join(
       })),
     )
     if (!assignment) {
-      throw errors.badRequest('No valid class assignment is available. Try selecting more classes.')
+      throw errors.badRequest(
+        'No valid class assignment is available. Try selecting more classes.',
+      )
     }
 
-    // Check the new assignment before leaving another queue, so an impossible combination never
-    // costs the player their existing place.
+    // Check feasibility before leaving another queue, so an impossible combination never costs
+    // the player their existing place.
     if (
       await collections.queueSlots.countDocuments({
         queue: { $ne: queue },
@@ -156,52 +160,80 @@ export async function join(
     }
     await leavePools(steamId, emit)
 
-    const changed: QueueSlotModel[] = []
-    const finalSlots: QueueSlotModel[] = []
-    for (const slot of slots) {
+    const slotChanges = slots.map(slot => {
       const assignedSteamId = assignment.get(slot.id)
       const member = assignedSteamId ? members.get(assignedSteamId) : undefined
       const nextPlayer = member?.player ?? null
-      const nextReady = member?.ready ?? false
       const currentClasses = slot.availableClasses ?? (slot.player ? [slot.gameClass] : [])
       const nextClasses = member?.availableClasses ?? []
-      const classesChanged =
-        currentClasses.length !== nextClasses.length ||
-        currentClasses.some((gameClass, index) => gameClass !== nextClasses[index])
-      const playerChanged =
-        slot.player?.steamId !== nextPlayer?.steamId ||
-        slot.player?.name !== nextPlayer?.name ||
-        slot.player?.avatarUrl !== nextPlayer?.avatarUrl
-      const readyChanged = slot.ready !== nextReady
+      return {
+        slot,
+        member,
+        playerChanged:
+          slot.player?.steamId !== nextPlayer?.steamId ||
+          slot.player?.name !== nextPlayer?.name ||
+          slot.player?.avatarUrl !== nextPlayer?.avatarUrl,
+        readyChanged: slot.ready !== (member?.ready ?? false),
+        classesChanged:
+          currentClasses.length !== nextClasses.length ||
+          currentClasses.some((gameClass, index) => gameClass !== nextClasses[index]),
+      }
+    })
 
-      if (!playerChanged && !readyChanged && !classesChanged) {
-        finalSlots.push(slot)
+    const finalSlotsById = new Map(slots.map(slot => [slot.id, slot]))
+    const changedById = new Map<QueueSlotId, QueueSlotModel>()
+
+    // Vacate moving players first, then fill the destination slots. This avoids transient duplicate
+    // memberships when a flexible player has to move for a class specialist.
+    for (const { slot, member } of slotChanges) {
+      if (!slot.player || slot.player.steamId === member?.player.steamId) {
         continue
       }
 
-      const update: UpdateFilter<QueueSlotModel> = member
-        ? {
-            $set: {
-              player: nextPlayer,
-              ready: nextReady,
-              availableClasses: member.availableClasses,
-            },
-          }
-        : {
-            $set: { player: null, ready: false },
-            $unset: { availableClasses: '' },
-          }
-      const updated = await collections.queueSlots.findOneAndUpdate({ _id: slot._id }, update, {
-        returnDocument: 'after',
-      })
-      if (!updated) {
-        throw errors.internalServerError('failed to update queue slot')
+      const update: UpdateFilter<QueueSlotModel> = {
+        $set: { player: null, ready: false },
+        $unset: { availableClasses: '' },
       }
-      changed.push(updated)
-      finalSlots.push(updated)
+      const updated = await collections.queueSlots.findOneAndUpdate(
+        { _id: slot._id },
+        update,
+        { returnDocument: 'after' },
+      )
+      if (!updated) {
+        throw errors.internalServerError('failed to vacate queue slot')
+      }
+      finalSlotsById.set(updated.id, updated)
+      changedById.set(updated.id, updated)
+      emit('queue/slots:updated', { queue, slots: [updated] })
+    }
+
+    for (const { slot, member, playerChanged, readyChanged, classesChanged } of slotChanges) {
+      if (!member || (!playerChanged && !readyChanged && !classesChanged)) {
+        continue
+      }
+
+      const update: UpdateFilter<QueueSlotModel> = {
+        $set: {
+          player: member.player,
+          ready: member.ready,
+          availableClasses: member.availableClasses,
+        },
+      }
+      const updated = await collections.queueSlots.findOneAndUpdate(
+        { _id: slot._id },
+        update,
+        { returnDocument: 'after' },
+      )
+      if (!updated) {
+        throw errors.internalServerError('failed to assign queue slot')
+      }
+      finalSlotsById.set(updated.id, updated)
+      changedById.set(updated.id, updated)
+      emit('queue/slots:updated', { queue, slots: [updated] })
     }
 
     // A friendship is only valid while its source and target still occupy compatible classes.
+    const finalSlots = [...finalSlotsById.values()]
     const friendships = await collections.queueFriends.find({ queue }).toArray()
     const slotsByPlayer = new Map(
       finalSlots.flatMap(slot => (slot.player ? [[slot.player.steamId, slot] as const] : [])),
@@ -226,9 +258,6 @@ export async function join(
       await preReady.start(steamId)
     }
 
-    if (changed.length > 0) {
-      emit('queue/slots:updated', { queue, slots: changed })
-    }
-    return changed
+    return [...changedById.values()]
   })
 }
