@@ -151,7 +151,7 @@ describe('join()', () => {
       expect.objectContaining({
         $set: expect.objectContaining({
           player: expect.objectContaining({ steamId }),
-          availableClasses: [Tf2ClassName.scout, Tf2ClassName.soldier],
+          availableClasses: [Tf2ClassName.soldier, Tf2ClassName.scout],
         }),
       }),
       { returnDocument: 'after' },
@@ -197,7 +197,7 @@ describe('join()', () => {
       expect.objectContaining({
         $set: expect.objectContaining({
           player: expect.objectContaining({ steamId }),
-          availableClasses: [Tf2ClassName.scout, Tf2ClassName.soldier],
+          availableClasses: [Tf2ClassName.soldier, Tf2ClassName.scout],
         }),
       }),
       { returnDocument: 'after' },
