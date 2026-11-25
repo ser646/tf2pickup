@@ -3,6 +3,7 @@ import type { QueueModel } from '../../database/models/queue.model'
 import type { QueueSlotModel } from '../../database/models/queue-slot.model'
 import type { SteamId64 } from '../../shared/types/steam-id-64'
 import { configuration } from '../../configuration'
+import { gamemodeConfigs } from '../../gamemodes/configs'
 import { QueueSlot } from '../auto/views/html/queue-slot'
 import { ClassPreferences } from '../auto/views/html/class-preferences'
 import { CurrentPlayerCount } from '../views/html/current-player-count'
@@ -64,20 +65,24 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
     )
   }
 
-  // Class availability controls are part of the queue form, but slot changes arrive as individual
-  // OOB fragments. Refresh them too, so the selected icons and own-slot submit target stay in sync
-  // after joining, leaving, or being moved to another slot.
+  // Refresh every existing class heading when membership changes, keeping the inline
+  // availability toggles in sync with the player's saved classes and current slot.
   if (parts.slots) {
     const currentSlots =
       allSlots ?? (await collections.queueSlots.find({ queue: queue._id }).toArray())
     const defaultSkill = (await configuration.get('games.default_player_skill'))[queue.gamemode]
-    fragments.push(async ({ actor }) =>
-      ClassPreferences({
-        queue,
-        slots: currentSlots,
-        actor: await actor(),
-        defaultSkill,
-      }),
+    fragments.push(
+      ...gamemodeConfigs[queue.gamemode].classes.map(
+        ({ name: gameClass }): Fragment =>
+          async ({ actor }) =>
+            ClassPreferences({
+              queue,
+              slots: currentSlots,
+              actor: await actor(),
+              defaultSkill,
+              gameClass,
+            }),
+      ),
     )
   }
 
