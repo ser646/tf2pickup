@@ -41,6 +41,8 @@ describe('ClassPreferences', () => {
 
     expect(html.querySelector('#queue-class-preference-scout')).not.toBeNull()
     expect(html.querySelector('input[name="classes"][value="scout"]')).not.toBeNull()
+    expect(html.querySelector('button[data-class-primary][data-class-primary-join]')).not.toBeNull()
+    expect(html.text).toContain('Also available')
     expect(html.text).toContain('Scout')
     expect(html.querySelector('#queue-class-preferences')).toBeNull()
     expect(html.querySelector('[data-select-all-classes]')).toBeNull()
@@ -69,7 +71,7 @@ describe('ClassPreferences', () => {
     )
 
     expect(
-      html.querySelector('input[data-class-preference-join="scout-1"][value="scout"]'),
+      html.querySelector('button[data-class-primary-join="scout-1"]'),
     ).not.toBeNull()
   })
 
@@ -95,7 +97,8 @@ describe('ClassPreferences', () => {
     )
 
     expect(html.querySelector('input[name="classes"][value="scout"][checked]')).not.toBeNull()
-    expect(html.querySelector('input[data-class-preference-join="soldier-1"]')).not.toBeNull()
+    expect(html.querySelector('button[data-class-primary-join="soldier-1"]')).not.toBeNull()
+    expect(html.querySelector('input[value="soldier"][disabled]')).not.toBeNull()
   })
 
   it('renders the original heading unchanged for signed-out viewers', () => {
