@@ -234,7 +234,7 @@ describe('join()', () => {
     expect(vacateSlot).not.toHaveBeenCalled()
   })
 
-  it("hands the player's bans and the gamemode's default skill to the join blocker", async () => {
+  it("hands the player's bans and the gamemode's default skill to the primary class blocker", async () => {
     await join(queue, slotId, steamId)
 
     expect(joinBlocker).toHaveBeenCalledWith(
@@ -242,8 +242,32 @@ describe('join()', () => {
       { gameClass: Tf2ClassName.scout },
       expect.anything(),
       { scout: 2, soldier: 2 },
-      { skipSkillThreshold: true },
     )
+  })
+
+  it('rejects an ineligible primary class even when an alternate class is eligible', async () => {
+    const soldierSlot: DbSlot = {
+      _id: new ObjectId(),
+      queue,
+      id: otherSlotId,
+      gameClass: Tf2ClassName.soldier,
+      player: null,
+      ready: false,
+    }
+    vi.mocked(collections.queueSlots.find).mockReturnValue(
+      cursor([slot, soldierSlot]) as never,
+    )
+    mockUpdates([slot, soldierSlot])
+    vi.mocked(joinBlocker).mockImplementation((_player, target, _settings, _skill) =>
+      target.gameClass === Tf2ClassName.soldier
+        ? 'You do not meet skill requirements to play soldier'
+        : null,
+    )
+
+    await expect(join(queue, otherSlotId, steamId, [Tf2ClassName.scout])).rejects.toThrow(
+      'You do not meet skill requirements to play soldier',
+    )
+    expect(collections.queueSlots.findOneAndUpdate).not.toHaveBeenCalled()
   })
 
   it('removes a friendship when class reassignment makes it invalid', async () => {
