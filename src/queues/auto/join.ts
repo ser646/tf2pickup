@@ -73,15 +73,11 @@ export async function join(
       throw errors.badRequest('class ' + invalidClass + ' is not available in this queue')
     }
 
-    const globalBlocker = joinBlocker(
-      player,
-      { gameClass: requestedClasses[0]! },
-      settings,
-      defaultSkill,
-      { skipSkillThreshold: true },
-    )
-    if (globalBlocker) {
-      throw errors.badRequest(globalBlocker)
+    // The clicked heading is the requested primary class, so it must be playable.
+    // Alternate eligibility must never silently turn a rejected primary selection into another class.
+    const primaryBlocker = joinBlocker(player, clickedSlot, settings, defaultSkill)
+    if (primaryBlocker) {
+      throw errors.badRequest(primaryBlocker)
     }
 
     // Skill thresholds can differ by class. Keep only the classes this player is currently
