@@ -42,7 +42,11 @@ export async function QueueSlot(props: {
   const isReadySlot = !!props.slot.player && props.slot.ready
   let slotContent = <></>
   if (props.slot.player) {
-    slotContent = <PlayerInfo {...props} />
+    const joinDisabled =
+      props.actor && props.queue
+        ? joinBlocker(props.actor, props.slot, props.queue, props.defaultSkill) ?? undefined
+        : undefined
+    slotContent = <PlayerInfo {...props} joinDisabled={joinDisabled} />
   } else if (props.actor && props.queue) {
     const disabled =
       joinBlocker(props.actor, props.slot, props.queue, props.defaultSkill) ?? undefined
@@ -109,7 +113,33 @@ function JoinButton(props: { slotId: QueueSlotId; disabled: string | undefined }
   )
 }
 
-async function PlayerInfo(props: { queue?: Queue; slot: QueueSlotModel; actor?: Actor }) {
+function TakeOccupiedSlotButton(props: {
+  slotId: QueueSlotId
+  disabled: string | undefined
+}) {
+  return (
+    <button
+      type="submit"
+      class="take-queue-slot-button"
+      name="join"
+      value={props.slotId}
+      disabled={!!props.disabled}
+      title={props.disabled ?? 'Take this class slot'}
+      aria-label={props.disabled ?? 'Take this class slot'}
+      data-umami-event="join-queue"
+      data-umami-event-slot-id={props.slotId}
+    >
+      {props.disabled ? <IconLock /> : <IconPlus />}
+    </button>
+  )
+}
+
+async function PlayerInfo(props: {
+  queue?: Queue
+  slot: QueueSlotModel
+  actor?: Actor
+  joinDisabled?: string | undefined
+}) {
   if (!props.slot.player) {
     return <></>
   }
@@ -185,7 +215,12 @@ async function PlayerInfo(props: { queue?: Queue; slot: QueueSlotModel; actor?: 
           </span>
         )}
       </div>
-      {slotActionButton}
+      <div class="queue-slot-actions">
+        {slotActionButton}
+        {props.actor && props.actor.steamId !== props.slot.player.steamId && props.queue ? (
+          <TakeOccupiedSlotButton slotId={props.slot.id} disabled={props.joinDisabled} />
+        ) : null}
+      </div>
     </div>
   )
 }
