@@ -16,7 +16,11 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
     }),
   )) as [QueuePage, QueuePage, QueuePage]
 
-  // Clicking a class heading joins the queue; no individual slot is clicked.
+  // Flexible players tick "Also available: Scout", then click Medic as their primary class.
+  for (const page of [flexible1Page, flexible2Page]) {
+    await page.page.locator('[data-class-preference][value="scout"]').first().check()
+  }
+  // Clicking the class name chooses the primary class and joins the queue.
   await flexible1Page.slot('medic-1').join()
   await flexible2Page.slot('medic-2').join()
   await medicPage.slot('medic-1').join()
