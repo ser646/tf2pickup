@@ -114,13 +114,17 @@ async function Queue(props: {
         data-disable-when-offline
       >
         <div class="queue-team-heading-spacer" aria-hidden="true"></div>
-        {positions.map(position => (
+        {positions.map((position, index) => (
           <ClassPreferences
             queue={props.queue}
             slots={props.slots}
             actor={actor}
             defaultSkill={defaultSkill}
             gameClass={position.gameClass}
+            headingId={'queue-class-preference-' + position.gameClass + '-' + position.classIndex}
+            includeInForm={
+              positions.findIndex(candidate => candidate.gameClass === position.gameClass) === index
+            }
           />
         ))}
 
