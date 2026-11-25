@@ -72,6 +72,20 @@
     }
   }
 
+  .queue-class-selection-hint {
+    grid-column: 1 / -1;
+    margin: 0 0 2px;
+    color: var(--color-zinc-400);
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+
+    strong {
+      color: var(--color-zinc-200);
+      font-weight: 600;
+    }
+  }
+
   .queue-class-preferences-submit {
     display: none;
   }
