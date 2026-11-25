@@ -76,9 +76,7 @@ export async function join(
     const requestedClasses = [
       ...new Set(selectedClasses.length > 0 ? selectedClasses : [clickedSlot.gameClass]),
     ]
-    const invalidClass = requestedClasses.find(
-      gameClass => !configuredClasses.includes(gameClass),
-    )
+    const invalidClass = requestedClasses.find(gameClass => !configuredClasses.includes(gameClass))
     if (invalidClass) {
       throw errors.badRequest('class ' + invalidClass + ' is not available in this queue')
     }
@@ -143,9 +141,7 @@ export async function join(
       })),
     )
     if (!assignment) {
-      throw errors.badRequest(
-        'No valid class assignment is available. Try selecting more classes.',
-      )
+      throw errors.badRequest('No valid class assignment is available. Try selecting more classes.')
     }
 
     // Check feasibility before leaving another queue, so an impossible combination never costs
@@ -194,11 +190,9 @@ export async function join(
         $set: { player: null, ready: false },
         $unset: { availableClasses: '' },
       }
-      const updated = await collections.queueSlots.findOneAndUpdate(
-        { _id: slot._id },
-        update,
-        { returnDocument: 'after' },
-      )
+      const updated = await collections.queueSlots.findOneAndUpdate({ _id: slot._id }, update, {
+        returnDocument: 'after',
+      })
       if (!updated) {
         throw errors.internalServerError('failed to vacate queue slot')
       }
@@ -219,11 +213,9 @@ export async function join(
           availableClasses: member.availableClasses,
         },
       }
-      const updated = await collections.queueSlots.findOneAndUpdate(
-        { _id: slot._id },
-        update,
-        { returnDocument: 'after' },
-      )
+      const updated = await collections.queueSlots.findOneAndUpdate({ _id: slot._id }, update, {
+        returnDocument: 'after',
+      })
       if (!updated) {
         throw errors.internalServerError('failed to assign queue slot')
       }
