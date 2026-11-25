@@ -102,7 +102,8 @@ document.addEventListener('htmx:afterSwap', event => {
     return
   }
 
-  const form = target.closest<HTMLFormElement>('#queue') ?? document.querySelector<HTMLFormElement>('#queue')
+  const form =
+    target.closest<HTMLFormElement>('#queue') ?? document.querySelector<HTMLFormElement>('#queue')
   if (form) {
     restorePendingClassPreferences(form)
   }
