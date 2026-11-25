@@ -66,7 +66,12 @@ export async function join(
 
     const configuredClasses = gamemodeConfigs[settings.gamemode].classes.map(({ name }) => name)
     const requestedClasses = [
-      ...new Set(selectedClasses.length > 0 ? selectedClasses : [clickedSlot.gameClass]),
+      ...new Set([
+        ...(selectedClasses.length > 0 ? selectedClasses : [clickedSlot.gameClass]),
+        ...(clickedSlot.player && clickedSlot.player.steamId !== steamId
+          ? [clickedSlot.gameClass]
+          : []),
+      ]),
     ]
     const invalidClass = requestedClasses.find(gameClass => !configuredClasses.includes(gameClass))
     if (invalidClass) {
@@ -97,6 +102,14 @@ export async function join(
         defaultSkill,
       )
       throw errors.badRequest(blocker ?? 'You are not eligible for the selected classes')
+    }
+    if (
+      clickedSlot.player &&
+      clickedSlot.player.steamId !== steamId &&
+      !availableClasses.includes(clickedSlot.gameClass)
+    ) {
+      const blocker = joinBlocker(player, clickedSlot, settings, defaultSkill)
+      throw errors.badRequest(blocker ?? 'You are not eligible for this class')
     }
 
     const ownSlot = slots.find(slot => slot.player?.steamId === steamId)
