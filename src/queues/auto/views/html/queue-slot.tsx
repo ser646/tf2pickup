@@ -32,7 +32,7 @@ type Actor = (JoinBlockerPlayer & Pick<PlayerModel, 'steamId' | 'roles'>) | unde
 type Queue = Pick<QueueModel, 'enabled' | 'skillThreshold' | 'requireVerification' | 'gamemode'>
 
 export async function QueueSlot(props: {
-  queue: Queue
+  queue?: Queue
   slot: QueueSlotModel
   actor?: Actor
   defaultSkill: PlayerSkill | undefined
@@ -42,7 +42,7 @@ export async function QueueSlot(props: {
   let slotContent = <></>
   if (props.slot.player) {
     slotContent = <PlayerInfo {...props} />
-  } else if (props.actor) {
+  } else if (props.actor && props.queue) {
     // Class-specific skill requirements are checked against the selected availability list on the
     // server; an empty slot's button must not prevent joining through another selected class.
     const globalBlocker =
@@ -58,7 +58,7 @@ export async function QueueSlot(props: {
         joinBlocker(
           props.actor!,
           { gameClass: name },
-          props.queue,
+          props.queue!,
           props.defaultSkill,
         ) !== null,
     )
@@ -101,7 +101,7 @@ function JoinButton(props: { slotId: QueueSlotId; disabled: string | undefined }
   )
 }
 
-async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: Actor }) {
+async function PlayerInfo(props: { queue?: Queue; slot: QueueSlotModel; actor?: Actor }) {
   if (!props.slot.player) {
     return <></>
   }
@@ -110,6 +110,7 @@ async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: A
   let skill: PlayerSkill | undefined = undefined
   if (
     props.actor?.roles.includes(PlayerRole.admin) &&
+    props.queue &&
     gamemodeConfigs[props.queue.gamemode].autoBalance
   ) {
     const slotPlayer = await collections.players.findOne<Pick<PlayerModel, 'skill'>>(
@@ -141,7 +142,9 @@ async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: A
       : []
   const availableClasses = props.slot.availableClasses ?? [props.slot.gameClass]
   const additionalClasses = availableClasses.filter(gameClass => gameClass !== props.slot.gameClass)
-  const allClasses = availableClasses.length >= gamemodeConfigs[props.queue.gamemode].classes.length
+  const allClasses =
+    !!props.queue &&
+    availableClasses.length >= gamemodeConfigs[props.queue.gamemode].classes.length
 
   return (
     <div class="player-info" data-player-ready={String(props.slot.ready)}>
