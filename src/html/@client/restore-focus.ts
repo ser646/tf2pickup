@@ -2,9 +2,18 @@ import htmx from './htmx'
 
 // htmx restores focus after its own swaps, but the ws extension swaps via oobSwap, which doesn't.
 let focused: Element | null = null
+let lastFocused: Element | null = null
+
+document.addEventListener('focusin', event => {
+  const target = event.target
+  if (target instanceof HTMLElement && target !== document.body) {
+    lastFocused = target
+  }
+})
 
 htmx.on('htmx:wsBeforeMessage', () => {
-  focused = document.activeElement
+  const active = document.activeElement
+  focused = active && active !== document.body ? active : lastFocused
 })
 
 htmx.on('htmx:wsAfterMessage', () => {
