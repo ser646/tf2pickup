@@ -9,11 +9,19 @@ export interface PlayerClassAvailability {
   currentSlotId?: QueueSlotId
 }
 
+function shuffle<T>(items: T[]): T[] {
+  for (let index = items.length - 1; index > 0; index--) {
+    const randomIndex = Math.floor(Math.random() * (index + 1))
+    ;[items[index], items[randomIndex]] = [items[randomIndex]!, items[index]!]
+  }
+  return items
+}
+
 /**
  * Finds a complete assignment of queued players to the queue's fixed class slots.
  *
- * Existing assignments are preferred, but an augmenting path can move a flexible player when
- * that is necessary to make room for someone who can only play a narrower set of classes.
+ * Existing assignments are preferred. If a player must move, their alternative class slots are
+ * tried in random order so a flexible player is not always pushed into the same class.
  */
 export function assignPlayersToSlots(
   slots: readonly Pick<QueueSlotModel, 'id' | 'gameClass'>[],
@@ -40,12 +48,15 @@ export function assignPlayersToSlots(
         }
         return a.id.localeCompare(b.id)
       })
-      .map(({ id }) => id)
+    const [preferred, ...alternatives] = candidates
+    const orderedCandidates = preferred
+      ? [preferred.id, ...shuffle(alternatives.map(({ id }) => id))]
+      : []
 
-    if (candidates.length === 0) {
+    if (orderedCandidates.length === 0) {
       return null
     }
-    edges.set(player.steamId, candidates)
+    edges.set(player.steamId, orderedCandidates)
   }
 
   const occupants = new Map<QueueSlotId, SteamId64>()
