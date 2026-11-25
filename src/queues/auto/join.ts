@@ -64,14 +64,6 @@ export async function join(
       throw errors.notFound('no such slot')
     }
 
-    if (
-      selectedClasses.length === 0 &&
-      clickedSlot.player &&
-      clickedSlot.player.steamId !== steamId
-    ) {
-      throw withLogLevel(errors.badRequest('slot occupied'), 'debug')
-    }
-
     const configuredClasses = gamemodeConfigs[settings.gamemode].classes.map(({ name }) => name)
     const requestedClasses = [
       ...new Set(selectedClasses.length > 0 ? selectedClasses : [clickedSlot.gameClass]),
@@ -129,7 +121,7 @@ export async function join(
       },
       ready: state === QueueState.ready ? (ownSlot?.ready ?? true) : false,
       availableClasses,
-      currentSlotId: ownSlot?.id ?? clickedSlot.id,
+      currentSlotId: clickedSlot.id,
     })
 
     const assignment = assignPlayersToSlots(
