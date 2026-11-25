@@ -15,13 +15,15 @@ export function ClassPreferences(props: {
   actor: Actor
   defaultSkill: PlayerSkill | undefined
   gameClass: Tf2ClassName
+  headingId?: string
+  includeInForm?: boolean
 }) {
   const classConfig = gamemodeConfigs[props.queue.gamemode].classes.find(
     item => item.name === props.gameClass,
   )
   if (!props.actor || !classConfig) {
     return (
-      <h2 id={'queue-class-preference-' + props.gameClass} class="queue-class-heading">
+      <h2 id={props.headingId ?? 'queue-class-preference-' + props.gameClass} class="queue-class-heading">
         <GameClassIcon gameClass={props.gameClass} size={32} />
         <span>{props.gameClass}</span>
       </h2>
@@ -52,7 +54,7 @@ export function ClassPreferences(props: {
       >
         <input
           type="checkbox"
-          name="classes"
+          {...(props.includeInForm === false ? {} : { name: 'classes' })}
           value={props.gameClass}
           checked={checked}
           disabled={!!blocker}
