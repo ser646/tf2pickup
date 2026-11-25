@@ -47,4 +47,9 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
     flexible2Page.leaveQueue(),
     medicPage.leaveQueue(),
   ])
+  await Promise.all([
+    flexible1Page.waitToBeEmpty(),
+    flexible2Page.waitToBeEmpty(),
+    medicPage.waitToBeEmpty(),
+  ])
 })
