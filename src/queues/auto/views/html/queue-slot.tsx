@@ -15,7 +15,7 @@ import {
 import { Tf2ClassName } from '../../../../shared/types/tf2-class-name'
 import { GameClassIcon } from '../../../../html/components/game-class-icon'
 import { gamemodeConfigs } from '../../../../gamemodes/configs'
-import { joinBlocker, type JoinBlockerPlayer } from '../../join-blocker'
+import type { JoinBlockerPlayer } from '../../join-blocker'
 import type { QueueSlotId } from '../../../types/queue-slot-id'
 
 const enum MarkAsFriendButtonState {
@@ -40,10 +40,6 @@ export async function QueueSlot(props: {
   const isReadySlot = !!props.slot.player && props.slot.ready
   let slotContent = <></>
   if (props.slot.player) {
-    const joinDisabled =
-      props.actor && props.queue
-        ? joinBlocker(props.actor, props.slot, props.queue, props.defaultSkill) ?? undefined
-        : undefined
     slotContent = <PlayerInfo {...props} />
   }
 
@@ -88,7 +84,6 @@ async function PlayerInfo(props: {
   queue?: Queue
   slot: QueueSlotModel
   actor?: Actor
-  joinDisabled?: string | undefined
 }) {
   if (!props.slot.player) {
     return <></>
