@@ -28,8 +28,8 @@ class QueueSlot {
   }
 
   joinButton() {
-    const gameClass = this.slotId.replace(/-\\d+$/, '')
-    return this.page.locator('[data-class-preference]').filter({ has: this.page.locator('') }).first()
+    const gameClass = this.slotId.slice(0, this.slotId.lastIndexOf('-'))
+    return this.page.locator(`[data-class-preference][value="${gameClass}"]`).first()
   }
 
   async join() {
