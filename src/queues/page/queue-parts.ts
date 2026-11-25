@@ -64,8 +64,8 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
     )
   }
 
-  // Class preferences are part of the queue form, but slot changes arrive as individual OOB
-  // fragments. Refresh this fieldset too, so the update button and selected classes stay in sync
+  // Class availability controls are part of the queue form, but slot changes arrive as individual
+  // OOB fragments. Refresh them too, so the selected icons and own-slot submit target stay in sync
   // after joining, leaving, or being moved to another slot.
   if (parts.slots) {
     const currentSlots =
