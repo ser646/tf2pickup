@@ -68,12 +68,13 @@ export function ClassPreferences(props: {
               data-class-preference
             />
             <GameClassIcon gameClass={name} size={20} />
-            <span safe>{name}</span>
+            <span>{name}</span>
           </label>
         )
       })}
       {ownSlot && (
         <button
+          safe
           type="submit"
           name="join"
           value={ownSlot.id}
