@@ -4,27 +4,18 @@ document.addEventListener('change', event => {
     return
   }
 
-  const preferences = target.closest<HTMLElement>('#queue-class-preferences')
   const form = target.closest<HTMLFormElement>('#queue')
-  if (!preferences || !form) {
+  if (!form) {
     return
   }
 
-  const selected = [
-    ...preferences.querySelectorAll<HTMLInputElement>('[data-class-preference]:checked'),
-  ]
+  const selected = [...form.querySelectorAll<HTMLInputElement>('[data-class-preference]:checked')]
   if (selected.length === 0) {
     target.checked = true
     return
   }
 
-  if (!preferences.dataset.ownSlot) {
-    return
-  }
-
-  const submitter = preferences.querySelector<HTMLButtonElement>(
-    '[data-class-preferences-submit]',
-  )
+  const submitter = form.querySelector<HTMLButtonElement>('[data-class-preferences-submit]')
   if (submitter) {
     form.requestSubmit(submitter)
   }
