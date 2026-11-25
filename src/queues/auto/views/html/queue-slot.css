@@ -73,8 +73,7 @@
   }
 
   .queue-class-selection-hint {
-    grid-column: 1 / -1;
-    margin: 0 0 2px;
+    margin: 0 0 12px;
     color: var(--color-zinc-400);
     font-size: 12px;
     line-height: 16px;
