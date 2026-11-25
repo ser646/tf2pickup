@@ -29,15 +29,12 @@ class QueueSlot {
 
   joinButton() {
     const gameClass = this.slotId.slice(0, this.slotId.lastIndexOf('-'))
-    return this.page.locator(`[data-class-preference][value="${gameClass}"]`).first()
+    return this.page.locator(`[data-class-primary][data-class-primary-join="${gameClass}-1"]`).first()
   }
 
   async join() {
-    const gameClass = this.slotId.slice(0, this.slotId.lastIndexOf('-'))
-    const preference = this.page.locator(`[data-class-preference][value="${gameClass}"]`).first()
-    if (!(await preference.isChecked())) {
-      await preference.check()
-    }
+    await this.joinButton().click()
+    await expect(this.page.getByRole('button', { name: 'Leave queue' })).toBeVisible()
   }
 
   markAsFriendButton() {
