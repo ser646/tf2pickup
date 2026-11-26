@@ -194,6 +194,8 @@ export default fp(
 
 function voiceRosterKey(game: GameModel): string {
   return game.slots
-    .map(({ id, player, team, gameClass, status }) => `${id}:${player}:${team}:${gameClass}:${status}`)
+    .map(
+      ({ id, player, team, gameClass, status }) => `${id}:${player}:${team}:${gameClass}:${status}`,
+    )
     .join('|')
 }
