@@ -28,11 +28,11 @@ vi.mock('../queue-command', () => ({
 const emit = vi.fn()
 
 import { ObjectId } from 'mongodb'
-import { collections } from '../../database/collections'
+import { collections } from '../../database/collections'\nimport { configuration } from '../../configuration'
 import type { QueueId } from '../../database/models/queue.model'
 import { QueueState } from '../../database/models/queue-state.model'
 import { players } from '../../players'
-import type { SteamId64 } from '../../shared/types/steam-id-64'
+import type { SteamId64 } from '../../shared/types/steam-id-64'\nimport { VoiceServerType } from '../../shared/types/voice-server-type'
 import { get } from '../get'
 import { getState } from '../get-state'
 import type { QueueSlotId } from '../types/queue-slot-id'
@@ -56,7 +56,7 @@ const player = {
 describe('join()', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(get).mockResolvedValue({
+    vi.mocked(configuration.get).mockImplementation((async (key: string) =>\n      key === 'games.default_player_skill'\n        ? { '6v6': { scout: 2 } }\n        : VoiceServerType.none) as never)\n    vi.mocked(get).mockResolvedValue({
       enabled: true,
       requireVerification: false,
       gamemode: '6v6',
