@@ -42,7 +42,13 @@ class QueueSlot {
       // is the join target and class headings do not expose data-class-primary.
       await this.locator.click()
     }
-    await expect(this.page.getByRole('button', { name: 'Leave queue' })).toBeVisible()
+    const leaveQueueButton = this.page.getByRole('button', { name: 'Leave queue' })
+    await expect
+      .poll(
+        async () =>
+          /games\\/(\\d+)/.test(this.page.url()) || (await leaveQueueButton.isVisible()),
+      )
+      .toBe(true)
   }
 
   markAsFriendButton() {
@@ -136,7 +142,26 @@ export class QueuePage {
     if (/games\/(\d+)/.test(this.page.url()) || (await this.slot(slot).isReady())) {
       return
     }
-    await this.readyUpDialog().readyUp()
+    const readyUpButton = this.readyUpDialog().readyUpButton()
+    await expect
+      .poll(async () => {
+        if (/games\\/(\\d+)/.test(this.page.url())) {
+          return 'game'
+        }
+        if (await this.slot(slot).isReady()) {
+          return 'ready'
+        }
+        if (await readyUpButton.isVisible()) {
+          return 'dialog'
+        }
+        return 'waiting'
+      })
+      .not.toBe('waiting')
+
+    if (/games\\/(\\d+)/.test(this.page.url()) || (await this.slot(slot).isReady())) {
+      return
+    }
+    await readyUpButton.click()
   }
 
   gamesLink() {
