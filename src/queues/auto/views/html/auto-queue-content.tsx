@@ -104,7 +104,7 @@ async function Queue(props: {
 
   // Keep the original click-a-slot interface unless multi-class is explicitly enabled.
   const teams = teamSlots(props.queue.gamemode, props.slots)
-  if (props.queue.allowMultipleClasses !== true) {
+  if (!props.queue.allowMultipleClasses) {
     if (teams.length > 0) {
       const teamNames = ['BLU', 'RED'] as const
       return (
@@ -153,22 +153,26 @@ async function Queue(props: {
         ws-send
         data-disable-when-offline
       >
-        {config.classes.map(gc => gc.name).map(gameClass => (
-          <div class="queue-class-column">
-            <h2 class="queue-class-heading">
-              <GameClassIcon gameClass={gameClass} size={32} />
-              <span>{gameClass}</span>
-            </h2>
-            {props.slots.filter(slot => slot.gameClass === gameClass).map(slot => (
-              <SingleClassQueueSlot
-                queue={props.queue}
-                slot={slot}
-                actor={actor}
-                defaultSkill={defaultSkill}
-              />
-            ))}
-          </div>
-        ))}
+        {config.classes
+          .map(gc => gc.name)
+          .map(gameClass => (
+            <div class="queue-class-column">
+              <h2 class="queue-class-heading">
+                <GameClassIcon gameClass={gameClass} size={32} />
+                <span>{gameClass}</span>
+              </h2>
+              {props.slots
+                .filter(slot => slot.gameClass === gameClass)
+                .map(slot => (
+                  <SingleClassQueueSlot
+                    queue={props.queue}
+                    slot={slot}
+                    actor={actor}
+                    defaultSkill={defaultSkill}
+                  />
+                ))}
+            </div>
+          ))}
       </form>
     )
   }
