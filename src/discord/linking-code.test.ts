@@ -33,11 +33,7 @@ describe('Discord linking code encryption', () => {
   it('rejects tampered ciphertext', async () => {
     const encrypted = await encryptLinkingCode('0123456789ABCDEF01234567')
     const [iv, tag, ciphertext] = encrypted.split('.')
-    const tampered = [
-      iv,
-      tag,
-      `${ciphertext![0] === 'A' ? 'B' : 'A'}${ciphertext!.slice(1)}`,
-    ].join('.')
+    const tampered = [iv, tag, `${ciphertext![0] === 'A' ? 'B' : 'A'}${ciphertext!.slice(1)}`].join('.')
 
     await expect(decryptLinkingCode(tampered)).rejects.toThrow()
   })
