@@ -14,6 +14,7 @@ export async function DiscordSettingsEntry(props: {
   )
   const inviteLink = await configuration.get('misc.discord_invite_link')
   const voiceConfigured = configuredGuilds.length === 1 && !!discord.client?.isReady()
+  const canGenerateLinkingCode = voiceConfigured && !!inviteLink
 
   return (
     <div
@@ -47,15 +48,16 @@ export async function DiscordSettingsEntry(props: {
           <p class="flex-1 text-sm text-zinc-300">
             Discord match voice is not configured. Contact an administrator.
           </p>
+        ) : !inviteLink ? (
+          <p class="flex-1 text-sm text-zinc-300">
+            The Discord server invite link has not been configured. Contact an administrator.
+          </p>
         ) : (
           <>
             <p class="flex-1">
               Join the Discord server, then link your account to access your team's private match voice channel.
             </p>
             <div class="flex flex-wrap items-center gap-2">
-              {!inviteLink && (
-                <p class="text-sm text-zinc-400">The Discord invite link has not been configured. Contact an administrator.</p>
-              )}
               {inviteLink ? (
                 <a
                   class="button"
@@ -90,7 +92,7 @@ export async function DiscordSettingsEntry(props: {
           </>
         )}
       </div>
-      {props.generatedCode && !player.discordLink && voiceConfigured && (
+      {props.generatedCode && !player.discordLink && canGenerateLinkingCode && (
         <div class="mx-5 rounded-lg border border-zinc-700 bg-zinc-900 p-4">
           <p class="font-semibold">Finish linking your Discord account</p>
           <ol class="my-3 list-decimal space-y-2 pl-5 text-sm text-zinc-200">
