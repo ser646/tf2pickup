@@ -54,38 +54,23 @@ export async function DiscordSettingsEntry(props: {
             The Discord server invite link has not been configured. Contact an administrator.
           </p>
         ) : props.generatedCode ? (
-          <p class="flex-1">
-            Follow the instructions below to link your Discord account.
-          </p>
+          <p class="flex-1">Use the code below to link your Discord account.</p>
         ) : (
           <>
             <p class="flex-1">
-              Join the Discord server, then link your account to access your team's private match voice channel.
+              Link your Discord account to access your team's private match voice channel.
             </p>
             <div class="flex flex-wrap items-center gap-2">
-              {inviteLink ? (
-                <a
-                  class="button"
-                  data-variant="darker"
-                  href={inviteLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <IconBrandDiscord size={18} />
-                  Join Discord server
-                </a>
-              ) : (
-                <button
-                  class="button"
-                  data-variant="darker"
-                  type="button"
-                  disabled
-                  title="The Discord invite link has not been configured"
-                >
-                  <IconBrandDiscord size={18} />
-                  Join Discord server
-                </button>
-              )}
+              <a
+                class="button"
+                data-variant="darker"
+                href={inviteLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <IconBrandDiscord size={18} />
+                Join Discord server
+              </a>
               <button
                 class="button"
                 data-variant="accent"
@@ -99,48 +84,63 @@ export async function DiscordSettingsEntry(props: {
       </div>
       {props.generatedCode && !player.discordLink && canGenerateLinkingCode && (
         <div class="mx-5 rounded-lg border border-zinc-700 bg-zinc-900 p-4">
-          <p class="font-semibold">Finish linking your Discord account</p>
-          <ol class="my-3 list-decimal space-y-2 pl-5 text-sm text-zinc-200">
-            <li>
-              {inviteLink
-                ? "Join the Discord server using the button below, if you haven't already."
-                : "Join the configured Discord server, if you haven't already. Ask an administrator for an invite link if needed."}
-            </li>
-            <li>Open the server and enter <code>/link</code> in any channel where you can use bot commands.</li>
-            <li>Paste the one-time code into the command's <code>code</code> field and submit it.</li>
-          </ol>
-          {inviteLink ? (
-            <a
-              class="button"
-              data-variant="darker"
-              href={inviteLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <IconBrandDiscord size={18} />
-              Join Discord server
-            </a>
-          ) : (
-            <button
-              class="button"
-              data-variant="darker"
-              type="button"
-              disabled
-              title="The Discord invite link has not been configured"
-            >
-              <IconBrandDiscord size={18} />
-              Join Discord server
-            </button>
-          )}
-          <p class="mt-4 text-sm text-zinc-400">
-            Your one-time code. Expires in <span data-countdown={Math.max(0, (props.codeExpiresAt?.getTime() ?? Date.now() + 600_000) - Date.now())}>10:00</span>.
+          <p class="text-sm text-zinc-400">
+            Your linking code
+            <span class="ml-2">· Expires in <span data-countdown={Math.max(0, (props.codeExpiresAt?.getTime() ?? Date.now() + 600_000) - Date.now())}>10:00</span></span>
           </p>
           <p class="my-2 break-all font-mono text-2xl tracking-widest" safe>
             {props.generatedCode}
           </p>
           <p class="text-xs text-zinc-400">
-            The code is shown only once and can only be used once. If it expires, generate a new one.
+            This code can only be used once.
           </p>
+
+          <div class="mt-5 border-t border-zinc-700 pt-4">
+            <p class="mb-3 font-semibold">How to link your account in Discord</p>
+            <ol class="space-y-4">
+              <li class="flex items-start gap-3">
+                <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold">1</span>
+                <div class="min-w-0 flex-1">
+                  <p class="mb-2 text-sm">Open our Discord server and type <code>/link</code> in a text channel.</p>
+                  <div class="rounded-lg border border-zinc-700 bg-[#313338] p-3">
+                    <p class="mb-2 text-xs text-zinc-400">MESSAGE</p>
+                    <div class="inline-flex items-center gap-2 rounded bg-[#4752c4] px-3 py-2 font-mono text-sm text-white">
+                      <span class="rounded bg-white/20 px-1">/</span> link
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold">2</span>
+                <div class="min-w-0 flex-1">
+                  <p class="mb-2 text-sm">Select the <code>/link</code> command from the suggestions.</p>
+                  <div class="rounded-lg border border-zinc-700 bg-[#2b2d31] p-3">
+                    <div class="flex items-center gap-2 text-sm text-white">
+                      <span class="rounded bg-[#4752c4] px-2 py-1 font-mono">/</span>
+                      <span class="font-semibold">link</span>
+                      <span class="text-xs text-zinc-400">Link your game account</span>
+                    </div>
+                  </div>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold">3</span>
+                <div class="min-w-0 flex-1">
+                  <p class="mb-2 text-sm">Paste your code into the <code>code</code> field and send the command.</p>
+                  <div class="rounded-lg border border-zinc-700 bg-[#2b2d31] p-3">
+                    <div class="mb-2 flex items-center gap-2 text-sm text-white">
+                      <span class="rounded bg-[#4752c4] px-2 py-1 font-mono">/</span>
+                      <span class="font-semibold">link</span>
+                    </div>
+                    <div class="rounded border border-[#5865f2] bg-[#1e1f22] p-2">
+                      <p class="mb-1 text-xs text-zinc-400">code</p>
+                      <p class="break-all font-mono text-sm text-white">{props.generatedCode}</p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ol>
+          </div>
         </div>
       )}
     </div>
