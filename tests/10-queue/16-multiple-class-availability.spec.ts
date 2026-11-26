@@ -24,6 +24,21 @@ test.afterEach(async ({ users }) => {
   await setMultiClassEnabled(users, false)
 })
 
+test('preserves the original click-a-slot signup by default @6v6', async ({ users }) => {
+  await setMultiClassEnabled(users, false)
+  const player = users.getNext(user => !user.isAdmin)
+  const page = await player.queuePage()
+  await page.goto()
+
+  await expect(page.page.locator('.queue-class-selection-hint')).toHaveCount(0)
+  await expect(page.page.locator('[data-class-preference]')).toHaveCount(0)
+  await expect(page.slot('scout-1').joinButton()).toBeVisible()
+  await page.slot('scout-1').join()
+  await expect(page.slot('scout-1').locator).toHaveAttribute('data-player', player.steamId)
+  await page.leaveQueue()
+  await page.waitToBeEmpty()
+})
+
 test('moves flexible players when a class specialist joins @6v6', async ({ users }) => {
   await setMultiClassEnabled(users, true)
   const [flexible1, flexible2, medic] = users.getMany(3)
