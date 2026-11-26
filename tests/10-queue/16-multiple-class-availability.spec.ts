@@ -33,19 +33,50 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
   await flexible2Page.slot('medic-2').join()
   await medicPage.slot('medic-1').join()
 
-  await expect(medicPage.slot('medic-1').locator).toHaveAttribute('data-player', medic.steamId)
+  // The assignment intentionally randomizes which alternate slot a flexible player takes.
+  // Assert the class distribution rather than a particular Scout slot.
   await expect
-    .poll(async () => [
-      await medicPage.slot('medic-2').locator.getAttribute('data-player'),
-      await medicPage.slot('scout-1').locator.getAttribute('data-player'),
-    ])
-    .toEqual(expect.arrayContaining([flexible1.steamId, flexible2.steamId]))
+    .poll(async () => ({
+      medic: await Promise.all(
+        (['medic-1', 'medic-2'] as const).map(slotId =>
+          medicPage.slot(slotId).locator.getAttribute('data-player'),
+        ),
+      ),
+      scout: await Promise.all(
+        (['scout-1', 'scout-2'] as const).map(slotId =>
+          medicPage.slot(slotId).locator.getAttribute('data-player'),
+        ),
+      ),
+    }))
+    .toMatchObject({
+      medic: expect.arrayContaining([medic.steamId]),
+      scout: expect.arrayContaining([expect.any(String)]),
+    })
+
+  const assignment = {
+    medic: await Promise.all(
+      (['medic-1', 'medic-2'] as const).map(slotId =>
+        medicPage.slot(slotId).locator.getAttribute('data-player'),
+      ),
+    ),
+    scout: await Promise.all(
+      (['scout-1', 'scout-2'] as const).map(slotId =>
+        medicPage.slot(slotId).locator.getAttribute('data-player'),
+      ),
+    ),
+  }
+  expect(assignment.medic.filter(id => [flexible1.steamId, flexible2.steamId].includes(id ?? ''))).toHaveLength(1)
+  expect(assignment.scout.filter(id => [flexible1.steamId, flexible2.steamId].includes(id ?? ''))).toHaveLength(1)
 
   // Alternate availability is a hint for empty slots only, never content below a player.
-  for (const slotId of ['medic-1', 'medic-2', 'scout-1'] as const) {
-    await expect(medicPage.slot(slotId).locator.locator('.queue-slot-alternates')).toHaveCount(0)
+  for (const slotId of ['medic-1', 'medic-2', 'scout-1', 'scout-2'] as const) {
+    const slot = medicPage.slot(slotId).locator
+    if (await slot.getAttribute('data-player')) {
+      await expect(slot.locator('.queue-slot-alternates')).toHaveCount(0)
+    } else {
+      await expect(slot.locator('.queue-slot-alternates')).toHaveCount(1)
+    }
   }
-  await expect(medicPage.slot('scout-2').locator.locator('.queue-slot-alternates')).toHaveCount(1)
 
   await Promise.all([
     flexible1Page.leaveQueue(),
