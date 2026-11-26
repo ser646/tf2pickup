@@ -153,7 +153,7 @@ async function applyNickname(
   }
 
   if (member.nickname !== nickname) {
-    await member.setNickname(nickname, `Synchronize tf2pickup class for game ${game.number}`)
+    await member.setNickname(nickname, `Synchronize tf2pickup player name for game ${game.number}`)
   }
 }
 
