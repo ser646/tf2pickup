@@ -8,7 +8,7 @@ const key = scryptSync(
   32,
 )
 
-export async function encryptLinkingCode(code: string): Promise<string> {
+export function encryptLinkingCode(code: string): string {
   const iv = randomBytes(12)
   const cipher = createCipheriv(algorithm, key, iv)
   const encrypted = Buffer.concat([cipher.update(code, 'utf8'), cipher.final()])
@@ -17,7 +17,7 @@ export async function encryptLinkingCode(code: string): Promise<string> {
   return [iv, tag, encrypted].map(value => value.toString('base64url')).join('.')
 }
 
-export async function decryptLinkingCode(encryptedCode: string): Promise<string> {
+export function decryptLinkingCode(encryptedCode: string): string {
   const [iv, tag, encrypted] = encryptedCode.split('.')
   if (!iv || !tag || !encrypted) {
     throw new Error('Invalid encrypted Discord linking code')
