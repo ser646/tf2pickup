@@ -21,7 +21,12 @@ function restorePendingClassPreferences(form: HTMLFormElement) {
     return
   }
 
-  const selectedClasses = new Set<string>(JSON.parse(pendingClassPreferences))
+  const parsed: unknown = JSON.parse(pendingClassPreferences)
+  const selectedClasses = new Set(
+    Array.isArray(parsed)
+      ? parsed.filter((value): value is string => typeof value === 'string')
+      : [],
+  )
   const inputs = form.querySelectorAll<HTMLInputElement>('[data-class-preference]')
   for (const input of inputs) {
     input.checked = !input.disabled && selectedClasses.has(input.value)
