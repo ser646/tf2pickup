@@ -1,5 +1,4 @@
 import { addMinutes } from 'date-fns'
-import { z } from 'zod'
 import { createHash, randomBytes } from 'node:crypto'
 import { routes } from '../../../utils/routes'
 import { players } from '../../../players'
@@ -11,10 +10,7 @@ import { encryptLinkingCode } from '../../../discord/linking-code'
 export default routes(async app => {
   app
     .get('/', async (_request, reply) => reply.redirect('/settings'))
-    .post(
-      '/',
-      { schema: { body: z.object({}).default({}) } },
-      async (request, reply) => {
+    .post('/', async (request, reply) => {
         if (!request.user) {
           return reply.redirect('/auth/steam')
         }
@@ -76,8 +72,7 @@ export default routes(async app => {
         })
 
         return reply.html(await DiscordSettingsEntry({ steamId }))
-      },
-    )
+    })
     .post('/unlink', async (request, reply) => {
       if (!request.user) {
         return reply.redirect('/auth/steam')
