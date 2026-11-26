@@ -147,7 +147,7 @@ export async function DiscordSettingsEntry(props: {
                     </div>
                     <div class="rounded border border-[#5865f2] bg-[#1e1f22] p-2">
                       <p class="mb-1 text-xs text-zinc-400">code</p>
-                      <p class="break-all font-mono text-sm text-white">{props.generatedCode}</p>
+                      <p class="break-all font-mono text-sm text-white">{generatedCode}</p>
                     </div>
                   </div>
                 </div>
