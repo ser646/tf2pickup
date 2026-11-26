@@ -4,6 +4,7 @@ vi.mock('../../database/collections', () => ({
   collections: {
     queueSlots: {
       find: vi.fn(),
+      findOne: vi.fn(),
       countDocuments: vi.fn(),
       findOneAndUpdate: vi.fn(),
     },
@@ -106,10 +107,31 @@ describe('join()', () => {
       )) as never)
     vi.mocked(getState).mockResolvedValue(QueueState.waiting)
     vi.mocked(collections.queueSlots.find).mockReturnValue(cursor([slot]) as never)
+    vi.mocked(collections.queueSlots.findOne).mockResolvedValue(slot as never)
     vi.mocked(collections.queueSlots.countDocuments).mockResolvedValue(1)
     vi.mocked(collections.queueFriends.find).mockReturnValue(cursor([]) as never)
     vi.mocked(collections.queueFriends.deleteOne).mockResolvedValue({ deletedCount: 0 } as never)
     mockUpdates([slot])
+  })
+
+  it('uses the original one-slot join flow when multi-class is disabled', async () => {
+    vi.mocked(get).mockResolvedValue({
+      enabled: true,
+      requireVerification: false,
+      allowMultipleClasses: false,
+      skillThreshold: null,
+      gamemode: '6v6',
+      launchMode: 'auto',
+    } as never)
+
+    await join(queue, slotId, steamId)
+
+    expect(collections.queueSlots.findOne).toHaveBeenCalledWith({ queue, id: slotId })
+    expect(collections.queueSlots.findOneAndUpdate).toHaveBeenCalledWith(
+      { _id: slot._id, player: null },
+      expect.objectContaining({ $set: expect.objectContaining({ player: expect.objectContaining({ steamId }) }) }),
+      { returnDocument: 'after' },
+    )
   })
 
   it('leaves the other queue and takes the selected class slot', async () => {
