@@ -6,7 +6,7 @@ import { routes } from '../../../utils/routes'
 import { configuration } from '../../../configuration'
 
 const emptyString = z
-  .union([z.literal('').transform(() => null), z.string().url()])
+  .union([z.literal('').transform(() => null), z.url()])
   .nullable()
   .default(null)
 
