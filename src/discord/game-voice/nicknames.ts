@@ -48,12 +48,15 @@ async function restoreNickname(player: {
   if (!client?.isReady()) {
     return
   }
-  {
-    try {
+
+  try {
       const guild = await client.guilds.fetch(state.guildId)
       const member = await guild.members.fetch(state.userId)
       if (member.nickname === state.appliedNickname && member.manageable) {
-        await member.setNickname(state.originalNickname, 'Restore Discord nickname after tf2pickup match')
+        await member.setNickname(
+          state.originalNickname,
+          'Restore Discord nickname after tf2pickup match',
+        )
       }
     } catch (error) {
       if (
@@ -70,7 +73,6 @@ async function restoreNickname(player: {
         throw error
       }
     }
-  }
 
   await collections.players.updateOne(
     { steamId: player.steamId },
