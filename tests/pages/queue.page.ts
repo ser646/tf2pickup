@@ -29,9 +29,7 @@ class QueueSlot {
 
   joinButton() {
     const gameClass = this.slotId.slice(0, this.slotId.lastIndexOf('-'))
-    return this.page.locator(
-      `[data-class-primary][data-class-primary-join^="${gameClass}-"]`,
-    )
+    return this.page.locator(`[data-class-primary][data-class-primary-join^="${gameClass}-"]`)
   }
 
   async join() {
