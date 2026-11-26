@@ -29,16 +29,19 @@ class QueueSlot {
 
   joinButton() {
     const gameClass = this.slotId.slice(0, this.slotId.lastIndexOf('-'))
+    // Some gamemodes render the same class heading once per slot. The controls are
+    // intentionally class-based, so expose one representative visible heading.
     return this.page
       .locator(`[data-class-primary][data-class-primary-join^="${gameClass}-"]`)
       .filter({ visible: true })
+      .first()
   }
 
   async join() {
     const primaryClassButtons = this.joinButton()
     if (await primaryClassButtons.count()) {
       // Current queue UI: clicking the class heading selects the primary class.
-      await primaryClassButtons.first().click()
+      await primaryClassButtons.click()
     } else {
       // The 4.25.0 upgrade fixture runs against the legacy UI, where the slot itself
       // is the join target and class headings do not expose data-class-primary.
@@ -48,7 +51,7 @@ class QueueSlot {
     const leaveQueueButton = this.page.getByRole('button', { name: 'Leave queue' })
     await expect
       .poll(async () => {
-        const onGamePage = /games\/(\d+)/.test(this.page.url())
+        const onGamePage = /games\\/(\\d+)/.test(this.page.url())
         const canLeaveQueue = await leaveQueueButton.isVisible()
         return onGamePage || canLeaveQueue
       })
@@ -123,7 +126,7 @@ export class QueuePage {
   }
 
   header() {
-    return this.page.getByRole('heading', { name: /Players \d+\/\d+/ })
+    return this.page.getByRole('heading', { name: /Players \\d+\\/\\d+/ })
   }
 
   slot(slot: SlotId) {
@@ -151,14 +154,14 @@ export class QueuePage {
       return await this.slot(slot).isReady()
     }
 
-    if (/games\/(\d+)/.test(this.page.url()) || (await isPlayerReady())) {
+    if (/games\\/(\\d+)/.test(this.page.url()) || (await isPlayerReady())) {
       return
     }
     const readyUpButton = this.readyUpDialog().readyUpButton()
     await expect
       .poll(
         async () => {
-          if (/games\/(\d+)/.test(this.page.url())) {
+          if (/games\\/(\\d+)/.test(this.page.url())) {
             return 'game'
           }
           if (await isPlayerReady()) {
@@ -173,7 +176,7 @@ export class QueuePage {
       )
       .not.toBe('waiting')
 
-    if (/games\/(\d+)/.test(this.page.url()) || (await isPlayerReady())) {
+    if (/games\\/(\\d+)/.test(this.page.url()) || (await isPlayerReady())) {
       return
     }
     await readyUpButton.click()
