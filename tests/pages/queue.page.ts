@@ -29,13 +29,21 @@ class QueueSlot {
 
   joinButton() {
     const gameClass = this.slotId.slice(0, this.slotId.lastIndexOf('-'))
-    return this.page
-      .locator(`[data-class-primary][data-class-primary-join^="${gameClass}-"]`)
-      .first()
+    return this.page.locator(
+      `[data-class-primary][data-class-primary-join^="${gameClass}-"]`,
+    )
   }
 
   async join() {
-    await this.joinButton().click()
+    const primaryClassButtons = this.joinButton()
+    if (await primaryClassButtons.count()) {
+      // Current queue UI: clicking the class heading selects the primary class.
+      await primaryClassButtons.first().click()
+    } else {
+      // The 4.25.0 upgrade fixture runs against the legacy UI, where the slot itself
+      // is the join target and class headings do not expose data-class-primary.
+      await this.locator.click()
+    }
     await expect(this.page.getByRole('button', { name: 'Leave queue' })).toBeVisible()
   }
 
