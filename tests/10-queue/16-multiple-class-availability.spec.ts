@@ -34,10 +34,12 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
   await medicPage.slot('medic-1').join()
 
   await expect(medicPage.slot('medic-1').locator).toHaveAttribute('data-player', medic.steamId)
-  await expect.poll(async () => [
-    await medicPage.slot('medic-2').locator.getAttribute('data-player'),
-    await medicPage.slot('scout-1').locator.getAttribute('data-player'),
-  ]).toEqual(expect.arrayContaining([flexible1.steamId, flexible2.steamId]))
+  await expect
+    .poll(async () => [
+      await medicPage.slot('medic-2').locator.getAttribute('data-player'),
+      await medicPage.slot('scout-1').locator.getAttribute('data-player'),
+    ])
+    .toEqual(expect.arrayContaining([flexible1.steamId, flexible2.steamId]))
 
   // Alternate availability is a hint for empty slots only, never content below a player.
   for (const slotId of ['medic-1', 'medic-2', 'scout-1'] as const) {

@@ -254,9 +254,7 @@ describe('join()', () => {
       player: null,
       ready: false,
     }
-    vi.mocked(collections.queueSlots.find).mockReturnValue(
-      cursor([slot, soldierSlot]) as never,
-    )
+    vi.mocked(collections.queueSlots.find).mockReturnValue(cursor([slot, soldierSlot]) as never)
     mockUpdates([slot, soldierSlot])
     vi.mocked(joinBlocker).mockImplementation((_player, target, _settings, _skill) =>
       target.gameClass === Tf2ClassName.soldier

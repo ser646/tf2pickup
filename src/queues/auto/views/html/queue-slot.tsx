@@ -81,11 +81,7 @@ export async function QueueSlot(props: {
   )
 }
 
-async function PlayerInfo(props: {
-  queue?: Queue
-  slot: QueueSlotModel
-  actor?: Actor
-}) {
+async function PlayerInfo(props: { queue?: Queue; slot: QueueSlotModel; actor?: Actor }) {
   if (!props.slot.player) {
     return <></>
   }
@@ -161,9 +157,7 @@ async function PlayerInfo(props: {
           </span>
         )}
       </div>
-      <div class="queue-slot-actions">
-        {slotActionButton}
-      </div>
+      <div class="queue-slot-actions">{slotActionButton}</div>
     </div>
   )
 }

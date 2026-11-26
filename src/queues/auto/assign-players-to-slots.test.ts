@@ -46,10 +46,7 @@ describe('assignPlayersToSlots()', () => {
 
   it('randomizes the alternate class chosen when a flexible player must move', () => {
     const medic = 'medic-1' as QueueSlotId
-    const expandedSlots = [
-      ...slots,
-      { id: medic, gameClass: Tf2ClassName.medic },
-    ]
+    const expandedSlots = [...slots, { id: medic, gameClass: Tf2ClassName.medic }]
     const random = vi.spyOn(Math, 'random').mockReturnValue(0)
 
     try {

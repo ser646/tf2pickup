@@ -66,7 +66,7 @@ export function ClassPreferences(props: {
         data-class-primary
         data-class-primary-join={primarySlot?.id}
         disabled={!!blocker || !primarySlot}
-        title={blocker ?? ('Select ' + props.gameClass + ' as your main class')}
+        title={blocker ?? 'Select ' + props.gameClass + ' as your main class'}
       >
         <GameClassIcon gameClass={props.gameClass} size={32} />
         <span>{props.gameClass}</span>

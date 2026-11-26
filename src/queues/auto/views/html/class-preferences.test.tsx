@@ -72,9 +72,7 @@ describe('ClassPreferences', () => {
       ),
     )
 
-    expect(
-      html.querySelector('button[data-class-primary-join="scout-1"]'),
-    ).not.toBeNull()
+    expect(html.querySelector('button[data-class-primary-join="scout-1"]')).not.toBeNull()
   })
 
   it('allows availability for a class whose slots are all occupied', () => {

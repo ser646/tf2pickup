@@ -78,10 +78,9 @@ document.addEventListener('change', event => {
   ].filter(input => input.value === target.value)
   for (const input of matchingInputs) {
     input.checked = target.checked
-    input.closest('.queue-class-heading')?.classList.toggle(
-      'queue-class-heading-selected',
-      target.checked,
-    )
+    input
+      .closest('.queue-class-heading')
+      ?.classList.toggle('queue-class-heading-selected', target.checked)
   }
 
   // Before joining, checkboxes only prepare additional classes locally. The player

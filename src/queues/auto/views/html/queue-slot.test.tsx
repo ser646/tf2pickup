@@ -88,7 +88,6 @@ describe('QueueSlot', () => {
     })
   })
 
-
   describe('when slot has a player', () => {
     const occupiedSlot = {
       ...emptySlot,

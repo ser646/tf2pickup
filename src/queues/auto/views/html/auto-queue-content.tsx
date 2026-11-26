@@ -104,8 +104,8 @@ async function Queue(props: {
   const teams = teamSlots(props.queue.gamemode, props.slots)
   const classSelectionHint = (
     <p class="queue-class-selection-hint">
-      <strong>Click a class name</strong> to join as that class. Use{' '}
-      <strong>Also available</strong> to mark other classes you can play.
+      <strong>Click a class name</strong> to join as that class. Use <strong>Also available</strong>{' '}
+      to mark other classes you can play.
     </p>
   )
   if (teams.length > 0) {

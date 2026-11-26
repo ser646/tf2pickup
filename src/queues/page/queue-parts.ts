@@ -82,8 +82,7 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
     const headings = hasTeamLayout
       ? positions.map((position, index) => ({
           ...position,
-          headingId:
-            'queue-class-preference-' + position.gameClass + '-' + position.classIndex,
+          headingId: 'queue-class-preference-' + position.gameClass + '-' + position.classIndex,
           includeInForm:
             positions.findIndex(candidate => candidate.gameClass === position.gameClass) === index,
         }))
