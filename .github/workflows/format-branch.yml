@@ -29,3 +29,5 @@ jobs:
             git commit -m "[format] Apply Prettier to Discord changes"
             git push
           fi
+
+# Temporary one-off formatter run.
