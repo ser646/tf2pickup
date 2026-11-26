@@ -33,9 +33,42 @@
     border-radius: 5px;
     cursor: pointer;
 
+    position: relative;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    cursor: pointer;
+
+    &::after {
+      content: '＋ Join';
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 15px;
+      padding: 0 6px;
+      border: 1px solid var(--color-zinc-600);
+      border-radius: 999px;
+      color: var(--color-zinc-300);
+      background: var(--color-surface-raised);
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 13px;
+      white-space: nowrap;
+      transition:
+        color 120ms ease,
+        border-color 120ms ease,
+        background 120ms ease;
+    }
+
     &:hover:not(:disabled) {
       color: var(--color-zinc-50);
       background: var(--color-surface-hover);
+
+      &::after {
+        border-color: var(--color-emerald-500);
+        color: var(--color-emerald-200);
+        background: var(--color-emerald-900);
+      }
     }
 
     &:focus-visible {
