@@ -138,7 +138,7 @@ export const launchGame = mergeTests(authUsers, simulateGameServer, waitForEmpty
             const slot = desiredSlots.get(user.playerName)!
 
             if (user !== lastPlayer) {
-              await queuePage.readyUp(slot)
+              await queuePage.readyUp(slot, user.steamId)
             }
             await page.waitForURL(/games\/(\d+)/)
           }),
