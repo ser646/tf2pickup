@@ -53,6 +53,9 @@ export async function DiscordSettingsEntry(props: {
               Join the Discord server, then link your account to access your team's private match voice channel.
             </p>
             <div class="flex flex-wrap items-center gap-2">
+              {!inviteLink && (
+                <p class="text-sm text-zinc-400">The Discord invite link has not been configured. Contact an administrator.</p>
+              )}
               {inviteLink && (
                 <a
                   class="button"
@@ -79,7 +82,11 @@ export async function DiscordSettingsEntry(props: {
         <div class="mx-5 rounded-lg border border-zinc-700 bg-zinc-900 p-4">
           <p class="font-semibold">Finish linking your Discord account</p>
           <ol class="my-3 list-decimal space-y-2 pl-5 text-sm text-zinc-200">
-            <li>Join the Discord server using the button below, if you haven't already.</li>
+            <li>
+              {inviteLink
+                ? "Join the Discord server using the button below, if you haven't already."
+                : "Join the configured Discord server, if you haven't already. Ask an administrator for an invite link if needed."}
+            </li>
             <li>Open the server and enter <code>/link</code> in any channel where you can use bot commands.</li>
             <li>Paste the one-time code into the command's <code>code</code> field and submit it.</li>
           </ol>
