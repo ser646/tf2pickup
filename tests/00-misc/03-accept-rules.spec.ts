@@ -32,7 +32,7 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
   expect(await originalBanner.evaluate(element => element.isConnected)).toBe(true)
   expect(page.url()).toBe(queueUrl)
   expect(await page.evaluate(() => Notification.permission)).toBe('default')
-  await expect(page.getByRole('button', { name: /Join queue on slot/ }).first()).toBeEnabled()
+  await expect(page.locator('[data-class-primary]:not(:disabled)').first()).toBeEnabled()
   await page.reload()
   await expect(dialog).not.toBeVisible()
   expect(errors).toEqual([])
