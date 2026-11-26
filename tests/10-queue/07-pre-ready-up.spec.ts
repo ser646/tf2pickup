@@ -160,12 +160,9 @@ test('does not ready up if switching classes as 11th player @6v6 @9v9', async ({
   await page.goto()
   await page.slot(firstSlot).join()
 
-  const firstClass = firstSlot.split('-')[0]!
-  const secondClass = secondSlot.split('-')[0]!
-  const preferences = page.page.locator('#queue-class-preferences')
-  await preferences.locator(`input[name="classes"][value="${firstClass}"]`).uncheck()
-  await preferences.locator(`input[name="classes"][value="${secondClass}"]`).check()
-  await page.page.getByRole('button', { name: 'Update availability' }).click()
+  // Clicking the second class heading changes the primary class without a separate
+  // availability form or an explicit "Update availability" action.
+  await page.slot(secondSlot).join()
 
   const reassignedSlot = page.slot(secondSlot)
   await expect(reassignedSlot.locator).toHaveAttribute('data-player', polemic.steamId)
