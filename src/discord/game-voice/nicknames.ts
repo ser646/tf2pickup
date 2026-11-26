@@ -30,9 +30,14 @@ type NicknameState = {
 }
 
 function nicknameFor(name: string, gameClass: Tf2ClassName): string {
-  return Array.from(`${classEmojis[gameClass]} ${name}`)
-    .slice(0, 32)
-    .join('')
+  let nickname = ''
+  for (const character of Array.from(`${classEmojis[gameClass]} ${name}`)) {
+    if (nickname.length + character.length > 32) {
+      break
+    }
+    nickname += character
+  }
+  return nickname
 }
 
 async function restoreNickname(player: {
@@ -50,29 +55,29 @@ async function restoreNickname(player: {
   }
 
   try {
-      const guild = await client.guilds.fetch(state.guildId)
-      const member = await guild.members.fetch(state.userId)
-      if (member.nickname === state.appliedNickname && member.manageable) {
-        await member.setNickname(
-          state.originalNickname,
-          'Restore Discord nickname after tf2pickup match',
-        )
-      }
-    } catch (error) {
-      if (
-        typeof error === 'object' &&
-        error !== null &&
-        'code' in error &&
-        (error.code === 10007 || error.code === 10013)
-      ) {
-        logger.debug(
-          { steamId: player.steamId, userId: state.userId },
-          'cannot restore nickname because the Discord member is no longer in the guild',
-        )
-      } else {
-        throw error
-      }
+    const guild = await client.guilds.fetch(state.guildId)
+    const member = await guild.members.fetch(state.userId)
+    if (member.nickname === state.appliedNickname && member.manageable) {
+      await member.setNickname(
+        state.originalNickname,
+        'Restore Discord nickname after tf2pickup match',
+      )
     }
+  } catch (error) {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error.code === 10007 || error.code === 10013)
+    ) {
+      logger.debug(
+        { steamId: player.steamId, userId: state.userId },
+        'cannot restore nickname because the Discord member is no longer in the guild',
+      )
+    } else {
+      throw error
+    }
+  }
 
   await collections.players.updateOne(
     { steamId: player.steamId },
