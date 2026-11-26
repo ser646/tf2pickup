@@ -77,7 +77,7 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
           <a
             class="button mb-4"
             data-variant="darker"
-            href={inviteLink!}
+            href={inviteLink}
             target="_blank"
             rel="noopener noreferrer"
           >
