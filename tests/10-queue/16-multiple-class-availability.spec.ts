@@ -33,8 +33,7 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
   await flexible2Page.slot('medic-2').join()
   await medicPage.slot('medic-1').join()
 
-  // The assignment intentionally randomizes which alternate slot a flexible player takes.
-  // Assert the class distribution rather than a particular Scout slot.
+  // 6v6 has four Scout slots across both teams. The flexible assignment may use any of them.
   const readAssignment = async () => ({
     medic: await Promise.all(
       (['medic-1', 'medic-2'] as const).map(slotId =>
@@ -42,7 +41,7 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
       ),
     ),
     scout: await Promise.all(
-      (['scout-1', 'scout-2'] as const).map(slotId =>
+      (['scout-1', 'scout-2', 'scout-3', 'scout-4'] as const).map(slotId =>
         medicPage.slot(slotId).locator.getAttribute('data-player'),
       ),
     ),
@@ -80,7 +79,14 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
   ).toHaveLength(1)
 
   // Alternate availability is a hint for empty slots only, never content below a player.
-  for (const slotId of ['medic-1', 'medic-2', 'scout-1', 'scout-2'] as const) {
+  for (const slotId of [
+    'medic-1',
+    'medic-2',
+    'scout-1',
+    'scout-2',
+    'scout-3',
+    'scout-4',
+  ] as const) {
     const slot = medicPage.slot(slotId).locator
     if (await slot.getAttribute('data-player')) {
       await expect(slot.locator('.queue-slot-alternates')).toHaveCount(0)
