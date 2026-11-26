@@ -58,11 +58,10 @@ const player = {
 describe('join()', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(configuration.get).mockImplementation(
-      (async key =>
-        key === 'games.default_player_skill'
-          ? { '6v6': { scout: 2 } }
-          : VoiceServerType.none) as never,
+    vi.mocked(configuration.get).mockImplementation(async key =>
+      (key === 'games.default_player_skill'
+        ? { '6v6': { scout: 2 } }
+        : VoiceServerType.none) as never,
     )
     vi.mocked(get).mockResolvedValue({
       enabled: true,
@@ -71,11 +70,10 @@ describe('join()', () => {
       launchMode: 'auto',
     } as never)
     vi.mocked(joinBlocker).mockReturnValue(null)
-    vi.mocked(players.bySteamId).mockImplementation(
-      (async (_: SteamId64, keys: string[]) =>
-        Object.fromEntries(
-          Object.entries(player).filter(([key]) => keys.some(k => k.split('.')[0] === key)),
-        )) as never,
+    vi.mocked(players.bySteamId).mockImplementation(async (_: SteamId64, keys: string[]) =>
+      Object.fromEntries(
+        Object.entries(player).filter(([key]) => keys.some(k => k.split('.')[0] === key)),
+      ) as never,
     )
     vi.mocked(getState).mockResolvedValue(QueueState.waiting)
     vi.mocked(collections.queueSlots.findOne).mockResolvedValue(slot as never)
