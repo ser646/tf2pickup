@@ -10,6 +10,16 @@ import { encryptLinkingCode } from '../../../discord/linking-code'
 export default routes(async app => {
   app
     .get('/', async (_request, reply) => reply.redirect('/settings'))
+    .get('/status', async (request, reply) => {
+      if (!request.user) {
+        return reply.redirect('/auth/steam')
+      }
+      reply.header('Cache-Control', 'no-store')
+
+      return reply.html(
+        await DiscordSettingsEntry({ steamId: request.user.player.steamId }),
+      )
+    })
     .post('/', async (request, reply) => {
       if (!request.user) {
         return reply.redirect('/auth/steam')
