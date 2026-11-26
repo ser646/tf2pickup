@@ -211,3 +211,33 @@ export async function syncGameNicknames(game: GameModel): Promise<void> {
     await applyNickname(player, game, gameClass, guildId)
   }
 }
+
+export async function restoreStaleNicknames(): Promise<void> {
+  const savedPlayers = await collections.players
+    .find({ discordNickname: { $exists: true } })
+    .toArray()
+  if (savedPlayers.length === 0) {
+    return
+  }
+
+  const activeGames = await collections.games
+    .find({
+      number: { $in: savedPlayers.map(player => player.discordNickname!.gameNumber) },
+      state: {
+        $in: [
+          GameState.created,
+          GameState.configuring,
+          GameState.launching,
+          GameState.started,
+        ],
+      },
+    })
+    .toArray()
+  const activeGameNumbers = new Set(activeGames.map(({ number }) => number))
+
+  for (const player of savedPlayers) {
+    if (!activeGameNumbers.has(player.discordNickname!.gameNumber)) {
+      await restoreNickname(player)
+    }
+  }
+}
