@@ -45,7 +45,7 @@ describe('ClassPreferences', () => {
     expect(availabilityCheckbox!.getAttribute('disabled')).toBeDefined()
     expect(html.querySelector('button[data-class-primary]')).not.toBeNull()
     expect(html.text).toContain('Also available')
-    expect(html.text).toContain('Scout')
+    expect(html.text).toContain('scout')
     expect(html.querySelector('#queue-class-preferences')).toBeNull()
     expect(html.querySelector('[data-select-all-classes]')).toBeNull()
   })
@@ -116,7 +116,16 @@ describe('ClassPreferences', () => {
       String(
         ClassPreferences({
           queue,
-          slots: [slot],
+          slots: [
+            slot,
+            {
+              queue: slot.queue,
+              id: 'scout-1',
+              gameClass: Tf2ClassName.scout,
+              player: null,
+              ready: false,
+            },
+          ],
           actor: actor as never,
           defaultSkill: undefined,
           gameClass: Tf2ClassName.scout,
@@ -147,6 +156,6 @@ describe('ClassPreferences', () => {
 
     expect(html.querySelector('h2#queue-class-preference-scout')).not.toBeNull()
     expect(html.querySelector('input[name="classes"]')).toBeNull()
-    expect(html.text).toContain('Scout')
+    expect(html.text).toContain('scout')
   })
 })
