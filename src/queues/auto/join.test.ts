@@ -16,7 +16,7 @@ vi.mock('../../pre-ready', () => ({ preReady: { start: vi.fn() } }))
 vi.mock('../get', () => ({ get: vi.fn() }))
 vi.mock('../get-state', () => ({ getState: vi.fn() }))
 vi.mock('../../configuration', () => ({
-  configuration: { get: vi.fn().mockResolvedValue({ '6v6': { scout: 2 } }) },
+  configuration: { get: vi.fn() },
 }))
 vi.mock('./join-blocker', () => ({ joinBlocker: vi.fn().mockReturnValue(null) }))
 vi.mock('./vacate-slot', () => ({ vacateSlot: vi.fn() }))
@@ -28,11 +28,13 @@ vi.mock('../queue-command', () => ({
 const emit = vi.fn()
 
 import { ObjectId } from 'mongodb'
-import { collections } from '../../database/collections'\nimport { configuration } from '../../configuration'
+import { configuration } from '../../configuration'
+import { collections } from '../../database/collections'
 import type { QueueId } from '../../database/models/queue.model'
 import { QueueState } from '../../database/models/queue-state.model'
 import { players } from '../../players'
-import type { SteamId64 } from '../../shared/types/steam-id-64'\nimport { VoiceServerType } from '../../shared/types/voice-server-type'
+import type { SteamId64 } from '../../shared/types/steam-id-64'
+import { VoiceServerType } from '../../shared/types/voice-server-type'
 import { get } from '../get'
 import { getState } from '../get-state'
 import type { QueueSlotId } from '../types/queue-slot-id'
@@ -56,17 +58,25 @@ const player = {
 describe('join()', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(configuration.get).mockImplementation((async (key: string) =>\n      key === 'games.default_player_skill'\n        ? { '6v6': { scout: 2 } }\n        : VoiceServerType.none) as never)\n    vi.mocked(get).mockResolvedValue({
+    vi.mocked(configuration.get).mockImplementation(
+      (async key =>
+        key === 'games.default_player_skill'
+          ? { '6v6': { scout: 2 } }
+          : VoiceServerType.none) as never,
+    )
+    vi.mocked(get).mockResolvedValue({
       enabled: true,
       requireVerification: false,
       gamemode: '6v6',
       launchMode: 'auto',
     } as never)
     vi.mocked(joinBlocker).mockReturnValue(null)
-    vi.mocked(players.bySteamId).mockImplementation((async (_: SteamId64, keys: string[]) =>
-      Object.fromEntries(
-        Object.entries(player).filter(([key]) => keys.some(k => k.split('.')[0] === key)),
-      )) as never)
+    vi.mocked(players.bySteamId).mockImplementation(
+      (async (_: SteamId64, keys: string[]) =>
+        Object.fromEntries(
+          Object.entries(player).filter(([key]) => keys.some(k => k.split('.')[0] === key)),
+        )) as never,
+    )
     vi.mocked(getState).mockResolvedValue(QueueState.waiting)
     vi.mocked(collections.queueSlots.findOne).mockResolvedValue(slot as never)
     // the player sits in another queue
@@ -121,6 +131,7 @@ describe('join()', () => {
       slot,
       expect.anything(),
       { scout: 2 },
+      false,
     )
   })
 })
