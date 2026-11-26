@@ -1,18 +1,12 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('../secrets', () => ({
-  secrets: {
-    get: vi.fn(async () => Buffer.alloc(32, 7)),
-  },
+vi.mock('../environment', () => ({
+  environment: { KEY_STORE_PASSPHRASE: 'test-key-store-passphrase' },
 }))
 
 import { decryptLinkingCode, encryptLinkingCode } from './linking-code'
 
 describe('Discord linking code encryption', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-  })
-
   it('round-trips a linking code', async () => {
     const code = '0123456789ABCDEF01234567'
 
