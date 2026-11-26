@@ -34,7 +34,7 @@ describe('joinBlocker()', () => {
   })
 
   it('requires a linked Discord account when Discord is the voice provider', () => {
-    const reason = 'Link your Discord account in Settings → Integrations → Discord to join this queue'
+    const reason =\n      'Link your Discord account in Settings → Integrations → Discord to join this queue'
     expect(joinBlocker(player, slot, queue, defaultSkill, true)).toBe(reason)
     expect(
       joinBlocker(
