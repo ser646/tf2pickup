@@ -19,7 +19,7 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
   const codeExpiresAt = player.discordLinkCode?.expiresAt
   const generatedCode =
     player.discordLinkCode?.encryptedCode && codeExpiresAt && codeExpiresAt > new Date()
-      ? await decryptLinkingCode(player.discordLinkCode.encryptedCode)
+      ? decryptLinkingCode(player.discordLinkCode.encryptedCode)
       : undefined
   const configuredGuilds = (await configuration.get('discord.guilds')).filter(
     ({ voiceServer }) => voiceServer !== undefined,
