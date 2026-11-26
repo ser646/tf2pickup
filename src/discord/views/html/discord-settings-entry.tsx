@@ -5,7 +5,12 @@ import { discord } from '../../index'
 import { IconBrandDiscord } from '../../../html/components/icons'
 import { decryptLinkingCode } from '../../linking-code'
 
-const stepNumberClass =\n  'flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold'\nconst commandSuggestionClass =\n  'inline-flex items-center gap-2 rounded bg-[#4752c4] px-3 py-2 font-mono text-sm text-white'\n\nexport async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
+const stepNumberClass =
+  'flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold'
+const commandSuggestionClass =
+  'inline-flex items-center gap-2 rounded bg-[#4752c4] px-3 py-2 font-mono text-sm text-white'
+
+export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
   const player = await players.bySteamId(props.steamId, [
     'discordLink',
     'discordLinkCode.encryptedCode',
