@@ -160,7 +160,12 @@ async function Queue(props: {
               <span>{gameClass}</span>
             </h2>
             {props.slots.filter(slot => slot.gameClass === gameClass).map(slot => (
-              <SingleClassQueueSlot queue={props.queue} slot={slot} actor={actor} defaultSkill={defaultSkill} />
+              <SingleClassQueueSlot
+                queue={props.queue}
+                slot={slot}
+                actor={actor}
+                defaultSkill={defaultSkill}
+              />
             ))}
           </div>
         ))}
