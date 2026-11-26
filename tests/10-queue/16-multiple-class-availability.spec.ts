@@ -35,25 +35,7 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
 
   // The assignment intentionally randomizes which alternate slot a flexible player takes.
   // Assert the class distribution rather than a particular Scout slot.
-  await expect
-    .poll(async () => ({
-      medic: await Promise.all(
-        (['medic-1', 'medic-2'] as const).map(slotId =>
-          medicPage.slot(slotId).locator.getAttribute('data-player'),
-        ),
-      ),
-      scout: await Promise.all(
-        (['scout-1', 'scout-2'] as const).map(slotId =>
-          medicPage.slot(slotId).locator.getAttribute('data-player'),
-        ),
-      ),
-    }))
-    .toMatchObject({
-      medic: expect.arrayContaining([medic.steamId]),
-      scout: expect.arrayContaining([expect.any(String)]),
-    })
-
-  const assignment = {
+  const readAssignment = async () => ({
     medic: await Promise.all(
       (['medic-1', 'medic-2'] as const).map(slotId =>
         medicPage.slot(slotId).locator.getAttribute('data-player'),
@@ -64,7 +46,24 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
         medicPage.slot(slotId).locator.getAttribute('data-player'),
       ),
     ),
-  }
+  })
+  await expect
+    .poll(async () => {
+      const assignment = await readAssignment()
+      const flexibleIds = [flexible1.steamId, flexible2.steamId]
+      return {
+        hasMedicSpecialist: assignment.medic.includes(medic.steamId),
+        flexiblePlayersInMedic: assignment.medic.filter(id => flexibleIds.includes(id ?? '')).length,
+        flexiblePlayersInScout: assignment.scout.filter(id => flexibleIds.includes(id ?? '')).length,
+      }
+    })
+    .toEqual({
+      hasMedicSpecialist: true,
+      flexiblePlayersInMedic: 1,
+      flexiblePlayersInScout: 1,
+    })
+
+  const assignment = await readAssignment()
   expect(assignment.medic.filter(id => [flexible1.steamId, flexible2.steamId].includes(id ?? ''))).toHaveLength(1)
   expect(assignment.scout.filter(id => [flexible1.steamId, flexible2.steamId].includes(id ?? ''))).toHaveLength(1)
 
