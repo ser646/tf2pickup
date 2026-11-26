@@ -56,7 +56,7 @@ export async function DiscordSettingsEntry(props: {
               {!inviteLink && (
                 <p class="text-sm text-zinc-400">The Discord invite link has not been configured. Contact an administrator.</p>
               )}
-              {inviteLink && (
+              {inviteLink ? (
                 <a
                   class="button"
                   data-variant="darker"
@@ -64,8 +64,20 @@ export async function DiscordSettingsEntry(props: {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
+                  <IconBrandDiscord size={18} />
                   Join Discord server
                 </a>
+              ) : (
+                <button
+                  class="button"
+                  data-variant="darker"
+                  type="button"
+                  disabled
+                  title="The Discord invite link has not been configured"
+                >
+                  <IconBrandDiscord size={18} />
+                  Join Discord server
+                </button>
               )}
               <button
                 class="button"
@@ -90,7 +102,7 @@ export async function DiscordSettingsEntry(props: {
             <li>Open the server and enter <code>/link</code> in any channel where you can use bot commands.</li>
             <li>Paste the one-time code into the command's <code>code</code> field and submit it.</li>
           </ol>
-          {inviteLink && (
+          {inviteLink ? (
             <a
               class="button"
               data-variant="darker"
@@ -101,6 +113,17 @@ export async function DiscordSettingsEntry(props: {
               <IconBrandDiscord size={18} />
               Join Discord server
             </a>
+          ) : (
+            <button
+              class="button"
+              data-variant="darker"
+              type="button"
+              disabled
+              title="The Discord invite link has not been configured"
+            >
+              <IconBrandDiscord size={18} />
+              Join Discord server
+            </button>
           )}
           <p class="mt-4 text-sm text-zinc-400">Your one-time code (expires in 10 minutes):</p>
           <p class="my-2 break-all font-mono text-2xl tracking-widest" safe>
