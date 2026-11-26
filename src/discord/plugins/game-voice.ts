@@ -10,7 +10,7 @@ import { safe } from '../../utils/safe'
 import { VoiceServerType } from '../../shared/types/voice-server-type'
 import { discord } from '../index'
 import { gameVoice } from '../game-voice'
-import { syncGameNicknames } from '../game-voice/nicknames'
+import { restoreStaleNicknames, syncGameNicknames } from '../game-voice/nicknames'
 
 const activeGameStates: GameState[] = [
   GameState.created,
@@ -57,6 +57,8 @@ export default fp(
     if (!client) {
       return
     }
+
+    await restoreStaleNicknames()
 
     client.on('voiceStateUpdate', (before, after) => {
       if (before.channelId === after.channelId || !after.channelId) {
