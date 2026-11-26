@@ -62,36 +62,35 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
             The Discord server invite link has not been configured. Contact an administrator.
           </p>
         ) : generatedCode ? (
-          <p class="flex-1">Your active linking code is shown below.</p>
+          <p class="flex-1">Finish linking your Discord account using the details below.</p>
         ) : (
           <>
             <p class="flex-1">
               Link your Discord account to access your team's private match voice channel.
             </p>
-            <div class="flex flex-wrap items-center gap-2">
-              <a
-                class="button"
-                data-variant="darker"
-                href={inviteLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <IconBrandDiscord size={18} />
-                Join Discord server
-              </a>
-              <button
-                class="button"
-                data-variant="accent"
-                hx-post="/discord/link"
-              >
-                Generate linking code
-              </button>
-            </div>
+            <button
+              class="button"
+              data-variant="accent"
+              hx-post="/discord/link"
+            >
+              <IconBrandDiscord size={18} />
+              Link Discord
+            </button>
           </>
         )}
       </div>
       {!!generatedCode && !player.discordLink && canGenerateLinkingCode && (
         <div class="mx-5 rounded-lg border border-zinc-700 bg-zinc-900 p-4">
+          <a
+            class="button mb-4"
+            data-variant="darker"
+            href={inviteLink!}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <IconBrandDiscord size={18} />
+            Join Discord server
+          </a>
           <p class="text-sm text-zinc-400">
             Your linking code
             <span class="ml-2">
