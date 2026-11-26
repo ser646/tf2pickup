@@ -235,10 +235,19 @@ export async function syncGameNicknames(game: GameModel): Promise<void> {
 }
 
 export async function restoreStaleNicknames(): Promise<void> {
+  const discordVoiceEnabled =
+    (await configuration.get('games.voice_server_type')) === VoiceServerType.discord
   const savedPlayers = await collections.players
     .find({ discordNickname: { $exists: true } })
     .toArray()
   if (savedPlayers.length === 0) {
+    return
+  }
+
+  if (!discordVoiceEnabled) {
+    for (const player of savedPlayers) {
+      await restoreNickname(player)
+    }
     return
   }
 
