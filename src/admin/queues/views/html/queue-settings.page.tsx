@@ -71,7 +71,9 @@ export async function QueueSettingsPage(props: { queue: QueueModel }) {
                   <span class="hidden group-has-checked:inline-block">
                     Players can select additional classes and may be moved between slots automatically
                   </span>
-                  <span class="group-has-checked:hidden">Players join by clicking an individual slot, as before</span>
+                  <span class="group-has-checked:hidden">
+                    Players join by clicking an individual slot, as before
+                  </span>
                 </dd>
               </dl>
               <Switch
