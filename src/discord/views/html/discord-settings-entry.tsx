@@ -39,7 +39,7 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
           <>
             <div class="flex-1">
               <p>Discord account linked</p>
-              <p class="text-sm text-zinc-400">
+              <p class="text-sm text-zinc-400" safe>
                 Linked on {player.discordLink.linkedAt.toLocaleDateString()}
               </p>
             </div>
