@@ -10,26 +10,26 @@ describe('Discord linking code encryption', () => {
   it('round-trips a linking code', async () => {
     const code = '0123456789ABCDEF01234567'
 
-    await expect(encryptLinkingCode(code).then(decryptLinkingCode)).resolves.toBe(code)
+    expect(decryptLinkingCode(encryptLinkingCode(code))).toBe(code)
   })
 
   it('uses a fresh nonce for each encryption', async () => {
     const code = '0123456789ABCDEF01234567'
 
-    const first = await encryptLinkingCode(code)
-    const second = await encryptLinkingCode(code)
+    const first = encryptLinkingCode(code)
+    const second = encryptLinkingCode(code)
 
     expect(second).not.toBe(first)
-    await expect(decryptLinkingCode(first)).resolves.toBe(code)
-    await expect(decryptLinkingCode(second)).resolves.toBe(code)
+    expect(decryptLinkingCode(first)).toBe(code)
+    expect(decryptLinkingCode(second)).toBe(code)
   })
 
   it('rejects tampered ciphertext', async () => {
-    const encrypted = await encryptLinkingCode('0123456789ABCDEF01234567')
+    const encrypted = encryptLinkingCode('0123456789ABCDEF01234567')
     const [iv, tag, ciphertext] = encrypted.split('.')
     const tamperedCiphertext = `${ciphertext![0] === 'A' ? 'B' : 'A'}${ciphertext!.slice(1)}`
     const tampered = [iv, tag, tamperedCiphertext].join('.')
 
-    await expect(decryptLinkingCode(tampered)).rejects.toThrow()
+    expect(() => decryptLinkingCode(tampered)).toThrow()
   })
 })
