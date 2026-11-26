@@ -29,3 +29,5 @@ jobs:
             git commit -m "[format] Apply Prettier to multi-class changes"
             git push
           fi
+
+# Temporary one-off formatter run.
