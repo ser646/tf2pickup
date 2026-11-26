@@ -75,7 +75,7 @@ describe('ClassPreferences', () => {
     expect(html.querySelector('button[data-class-primary-join="scout-1"]')).not.toBeNull()
   })
 
-  it('allows availability for a class whose slots are all occupied', () => {
+  it('keeps alternate availability disabled until the player has joined a slot', () => {
     const slots = [
       {
         queue: new ObjectId() as QueueId,
@@ -98,7 +98,7 @@ describe('ClassPreferences', () => {
     )
 
     expect(html.querySelector('button[data-class-primary-join="scout-1"]')).not.toBeNull()
-    expect(html.querySelector('input[name="classes"][value="scout"][disabled]')).toBeNull()
+    expect(html.querySelector('input[name="classes"][value="scout"][disabled]')).not.toBeNull()
   })
 
   it('reflects saved availability and uses the existing slot for updates', () => {
