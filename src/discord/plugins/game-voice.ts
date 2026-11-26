@@ -45,7 +45,6 @@ export default fp(
         if (game.discordVoiceChannels) {
           await gameVoice.sync(game)
           await syncGameNicknames(game)
-          await syncGameNicknames(game)
         } else {
           await gameVoice.open(game)
           await syncGameNicknames(game)
@@ -75,6 +74,7 @@ export default fp(
       safe(async ({ game }) => {
         if ((await configuration.get('games.voice_server_type')) === VoiceServerType.discord) {
           await gameVoice.open(game)
+          await syncGameNicknames(game)
         }
       }),
     )
@@ -97,6 +97,7 @@ export default fp(
       safe(async ({ game }) => {
         if ((await configuration.get('games.voice_server_type')) === VoiceServerType.discord) {
           await gameVoice.sync(game)
+          await syncGameNicknames(game)
         }
       }),
     )
@@ -127,6 +128,7 @@ export default fp(
         }
         if (game && activeGameStates.includes(game.state)) {
           await gameVoice.sync(game)
+          await syncGameNicknames(game)
         }
       }),
     )
@@ -135,6 +137,7 @@ export default fp(
       'game:ended',
       safe(async ({ game }) => {
         await gameVoice.close(game)
+        await syncGameNicknames(game)
       }),
     )
 
