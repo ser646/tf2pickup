@@ -21,7 +21,7 @@ vi.mock('../../pre-ready', () => ({ preReady: { start: vi.fn() } }))
 vi.mock('../get', () => ({ get: vi.fn() }))
 vi.mock('../get-state', () => ({ getState: vi.fn() }))
 vi.mock('../../configuration', () => ({
-  configuration: { get: vi.fn().mockResolvedValue({ '6v6': { scout: 2, soldier: 2 } }) },
+  configuration: { get: vi.fn() },
 }))
 vi.mock('./join-blocker', () => ({ joinBlocker: vi.fn().mockReturnValue(null) }))
 vi.mock('./vacate-slot', () => ({ vacateSlot: vi.fn() }))
@@ -33,12 +33,14 @@ vi.mock('../queue-command', () => ({
 const emit = vi.fn()
 
 import { ObjectId } from 'mongodb'
+import { configuration } from '../../configuration'
 import { collections } from '../../database/collections'
 import type { QueueId } from '../../database/models/queue.model'
 import type { QueueSlotModel } from '../../database/models/queue-slot.model'
 import { QueueState } from '../../database/models/queue-state.model'
 import { players } from '../../players'
 import type { SteamId64 } from '../../shared/types/steam-id-64'
+import { VoiceServerType } from '../../shared/types/voice-server-type'
 import { Tf2ClassName } from '../../shared/types/tf2-class-name'
 import { get } from '../get'
 import { getState } from '../get-state'
@@ -92,6 +94,12 @@ function mockUpdates(slots: DbSlot[]) {
 describe('join()', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(configuration.get).mockImplementation(
+      async key =>
+        (key === 'games.default_player_skill'
+          ? { '6v6': { scout: 2, soldier: 2 } }
+          : VoiceServerType.none) as never,
+    )
     vi.mocked(get).mockResolvedValue({
       enabled: true,
       requireVerification: false,
@@ -269,6 +277,7 @@ describe('join()', () => {
       expect.objectContaining({ gameClass: Tf2ClassName.scout }),
       expect.anything(),
       { scout: 2, soldier: 2 },
+      false,
     )
   })
 
