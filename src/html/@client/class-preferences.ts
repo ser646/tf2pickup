@@ -1,4 +1,5 @@
 let pendingClassPreferences: string | undefined
+let pendingClassPreferencesPath: string | undefined
 
 function savePendingClassPreferences(form: HTMLFormElement) {
   const selectedClasses = new Set(
@@ -7,10 +8,16 @@ function savePendingClassPreferences(form: HTMLFormElement) {
     ),
   )
   pendingClassPreferences = JSON.stringify([...selectedClasses])
+  pendingClassPreferencesPath = window.location.pathname
 }
 
 function restorePendingClassPreferences(form: HTMLFormElement) {
   if (pendingClassPreferences === undefined) {
+    return
+  }
+  if (pendingClassPreferencesPath !== window.location.pathname) {
+    pendingClassPreferences = undefined
+    pendingClassPreferencesPath = undefined
     return
   }
 
@@ -57,6 +64,7 @@ document.addEventListener('click', event => {
 
   // The class name itself selects the primary class. Checked boxes are additional classes.
   pendingClassPreferences = undefined
+  pendingClassPreferencesPath = undefined
   submitClassSelection(form, button.dataset.classPrimaryJoin)
 })
 
@@ -89,6 +97,7 @@ document.addEventListener('change', event => {
   if (joinSlot) {
     // The player's availability is now being submitted to the server.
     pendingClassPreferences = undefined
+    pendingClassPreferencesPath = undefined
     submitClassSelection(form, joinSlot)
   } else {
     // Keep local selections outside the form: HTMX can replace the entire form on a WS update.
