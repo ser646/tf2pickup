@@ -46,11 +46,7 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
                 Linked on {player.discordLink.linkedAt.toLocaleDateString()}
               </p>
             </div>
-            <button
-              class="button"
-              data-variant="darker"
-              hx-post="/discord/link/unlink"
-            >
+            <button class="button" data-variant="darker" hx-post="/discord/link/unlink">
               Unlink
             </button>
           </>
@@ -69,11 +65,7 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
             <p class="flex-1">
               Link your Discord account to access your team's private match voice channel.
             </p>
-            <button
-              class="button"
-              data-variant="accent"
-              hx-post="/discord/link"
-            >
+            <button class="button" data-variant="accent" hx-post="/discord/link">
               <IconBrandDiscord size={18} />
               Link Discord
             </button>
@@ -99,21 +91,19 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
               <span data-countdown-until={codeExpiresAt?.getTime() ?? Date.now()}>10:00</span>
             </span>
           </p>
-          <p class="my-2 break-all font-mono text-2xl tracking-widest" safe>
+          <p class="my-2 font-mono text-2xl tracking-widest break-all" safe>
             {generatedCode}
           </p>
-          <p class="text-xs text-zinc-400">
-            This code can only be used once.
-          </p>
+          <p class="text-xs text-zinc-400">This code can only be used once.</p>
 
           <div class="mt-5 border-t border-zinc-700 pt-4">
             <p class="mb-2 font-semibold">Use this command in our Discord server</p>
             <p class="mb-3 text-sm text-zinc-400">
-              In Discord, type `/link`, select the command, and paste the value into its
-              `code` field:
+              In Discord, type `/link`, select the command, and paste the value into its `code`
+              field:
             </p>
             <div class="rounded-lg border border-zinc-700 bg-[#2b2d31] p-3">
-              <code class="break-all font-mono text-base text-white" safe>
+              <code class="font-mono text-base break-all text-white" safe>
                 /link code:{generatedCode}
               </code>
             </div>

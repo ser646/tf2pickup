@@ -16,9 +16,7 @@ export default routes(async app => {
       }
       reply.header('Cache-Control', 'no-store')
 
-      return reply.html(
-        await DiscordSettingsEntry({ steamId: request.user.player.steamId }),
-      )
+      return reply.html(await DiscordSettingsEntry({ steamId: request.user.player.steamId }))
     })
     .post('/', async (request, reply) => {
       if (!request.user) {

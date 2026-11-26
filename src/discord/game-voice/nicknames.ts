@@ -192,9 +192,7 @@ export async function syncGameNicknames(game: GameModel): Promise<void> {
 
   const [playersInGame, previouslySynced] = await Promise.all([
     slotsBySteamId.size > 0
-      ? collections.players
-          .find({ steamId: { $in: [...slotsBySteamId.keys()] } })
-          .toArray()
+      ? collections.players.find({ steamId: { $in: [...slotsBySteamId.keys()] } }).toArray()
       : Promise.resolve([]),
     collections.players
       .find({ 'discordNickname.guildId': guildId, 'discordNickname.gameNumber': game.number })
@@ -241,12 +239,7 @@ export async function restoreStaleNicknames(): Promise<void> {
     .find({
       number: { $in: savedPlayers.map(player => player.discordNickname!.gameNumber) },
       state: {
-        $in: [
-          GameState.created,
-          GameState.configuring,
-          GameState.launching,
-          GameState.started,
-        ],
+        $in: [GameState.created, GameState.configuring, GameState.launching, GameState.started],
       },
     })
     .toArray()
