@@ -130,7 +130,7 @@ async function Queue(props: {
               actor={actor}
               defaultSkill={defaultSkill}
               gameClass={position.gameClass}
-              headingId={'queue-class-preference-' + position.gameClass + '-' + position.classIndex}
+              headingId={`queue-class-preference-${position.gameClass}-${position.classIndex}`}
               includeInForm={
                 positions.findIndex(candidate => candidate.gameClass === position.gameClass) ===
                 index
