@@ -51,6 +51,7 @@ export default routes(async app => {
       const latestPlayer = await players.bySteamId(steamId, [
         'discordLink',
         'discordLinkCode.hash',
+        'discordLinkCode.expiresAt',
       ])
 
       return reply.html(
@@ -59,6 +60,10 @@ export default routes(async app => {
           generatedCode:
             !latestPlayer.discordLink && latestPlayer.discordLinkCode?.hash === hash
               ? code
+              : undefined,
+          codeExpiresAt:
+            !latestPlayer.discordLink && latestPlayer.discordLinkCode?.hash === hash
+              ? latestPlayer.discordLinkCode.expiresAt
               : undefined,
         }),
       )
