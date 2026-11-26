@@ -115,6 +115,7 @@ export default fp(
           return
         }
 
+        const discordLinkChanged = before.discordLink?.userId !== after.discordLink?.userId
         let game = after.activeGame
           ? await collections.games.findOne({ number: after.activeGame })
           : null
@@ -130,7 +131,9 @@ export default fp(
           })
         }
         if (game && activeGameStates.includes(game.state)) {
-          await gameVoice.sync(game)
+          if (discordLinkChanged) {
+            await gameVoice.sync(game)
+          }
           await syncGameNicknames(game)
         }
       }),
