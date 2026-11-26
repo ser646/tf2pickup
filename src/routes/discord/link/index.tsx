@@ -43,7 +43,7 @@ export default routes(async app => {
 
       const code = randomBytes(12).toString('hex').toUpperCase()
       const hash = createHash('sha256').update(code).digest('hex')
-      const encryptedCode = await encryptLinkingCode(code)
+      const encryptedCode = encryptLinkingCode(code)
       const expiresAt = addMinutes(new Date(), 10)
 
       // Re-check inside the player mutex so concurrent requests cannot replace
