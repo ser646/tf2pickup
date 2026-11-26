@@ -292,6 +292,7 @@ describe('queuePage.updateAll', () => {
       'ban-alerts',
       'queue-slot-soldier-0',
       'queue-class-preferences',
+      'queue-class-preferences',
     ])
     expect(await received(bobOnUltiduo)).toEqual([])
   })
@@ -306,6 +307,9 @@ describe('queuePage.render', () => {
     expect(await received(socket)).toEqual([
       'queue-slot-soldier-0',
       'queue-slot-soldier-1',
+      'queue-class-preferences',
+      'queue-class-preferences',
+      'queue-class-preferences',
       'queue-class-preferences',
       'pre-ready-up-button',
       'queue-current-player-count',
