@@ -26,9 +26,10 @@ Only one Discord server may be configured as the match voice server. The categor
 
 Each player must sign in to tf2pickup through Steam and open **Settings → Integrations → Discord**.
 
-1. Generate a one-time code on the website.
-2. In the configured Discord server, run `/link` and provide the code.
-3. The code expires after ten minutes and can only be used once.
+1. Join the Discord server using the invite link shown in **Settings → Integrations → Discord**.
+2. Generate a one-time code on the website.
+3. In the configured Discord server, run `/link` and provide the code in its `code` field.
+4. The code expires after ten minutes and can only be used once.
 
 The website stores only a SHA-256 hash of the pending code. A Discord account can be linked to only one Steam account, and a Steam account can have only one linked Discord account.
 
