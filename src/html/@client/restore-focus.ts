@@ -20,7 +20,7 @@ htmx.on('htmx:wsBeforeMessage', () => {
   const queueSlot = focused?.closest<HTMLElement>('.queue-slot[id^="queue-slot-"]')
   focusedQueueSlotId =
     primaryButton?.dataset.classPrimaryJoin ??
-    queueSlot?.id.replace(/^queue-slot-/, undefined)
+    queueSlot?.id.replace(/^queue-slot-/, '')
 })
 
 htmx.on('htmx:wsAfterMessage', () => {
