@@ -151,14 +151,14 @@ export class QueuePage {
       return await this.slot(slot).isReady()
     }
 
-    if (/games\\/(\\d+)/.test(this.page.url()) || (await isPlayerReady())) {
+    if (/games\/(\d+)/.test(this.page.url()) || (await isPlayerReady())) {
       return
     }
     const readyUpButton = this.readyUpDialog().readyUpButton()
     await expect
       .poll(
         async () => {
-          if (/games\\/(\\d+)/.test(this.page.url())) {
+          if (/games\/(\d+)/.test(this.page.url())) {
             return 'game'
           }
           if (await isPlayerReady()) {
@@ -173,7 +173,7 @@ export class QueuePage {
       )
       .not.toBe('waiting')
 
-    if (/games\\/(\\d+)/.test(this.page.url()) || (await isPlayerReady())) {
+    if (/games\/(\d+)/.test(this.page.url()) || (await isPlayerReady())) {
       return
     }
     await readyUpButton.click()
