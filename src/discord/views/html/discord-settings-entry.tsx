@@ -7,6 +7,7 @@ import { IconBrandDiscord } from '../../../html/components/icons'
 export async function DiscordSettingsEntry(props: {
   steamId: SteamId64
   generatedCode?: string
+  codeExpiresAt?: Date
 }) {
   const player = await players.bySteamId(props.steamId, ['discordLink'])
   const configuredGuilds = (await configuration.get('discord.guilds')).filter(
@@ -51,6 +52,10 @@ export async function DiscordSettingsEntry(props: {
         ) : !inviteLink ? (
           <p class="flex-1 text-sm text-zinc-300">
             The Discord server invite link has not been configured. Contact an administrator.
+          </p>
+        ) : props.generatedCode ? (
+          <p class="flex-1">
+            Follow the instructions below to link your Discord account.
           </p>
         ) : (
           <>
@@ -127,7 +132,9 @@ export async function DiscordSettingsEntry(props: {
               Join Discord server
             </button>
           )}
-          <p class="mt-4 text-sm text-zinc-400">Your one-time code (expires in 10 minutes):</p>
+          <p class="mt-4 text-sm text-zinc-400">
+            Your one-time code. Expires in <span data-countdown={Math.max(0, (props.codeExpiresAt?.getTime() ?? Date.now() + 600_000) - Date.now())}>10:00</span>.
+          </p>
           <p class="my-2 break-all font-mono text-2xl tracking-widest" safe>
             {props.generatedCode}
           </p>
