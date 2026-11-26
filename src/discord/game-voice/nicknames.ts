@@ -9,7 +9,7 @@ import { discord } from '../index'
 
 const activeSlotStatuses = [SlotStatus.active, SlotStatus.waitingForSubstitute]
 
-type NicknameState = {
+interface NicknameState {
   guildId: string
   userId: string
   gameNumber: GameNumber
