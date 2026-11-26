@@ -24,10 +24,18 @@ test('a queue cleared while readying up starts its next ready-up afresh @6v6 @9v
   // The admin plays too, so their ready-up dialog is in the way: they ready up first. They may
   // have joined last (readied automatically), or been kicked by a slow run's own timeout.
   const clear = async () => {
-    const admin = await users.getAdmin().queuePage()
-    const slot = admin.slot(desiredSlots.get(users.getAdmin().playerName)!)
+    const adminUser = users.getAdmin()
+    const admin = await adminUser.queuePage()
     await admin.goto()
-    if ((await slot.isTaken()) && !(await slot.isReady())) {
+    await expect(admin.header()).toContainText(`${players.length}/${players.length}`)
+
+    // The class-heading UI lets the matcher choose either slot of a class, so find
+    // the admin by their actual membership rather than assuming a specific slot ID.
+    const ownSlot = admin.page.locator(`.queue-slot[data-player="${adminUser.steamId}"]`)
+    if (
+      (await ownSlot.count()) > 0 &&
+      (await ownSlot.locator('.player-info').getAttribute('data-player-ready')) !== 'true'
+    ) {
       await admin.readyUpDialog().readyUp()
       await expect(admin.readyUpDialog().readyUpButton()).not.toBeVisible()
     }
