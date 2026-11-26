@@ -2,11 +2,7 @@ import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'node:
 import { environment } from '../environment'
 
 const algorithm = 'aes-256-gcm'
-const key = scryptSync(
-  environment.KEY_STORE_PASSPHRASE,
-  'tf2pickup:discord-link-code:v1',
-  32,
-)
+const key = scryptSync(environment.KEY_STORE_PASSPHRASE, 'tf2pickup:discord-link-code:v1', 32)
 
 export function encryptLinkingCode(code: string): string {
   const iv = randomBytes(12)
