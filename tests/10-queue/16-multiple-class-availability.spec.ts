@@ -8,7 +8,9 @@ import { defaultQueueSlug } from '../queue-slots'
 const test = mergeTests(authUsers, waitForEmptyQueue)
 
 async function setMultiClassEnabled(
-  users: { getAdmin: () => { page: () => Promise<import('@playwright/test').Page> } },
+  users: {
+    getAdmin: () => { page: () => Promise<import('@playwright/test').Page> }
+  },
   enabled: boolean,
 ) {
   const admin = await users.getAdmin().page()
