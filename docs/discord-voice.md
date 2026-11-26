@@ -39,7 +39,7 @@ The website stores only a SHA-256 hash of the pending code. A Discord account ca
 - Each channel's permission-overwrite list is rebuilt from scratch: @everyone is denied View Channel, Connect, Move Members, and Manage Channels; old role-specific grants are removed; currently assigned, linked players receive member-specific View Channel and Connect allows; and the bot receives the required member-specific permissions. Server administrators retain Discord's administrator override.
 - When the match starts, players already in **LOBBY** are moved to their team channel.
 - Players joining **LOBBY** during a started match are moved automatically.
-- Roster changes and substitutions update the channel overwrites and synchronize linked players' server nicknames to their tf2pickup name with a class emoji. The bot saves each player's previous server nickname and restores it when they leave the match or the match ends. Players removed from a team lose access immediately and are returned to **LOBBY**.
+- Roster changes and substitutions update the channel overwrites and synchronize linked players' server nicknames to their tf2pickup display name (subject to Discord's 32-character nickname limit). The bot saves each player's previous server nickname and restores it when they leave the match or the match ends. Players removed from a team lose access immediately and are returned to **LOBBY**.
 - When the game ends, players are returned to **LOBBY** and the two match channels are deleted. **LOBBY** is never deleted.
 - On application startup, active games are reconciled and leftover channels for ended or interrupted games are cleaned up.
 - Temporary Discord API failures during channel creation, roster synchronization, or cleanup are retried automatically.
