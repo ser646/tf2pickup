@@ -1,8 +1,9 @@
 import { collections } from '../../database/collections'
-import { GameState, type GameModel } from '../../database/models/game.model'
+import { GameState, type GameModel, type GameNumber } from '../../database/models/game.model'
 import { SlotStatus } from '../../database/models/game-slot.model'
 import { logger } from '../../logger'
 import { Tf2ClassName } from '../../shared/types/tf2-class-name'
+import type { SteamId64 } from '../../shared/types/steam-id-64'
 import { VoiceServerType } from '../../shared/types/voice-server-type'
 import { configuration } from '../../configuration'
 import { discord } from '../index'
@@ -24,7 +25,7 @@ const activeSlotStatuses = [SlotStatus.active, SlotStatus.waitingForSubstitute]
 type NicknameState = {
   guildId: string
   userId: string
-  gameNumber: number
+  gameNumber: GameNumber
   originalNickname: string | null
   appliedNickname: string
 }
@@ -41,7 +42,7 @@ function nicknameFor(name: string, gameClass: Tf2ClassName): string {
 }
 
 async function restoreNickname(player: {
-  steamId: string
+  steamId: SteamId64
   discordNickname?: NicknameState
 }): Promise<void> {
   const state = player.discordNickname
@@ -94,7 +95,7 @@ async function restoreNickname(player: {
 
 async function applyNickname(
   player: {
-    steamId: string
+    steamId: SteamId64
     name: string
     discordLink?: { userId: string }
     discordNickname?: NicknameState
