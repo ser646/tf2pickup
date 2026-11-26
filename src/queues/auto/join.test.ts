@@ -256,7 +256,7 @@ describe('join()', () => {
     }
     vi.mocked(collections.queueSlots.find).mockReturnValue(cursor([slot, soldierSlot]) as never)
     mockUpdates([slot, soldierSlot])
-    vi.mocked(joinBlocker).mockImplementation((_player, target, _settings, _skill) =>
+    vi.mocked(joinBlocker).mockImplementation((_player, target) =>
       target.gameClass === Tf2ClassName.soldier
         ? 'You do not meet skill requirements to play soldier'
         : null,
