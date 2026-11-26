@@ -94,6 +94,7 @@ describe('join()', () => {
     vi.mocked(get).mockResolvedValue({
       enabled: true,
       requireVerification: false,
+      allowMultipleClasses: true,
       skillThreshold: null,
       gamemode: '6v6',
       launchMode: 'auto',
