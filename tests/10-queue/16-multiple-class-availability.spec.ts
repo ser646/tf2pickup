@@ -7,7 +7,10 @@ import { defaultQueueSlug } from '../queue-slots'
 
 const test = mergeTests(authUsers, waitForEmptyQueue)
 
-async function setMultiClassEnabled(users: { getAdmin: () => { page: () => Promise<import('@playwright/test').Page> } }, enabled: boolean) {
+async function setMultiClassEnabled(
+  users: { getAdmin: () => { page: () => Promise<import('@playwright/test').Page> } },
+  enabled: boolean,
+) {
   const admin = await users.getAdmin().page()
   await admin.goto(`/admin/queues/${defaultQueueSlug()}`)
   const toggle = admin.getByLabel('Allow multiple classes')
@@ -56,7 +59,9 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
 
   // Alternate classes cannot be selected before the player has joined a slot.
   for (const page of [flexible1Page, flexible2Page]) {
-    await expect(page.page.locator('[data-class-preference][value="scout"]').first()).toBeDisabled()
+    await expect(
+      page.page.locator('[data-class-preference][value="scout"]').first(),
+    ).toBeDisabled()
   }
 
   // Join as Medic first; only then can the player opt into Scout as an alternate class.
