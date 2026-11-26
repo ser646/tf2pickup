@@ -5,11 +5,6 @@ import { discord } from '../../index'
 import { IconBrandDiscord } from '../../../html/components/icons'
 import { decryptLinkingCode } from '../../linking-code'
 
-const stepNumberClass =
-  'flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold'
-const commandSuggestionClass =
-  'inline-flex items-center gap-2 rounded bg-[#4752c4] px-3 py-2 font-mono text-sm text-white'
-
 export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
   const player = await players.bySteamId(props.steamId, [
     'discordLink',
@@ -110,56 +105,13 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
           </p>
 
           <div class="mt-5 border-t border-zinc-700 pt-4">
-            <p class="mb-3 font-semibold">How to link your account in Discord</p>
-            <ol class="space-y-4">
-              <li class="flex items-start gap-3">
-                <span class={stepNumberClass}>1</span>
-                <div class="min-w-0 flex-1">
-                  <p class="mb-2 text-sm">
-                    Open our Discord server and type <code>/link</code> in a text channel.
-                  </p>
-                  <div class="rounded-lg border border-zinc-700 bg-[#313338] p-3">
-                    <p class="mb-2 text-xs text-zinc-400">MESSAGE</p>
-                    <div class={commandSuggestionClass}>
-                      <span class="rounded bg-white/20 px-1">/</span> link
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li class="flex items-start gap-3">
-                <span class={stepNumberClass}>2</span>
-                <div class="min-w-0 flex-1">
-                  <p class="mb-2 text-sm">
-                    Select the <code>/link</code> command from the suggestions.
-                  </p>
-                  <div class="rounded-lg border border-zinc-700 bg-[#2b2d31] p-3">
-                    <div class="flex items-center gap-2 text-sm text-white">
-                      <span class="rounded bg-[#4752c4] px-2 py-1 font-mono">/</span>
-                      <span class="font-semibold">link</span>
-                      <span class="text-xs text-zinc-400">Link your game account</span>
-                    </div>
-                  </div>
-                </div>
-              </li>
-              <li class="flex items-start gap-3">
-                <span class={stepNumberClass}>3</span>
-                <div class="min-w-0 flex-1">
-                  <p class="mb-2 text-sm">
-                    Paste your code into the <code>code</code> field and send the command.
-                  </p>
-                  <div class="rounded-lg border border-zinc-700 bg-[#2b2d31] p-3">
-                    <div class="mb-2 flex items-center gap-2 text-sm text-white">
-                      <span class="rounded bg-[#4752c4] px-2 py-1 font-mono">/</span>
-                      <span class="font-semibold">link</span>
-                    </div>
-                    <div class="rounded border border-[#5865f2] bg-[#1e1f22] p-2">
-                      <p class="mb-1 text-xs text-zinc-400">code</p>
-                      <p class="break-all font-mono text-sm text-white" safe>{generatedCode}</p>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </ol>
+            <p class="mb-2 font-semibold">Run this command in our Discord server</p>
+            <p class="mb-3 text-sm text-zinc-400">
+              Copy the entire command below and enter it in a text channel on the server.
+            </p>
+            <div class="rounded-lg border border-zinc-700 bg-[#2b2d31] p-3">
+              <code class="break-all font-mono text-base text-white" safe>/link {generatedCode}</code>
+            </div>
           </div>
         </div>
       )}
