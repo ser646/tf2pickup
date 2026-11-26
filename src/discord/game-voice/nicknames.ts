@@ -57,7 +57,14 @@ async function restoreNickname(player: {
   try {
     const guild = await client.guilds.fetch(state.guildId)
     const member = await guild.members.fetch(state.userId)
-    if (member.nickname === state.appliedNickname && member.manageable) {
+    if (member.nickname === state.appliedNickname) {
+      if (!member.manageable) {
+        logger.warn(
+          { steamId: player.steamId, userId: state.userId, guildId: state.guildId },
+          'cannot restore Discord nickname yet because the bot role is too low',
+        )
+        return
+      }
       await member.setNickname(
         state.originalNickname,
         'Restore Discord nickname after tf2pickup match',
