@@ -23,7 +23,8 @@ export default routes(app => {
     })
     .post('/', async (request, reply) => {
       if (!request.user) {
-        return reply.redirect('/auth/steam')
+        reply.redirect('/auth/steam')
+        return
       }
       reply.header('Cache-Control', 'no-store')
 
@@ -86,7 +87,8 @@ export default routes(app => {
     })
     .post('/unlink', async (request, reply) => {
       if (!request.user) {
-        return reply.redirect('/auth/steam')
+        reply.redirect('/auth/steam')
+        return
       }
       reply.header('Cache-Control', 'no-store')
 
@@ -95,6 +97,6 @@ export default routes(app => {
         $unset: { discordLink: 1, discordLinkCode: 1 },
       })
 
-      return reply.html(await DiscordSettingsEntry({ steamId }))
+      reply.html(await DiscordSettingsEntry({ steamId }))
     })
 })
