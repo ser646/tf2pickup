@@ -75,16 +75,7 @@ export default routes(async app => {
           }
         })
 
-        return reply.html(
-          await DiscordSettingsEntry({
-            steamId,
-            generatedCode:
-              !updatedPlayer.discordLink && updatedPlayer.discordLinkCode?.hash === hash
-                ? code
-                : undefined,
-            codeExpiresAt: updatedPlayer.discordLinkCode?.expiresAt,
-          }),
-        )
+        return reply.html(await DiscordSettingsEntry({ steamId }))
       },
     )
     .post('/unlink', async (request, reply) => {
