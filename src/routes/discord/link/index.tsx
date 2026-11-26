@@ -6,13 +6,14 @@ import { players } from '../../../players'
 import { configuration } from '../../../configuration'
 import { discord } from '../../../discord'
 import { DiscordSettingsEntry } from '../../../discord/views/html/discord-settings-entry'
+import { encryptLinkingCode } from '../../../discord/linking-code'
 
 export default routes(async app => {
   app
     .get('/', async (_request, reply) => reply.redirect('/settings'))
     .post(
       '/',
-      { schema: { body: z.object({ existingCode: z.string().optional() }) } },
+      { schema: { body: z.object({}).default({}) } },
       async (request, reply) => {
       if (!request.user) {
         return reply.redirect('/auth/steam')
@@ -30,68 +31,44 @@ export default routes(async app => {
       }
 
       const steamId = request.user.player.steamId
-      const player = await players.bySteamId(steamId, ['discordLink'])
-      if (player.discordLink) {
-        return reply.html(await DiscordSettingsEntry({ steamId }))
-      }
-
-      const existingCode = request.body.existingCode
-      const existingHash = existingCode
-        ? createHash('sha256').update(existingCode).digest('hex')
-        : undefined
-      const currentPlayer = await players.bySteamId(steamId, [
-        'discordLink',
-        'discordLinkCode.hash',
-        'discordLinkCode.expiresAt',
-      ])
-      if (
-        existingCode &&
-        currentPlayer.discordLinkCode?.hash === existingHash &&
-        currentPlayer.discordLinkCode.expiresAt > new Date()
-      ) {
-        return reply.html(
-          await DiscordSettingsEntry({
-            steamId,
-            generatedCode: existingCode,
-            codeExpiresAt: currentPlayer.discordLinkCode.expiresAt,
-          }),
-        )
-      }
-
       const code = randomBytes(12).toString('hex').toUpperCase()
       const hash = createHash('sha256').update(code).digest('hex')
-      await players.update(steamId, before => {
+      const encryptedCode = await encryptLinkingCode(code)
+      const expiresAt = addMinutes(new Date(), 10)
+
+      // Keep a still-valid code. The encrypted value lets the settings page restore it
+      // after a reload without storing the plaintext code in MongoDB.
+      const updatedPlayer = await players.update(steamId, before => {
         if (before.discordLink) {
           return { $unset: { discordLinkCode: 1 } }
+        }
+
+        if (
+          before.discordLinkCode?.encryptedCode &&
+          before.discordLinkCode.expiresAt > new Date()
+        ) {
+          return { $set: { discordLinkCode: before.discordLinkCode } }
         }
 
         return {
           $set: {
             discordLinkCode: {
               hash,
-              expiresAt: addMinutes(new Date(), 10),
+              encryptedCode,
+              expiresAt,
             },
           },
         }
       })
 
-      const latestPlayer = await players.bySteamId(steamId, [
-        'discordLink',
-        'discordLinkCode.hash',
-        'discordLinkCode.expiresAt',
-      ])
-
       return reply.html(
         await DiscordSettingsEntry({
           steamId,
           generatedCode:
-            !latestPlayer.discordLink && latestPlayer.discordLinkCode?.hash === hash
+            !updatedPlayer.discordLink && updatedPlayer.discordLinkCode?.hash === hash
               ? code
               : undefined,
-          codeExpiresAt:
-            !latestPlayer.discordLink && latestPlayer.discordLinkCode?.hash === hash
-              ? latestPlayer.discordLinkCode.expiresAt
-              : undefined,
+          codeExpiresAt: updatedPlayer.discordLinkCode?.expiresAt,
         }),
       )
     })
