@@ -1,19 +1,20 @@
+let pendingClassPreferences: string | undefined
+
 function savePendingClassPreferences(form: HTMLFormElement) {
   const selectedClasses = new Set(
     [...form.querySelectorAll<HTMLInputElement>('[data-class-preference]:checked')].map(
       input => input.value,
     ),
   )
-  form.dataset.classPreferencesPending = JSON.stringify([...selectedClasses])
+  pendingClassPreferences = JSON.stringify([...selectedClasses])
 }
 
 function restorePendingClassPreferences(form: HTMLFormElement) {
-  const pending = form.dataset.classPreferencesPending
-  if (!pending) {
+  if (pendingClassPreferences === undefined) {
     return
   }
 
-  const selectedClasses = new Set<string>(JSON.parse(pending))
+  const selectedClasses = new Set<string>(JSON.parse(pendingClassPreferences))
   const inputs = form.querySelectorAll<HTMLInputElement>('[data-class-preference]')
   for (const input of inputs) {
     input.checked = !input.disabled && selectedClasses.has(input.value)
@@ -55,7 +56,7 @@ document.addEventListener('click', event => {
   }
 
   // The class name itself selects the primary class. Checked boxes are additional classes.
-  form.dataset.classPreferencesPending = ''
+  pendingClassPreferences = undefined
   submitClassSelection(form, button.dataset.classPrimaryJoin)
 })
 
@@ -88,10 +89,10 @@ document.addEventListener('change', event => {
   const joinSlot = target.dataset.classPreferenceJoin
   if (joinSlot) {
     // The player's availability is now being submitted to the server.
-    form.dataset.classPreferencesPending = ''
+    pendingClassPreferences = undefined
     submitClassSelection(form, joinSlot)
   } else {
-    // Preserve selections made before joining when another player's update refreshes headings.
+    // Keep local selections outside the form: HTMX can replace the entire form on a WS update.
     savePendingClassPreferences(form)
   }
 })
