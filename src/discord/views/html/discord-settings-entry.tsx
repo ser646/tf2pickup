@@ -3,13 +3,24 @@ import { players } from '../../../players'
 import { configuration } from '../../../configuration'
 import { discord } from '../../index'
 import { IconBrandDiscord } from '../../../html/components/icons'
+import { decryptLinkingCode } from '../../linking-code'
 
 export async function DiscordSettingsEntry(props: {
   steamId: SteamId64
   generatedCode?: string
   codeExpiresAt?: Date
 }) {
-  const player = await players.bySteamId(props.steamId, ['discordLink'])
+  const player = await players.bySteamId(props.steamId, [
+    'discordLink',
+    'discordLinkCode.encryptedCode',
+    'discordLinkCode.expiresAt',
+  ])
+  const codeExpiresAt = player.discordLinkCode?.expiresAt
+  const generatedCode =
+    props.generatedCode ??
+    (player.discordLinkCode?.encryptedCode && codeExpiresAt && codeExpiresAt > new Date()
+      ? await decryptLinkingCode(player.discordLinkCode.encryptedCode)
+      : undefined)
   const configuredGuilds = (await configuration.get('discord.guilds')).filter(
     ({ voiceServer }) => voiceServer !== undefined,
   )
@@ -53,18 +64,9 @@ export async function DiscordSettingsEntry(props: {
           <p class="flex-1 text-sm text-zinc-300">
             The Discord server invite link has not been configured. Contact an administrator.
           </p>
-        ) : props.generatedCode ? (
+        ) : generatedCode ? (
           <>
             <p class="flex-1">Your active linking code is shown below.</p>
-            <input id="discord-link-existing-code" type="hidden" name="existingCode" value={props.generatedCode} />
-            <button
-              class="button"
-              data-variant="accent"
-              hx-post="/discord/link"
-              hx-include="#discord-link-existing-code"
-            >
-              Show current code
-            </button>
           </>
         ) : (
           <>
@@ -93,14 +95,14 @@ export async function DiscordSettingsEntry(props: {
           </>
         )}
       </div>
-      {props.generatedCode && !player.discordLink && canGenerateLinkingCode && (
+      {generatedCode && !player.discordLink && canGenerateLinkingCode && (
         <div class="mx-5 rounded-lg border border-zinc-700 bg-zinc-900 p-4">
           <p class="text-sm text-zinc-400">
             Your linking code
-            <span class="ml-2">· Expires in <span data-countdown={Math.max(0, (props.codeExpiresAt?.getTime() ?? Date.now() + 600_000) - Date.now())}>10:00</span></span>
+            <span class="ml-2">· Expires in <span data-countdown-until={(codeExpiresAt ?? props.codeExpiresAt ?? new Date(Date.now() + 600_000)).getTime()}>10:00</span></span>
           </p>
           <p class="my-2 break-all font-mono text-2xl tracking-widest" safe>
-            {props.generatedCode}
+            {generatedCode}
           </p>
           <p class="text-xs text-zinc-400">
             This code can only be used once.
