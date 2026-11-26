@@ -1,4 +1,5 @@
 import { addMinutes } from 'date-fns'
+import { z } from 'zod'
 import { createHash, randomBytes } from 'node:crypto'
 import { routes } from '../../../utils/routes'
 import { players } from '../../../players'
@@ -9,7 +10,10 @@ import { DiscordSettingsEntry } from '../../../discord/views/html/discord-settin
 export default routes(async app => {
   app
     .get('/', async (_request, reply) => reply.redirect('/settings'))
-    .post('/', async (request, reply) => {
+    .post(
+      '/',
+      { schema: { body: z.object({ existingCode: z.string().optional() }) } },
+      async (request, reply) => {
       if (!request.user) {
         return reply.redirect('/auth/steam')
       }
@@ -29,6 +33,29 @@ export default routes(async app => {
       const player = await players.bySteamId(steamId, ['discordLink'])
       if (player.discordLink) {
         return reply.html(await DiscordSettingsEntry({ steamId }))
+      }
+
+      const existingCode = request.body.existingCode
+      const existingHash = existingCode
+        ? createHash('sha256').update(existingCode).digest('hex')
+        : undefined
+      const currentPlayer = await players.bySteamId(steamId, [
+        'discordLink',
+        'discordLinkCode.hash',
+        'discordLinkCode.expiresAt',
+      ])
+      if (
+        existingCode &&
+        currentPlayer.discordLinkCode?.hash === existingHash &&
+        currentPlayer.discordLinkCode.expiresAt > new Date()
+      ) {
+        return reply.html(
+          await DiscordSettingsEntry({
+            steamId,
+            generatedCode: existingCode,
+            codeExpiresAt: currentPlayer.discordLinkCode.expiresAt,
+          }),
+        )
       }
 
       const code = randomBytes(12).toString('hex').toUpperCase()
