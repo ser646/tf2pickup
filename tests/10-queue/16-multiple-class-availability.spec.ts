@@ -3,10 +3,29 @@ import { authUsers } from '../fixtures/auth-users'
 import { waitForEmptyQueue } from '../fixtures/wait-for-empty-queue'
 import { expect } from '../fixtures/expect'
 import type { QueuePage } from '../pages/queue.page'
+import { defaultQueueSlug } from '../queue-slots'
 
 const test = mergeTests(authUsers, waitForEmptyQueue)
 
+async function setMultiClassEnabled(users: { getAdmin: () => { page: () => Promise<import('@playwright/test').Page> } }, enabled: boolean) {
+  const admin = await users.getAdmin().page()
+  await admin.goto(`/admin/queues/${defaultQueueSlug()}`)
+  const toggle = admin.getByLabel('Allow multiple classes')
+  if (enabled) {
+    await toggle.check()
+  } else {
+    await toggle.uncheck()
+  }
+  await admin.getByRole('button', { name: 'Save' }).click()
+  await expect(admin.getByText('Configuration saved')).toBeVisible()
+}
+
+test.afterEach(async ({ users }) => {
+  await setMultiClassEnabled(users, false)
+})
+
 test('moves flexible players when a class specialist joins @6v6', async ({ users }) => {
+  await setMultiClassEnabled(users, true)
   const [flexible1, flexible2, medic] = users.getMany(3)
   const [flexible1Page, flexible2Page, medicPage] = (await Promise.all(
     [flexible1, flexible2, medic].map(async user => {
