@@ -53,8 +53,12 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
       const flexibleIds = [flexible1.steamId, flexible2.steamId]
       return {
         hasMedicSpecialist: assignment.medic.includes(medic.steamId),
-        flexiblePlayersInMedic: assignment.medic.filter(id => flexibleIds.some(flexibleId => flexibleId === id)).length,
-        flexiblePlayersInScout: assignment.scout.filter(id => flexibleIds.some(flexibleId => flexibleId === id)).length,
+        flexiblePlayersInMedic: assignment.medic.filter(id =>
+          flexibleIds.some(flexibleId => flexibleId === id),
+        ).length,
+        flexiblePlayersInScout: assignment.scout.filter(id =>
+          flexibleIds.some(flexibleId => flexibleId === id),
+        ).length,
       }
     })
     .toEqual({
@@ -64,8 +68,16 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
     })
 
   const assignment = await readAssignment()
-  expect(assignment.medic.filter(id => [flexible1.steamId, flexible2.steamId].includes(id ?? ''))).toHaveLength(1)
-  expect(assignment.scout.filter(id => [flexible1.steamId, flexible2.steamId].includes(id ?? ''))).toHaveLength(1)
+  expect(
+    assignment.medic.filter(id =>
+      [flexible1.steamId, flexible2.steamId].some(flexibleId => flexibleId === id),
+    ),
+  ).toHaveLength(1)
+  expect(
+    assignment.scout.filter(id =>
+      [flexible1.steamId, flexible2.steamId].some(flexibleId => flexibleId === id),
+    ),
+  ).toHaveLength(1)
 
   // Alternate availability is a hint for empty slots only, never content below a player.
   for (const slotId of ['medic-1', 'medic-2', 'scout-1', 'scout-2'] as const) {
