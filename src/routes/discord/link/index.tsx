@@ -52,7 +52,7 @@ export default routes(async app => {
 
         // Re-check inside the player mutex so concurrent requests cannot replace
         // a code that another request has just generated.
-        const updatedPlayer = await players.update(steamId, before => {
+        await players.update(steamId, before => {
           if (before.discordLink) {
             return { $unset: { discordLinkCode: 1 } }
           }
