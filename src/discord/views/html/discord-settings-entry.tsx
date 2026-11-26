@@ -5,7 +5,7 @@ import { discord } from '../../index'
 import { IconBrandDiscord } from '../../../html/components/icons'
 import { decryptLinkingCode } from '../../linking-code'
 
-export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
+const stepNumberClass =\n  'flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold'\nconst commandSuggestionClass =\n  'inline-flex items-center gap-2 rounded bg-[#4752c4] px-3 py-2 font-mono text-sm text-white'\n\nexport async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
   const player = await players.bySteamId(props.steamId, [
     'discordLink',
     'discordLinkCode.encryptedCode',
@@ -60,9 +60,7 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
             The Discord server invite link has not been configured. Contact an administrator.
           </p>
         ) : generatedCode ? (
-          <>
-            <p class="flex-1">Your active linking code is shown below.</p>
-          </>
+          <p class="flex-1">Your active linking code is shown below.</p>
         ) : (
           <>
             <p class="flex-1">
@@ -96,9 +94,7 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
             Your linking code
             <span class="ml-2">
               · Expires in{' '}
-              <span data-countdown-until={codeExpiresAt?.getTime() ?? Date.now()}>
-                10:00
-              </span>
+              <span data-countdown-until={codeExpiresAt?.getTime() ?? Date.now()}>10:00</span>
             </span>
           </p>
           <p class="my-2 break-all font-mono text-2xl tracking-widest" safe>
@@ -112,31 +108,21 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
             <p class="mb-3 font-semibold">How to link your account in Discord</p>
             <ol class="space-y-4">
               <li class="flex items-start gap-3">
-                <span
-                  class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold"
-                >
-                  1
-                </span>
+                <span class={stepNumberClass}>1</span>
                 <div class="min-w-0 flex-1">
                   <p class="mb-2 text-sm">
                     Open our Discord server and type <code>/link</code> in a text channel.
                   </p>
                   <div class="rounded-lg border border-zinc-700 bg-[#313338] p-3">
                     <p class="mb-2 text-xs text-zinc-400">MESSAGE</p>
-                    <div
-                      class="inline-flex items-center gap-2 rounded bg-[#4752c4] px-3 py-2 font-mono text-sm text-white"
-                    >
+                    <div class={commandSuggestionClass}>
                       <span class="rounded bg-white/20 px-1">/</span> link
                     </div>
                   </div>
                 </div>
               </li>
               <li class="flex items-start gap-3">
-                <span
-                  class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold"
-                >
-                  2
-                </span>
+                <span class={stepNumberClass}>2</span>
                 <div class="min-w-0 flex-1">
                   <p class="mb-2 text-sm">
                     Select the <code>/link</code> command from the suggestions.
@@ -151,11 +137,7 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
                 </div>
               </li>
               <li class="flex items-start gap-3">
-                <span
-                  class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold"
-                >
-                  3
-                </span>
+                <span class={stepNumberClass}>3</span>
                 <div class="min-w-0 flex-1">
                   <p class="mb-2 text-sm">
                     Paste your code into the <code>code</code> field and send the command.
