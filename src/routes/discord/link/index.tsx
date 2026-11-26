@@ -7,16 +7,19 @@ import { discord } from '../../../discord'
 import { DiscordSettingsEntry } from '../../../discord/views/html/discord-settings-entry'
 import { encryptLinkingCode } from '../../../discord/linking-code'
 
-export default routes(async app => {
+export default routes(app => {
   app
-    .get('/', async (_request, reply) => reply.redirect('/settings'))
+    .get('/', (_request, reply) => {
+      reply.redirect('/settings')
+    })
     .get('/status', async (request, reply) => {
       if (!request.user) {
-        return reply.redirect('/auth/steam')
+        reply.redirect('/auth/steam')
+        return
       }
       reply.header('Cache-Control', 'no-store')
 
-      return reply.html(await DiscordSettingsEntry({ steamId: request.user.player.steamId }))
+      reply.html(await DiscordSettingsEntry({ steamId: request.user.player.steamId }))
     })
     .post('/', async (request, reply) => {
       if (!request.user) {
@@ -29,9 +32,8 @@ export default routes(async app => {
       )
       const inviteLink = await configuration.get('misc.discord_invite_link')
       if (configuredGuilds.length !== 1 || !discord.client?.isReady() || !inviteLink) {
-        return reply.badRequest(
-          'Discord match voice is not configured yet. Contact an administrator.',
-        )
+        reply.badRequest('Discord match voice is not configured yet. Contact an administrator.')
+        return
       }
 
       const steamId = request.user.player.steamId
@@ -46,7 +48,8 @@ export default routes(async app => {
         (currentPlayer.discordLinkCode?.encryptedCode &&
           currentPlayer.discordLinkCode.expiresAt > new Date())
       ) {
-        return reply.html(await DiscordSettingsEntry({ steamId }))
+        reply.html(await DiscordSettingsEntry({ steamId }))
+        return
       }
 
       const code = randomBytes(12).toString('hex').toUpperCase()
@@ -79,7 +82,7 @@ export default routes(async app => {
         }
       })
 
-      return reply.html(await DiscordSettingsEntry({ steamId }))
+      reply.html(await DiscordSettingsEntry({ steamId }))
     })
     .post('/unlink', async (request, reply) => {
       if (!request.user) {
