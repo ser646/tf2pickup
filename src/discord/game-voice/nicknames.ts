@@ -147,7 +147,7 @@ async function applyNickname(
   if (!member.manageable) {
     logger.warn(
       { steamId: player.steamId, userId, guildId },
-      'bot cannot manage this Discord member nickname; check role hierarchy and Manage Nicknames permission',
+      'cannot manage Discord nickname; check bot role and Manage Nicknames permission',
     )
     return
   }
