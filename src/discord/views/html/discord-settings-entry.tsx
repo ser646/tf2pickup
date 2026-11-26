@@ -5,11 +5,7 @@ import { discord } from '../../index'
 import { IconBrandDiscord } from '../../../html/components/icons'
 import { decryptLinkingCode } from '../../linking-code'
 
-export async function DiscordSettingsEntry(props: {
-  steamId: SteamId64
-  generatedCode?: string
-  codeExpiresAt?: Date
-}) {
+export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
   const player = await players.bySteamId(props.steamId, [
     'discordLink',
     'discordLinkCode.encryptedCode',
@@ -17,12 +13,9 @@ export async function DiscordSettingsEntry(props: {
   ])
   const codeExpiresAt = player.discordLinkCode?.expiresAt
   const generatedCode =
-    props.generatedCode ??
-    (player.discordLinkCode?.encryptedCode &&
-    codeExpiresAt &&
-    codeExpiresAt > new Date()
+    player.discordLinkCode?.encryptedCode && codeExpiresAt && codeExpiresAt > new Date()
       ? await decryptLinkingCode(player.discordLinkCode.encryptedCode)
-      : undefined)
+      : undefined
   const configuredGuilds = (await configuration.get('discord.guilds')).filter(
     ({ voiceServer }) => voiceServer !== undefined,
   )
@@ -105,9 +98,7 @@ export async function DiscordSettingsEntry(props: {
               · Expires in{' '}
               <span
                 data-countdown-until={(
-                  codeExpiresAt ??
-                  props.codeExpiresAt ??
-                  new Date(Date.now() + 600_000)
+                  codeExpiresAt ?? new Date()
                 ).getTime()}
               >
                 10:00
