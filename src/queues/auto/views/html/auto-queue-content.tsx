@@ -124,12 +124,22 @@ async function Queue(props: {
           ))}
           {teamNames.map((teamName, teamIndex) => (
             <div class="queue-team-row">
-              <div class={['queue-team-summary', teamName === 'BLU' ? 'queue-team-blu' : 'queue-team-red']}>
+              <div
+                class={[
+                  'queue-team-summary',
+                  teamName === 'BLU' ? 'queue-team-blu' : 'queue-team-red',
+                ]}
+              >
                 <span>{teamName}</span>
                 <TeamPlayerCount teamIndex={teamIndex} slots={teams[teamIndex] ?? []} />
               </div>
               {teams[teamIndex]?.map(slot => (
-                <SingleClassQueueSlot queue={props.queue} slot={slot} actor={actor} defaultSkill={defaultSkill} />
+                <SingleClassQueueSlot
+                  queue={props.queue}
+                  slot={slot}
+                  actor={actor}
+                  defaultSkill={defaultSkill}
+                />
               ))}
             </div>
           ))}
