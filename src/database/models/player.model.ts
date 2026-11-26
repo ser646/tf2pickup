@@ -106,6 +106,13 @@ export interface PlayerModel {
   preReadyUntil?: Date
   mumbleCertificate?: PlayerMumbleCertificate
   discordLink?: { userId: string; linkedAt: Date }
+  discordNickname?: {
+    guildId: string
+    userId: string
+    gameNumber: GameNumber
+    originalNickname: string | null
+    appliedNickname: string
+  }
   discordLinkCode?: { hash: string; encryptedCode?: string; expiresAt: Date }
   preferences: PlayerPreferences
   bans?: PlayerBan[]
