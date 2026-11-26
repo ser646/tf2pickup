@@ -7,7 +7,7 @@ import { hasActiveBan } from '../../players/has-active-ban'
 
 export type JoinBlockerPlayer = Pick<
   PlayerModel,
-  'hasAcceptedRules' | 'bans' | 'activeGame' | 'verified' | 'skill'
+  'hasAcceptedRules' | 'bans' | 'activeGame' | 'verified' | 'skill' | 'discordLink'
 >
 
 export function joinBlocker(
@@ -15,6 +15,7 @@ export function joinBlocker(
   slot: Pick<QueueSlotModel, 'gameClass'>,
   queue: Pick<QueueModel, 'enabled' | 'requireVerification' | 'skillThreshold' | 'gamemode'>,
   defaultSkill: PlayerSkill | undefined,
+  requireDiscordLink = false,
 ): string | null {
   if (!queue.enabled) {
     return 'This queue is disabled'
@@ -30,6 +31,10 @@ export function joinBlocker(
 
   if (player.activeGame) {
     return 'You are already in a game'
+  }
+
+  if (requireDiscordLink && !player.discordLink) {
+    return 'Link your Discord account in Settings → Integrations → Discord to join this queue'
   }
 
   if (queue.requireVerification && !player.verified) {
