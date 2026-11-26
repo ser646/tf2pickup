@@ -24,7 +24,7 @@ Only one Discord server may be configured as the match voice server. The categor
 
 ## Player account linking
 
-Each player must sign in to tf2pickup through Steam and open **Link Discord** from the site navigation.
+Each player must sign in to tf2pickup through Steam and open **Settings → Integrations → Discord**.
 
 1. Generate a one-time code on the website.
 2. In the configured Discord server, run `/link` and provide the code.
