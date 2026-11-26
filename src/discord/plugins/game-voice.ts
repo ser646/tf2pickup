@@ -10,6 +10,7 @@ import { safe } from '../../utils/safe'
 import { VoiceServerType } from '../../shared/types/voice-server-type'
 import { discord } from '../index'
 import { gameVoice } from '../game-voice'
+import { syncGameNicknames } from '../game-voice/nicknames'
 
 const activeGameStates: GameState[] = [
   GameState.created,
@@ -24,6 +25,7 @@ export default fp(
       const game = await collections.games.findOne({ number: gameNumber })
       if (game && (game.state === GameState.ended || game.state === GameState.interrupted)) {
         await gameVoice.close(game)
+        await syncGameNicknames(game)
       }
     })
 
@@ -42,8 +44,11 @@ export default fp(
       ) {
         if (game.discordVoiceChannels) {
           await gameVoice.sync(game)
+          await syncGameNicknames(game)
+          await syncGameNicknames(game)
         } else {
           await gameVoice.open(game)
+          await syncGameNicknames(game)
         }
       }
     })
@@ -82,6 +87,7 @@ export default fp(
           (before.state !== after.state || voiceRosterKey(before) !== voiceRosterKey(after))
         ) {
           await gameVoice.sync(after)
+          await syncGameNicknames(after)
         }
       }),
     )
@@ -98,7 +104,10 @@ export default fp(
     events.on(
       'player:updated',
       safe(async ({ before, after }) => {
-        if (before.discordLink?.userId === after.discordLink?.userId) {
+        if (
+          before.discordLink?.userId === after.discordLink?.userId &&
+          before.name === after.name
+        ) {
           return
         }
 
@@ -138,8 +147,10 @@ export default fp(
         try {
           if (game.discordVoiceChannels) {
             await gameVoice.sync(game)
+            await syncGameNicknames(game)
           } else {
             await gameVoice.open(game)
+            await syncGameNicknames(game)
           }
         } catch (error) {
           logger.error(
@@ -173,6 +184,6 @@ export default fp(
 
 function voiceRosterKey(game: GameModel): string {
   return game.slots
-    .map(({ id, player, team, status }) => `${id}:${player}:${team}:${status}`)
+    .map(({ id, player, team, gameClass, status }) => `${id}:${player}:${team}:${gameClass}:${status}`)
     .join('|')
 }
