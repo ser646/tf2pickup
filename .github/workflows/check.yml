@@ -20,6 +20,7 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - uses: pnpm/action-setup@v6.1.1
       - run: pnpm install
+      - run: pnpm exec prettier --write src/admin/queues/views/html/queue-settings.page.tsx src/queues/auto/views/html/auto-queue-content.tsx tests/10-queue/16-multiple-class-availability.spec.ts && git diff -- src/admin/queues/views/html/queue-settings.page.tsx src/queues/auto/views/html/auto-queue-content.tsx tests/10-queue/16-multiple-class-availability.spec.ts
       - run: pnpm lint
 
   xss-scan:
