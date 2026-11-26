@@ -97,9 +97,7 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
             <span class="ml-2">
               · Expires in{' '}
               <span
-                data-countdown-until={(
-                  codeExpiresAt ?? new Date()
-                ).getTime()}
+                data-countdown-until={codeExpiresAt?.getTime() ?? Date.now()}
               >
                 10:00
               </span>
