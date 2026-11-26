@@ -99,4 +99,5 @@ export default routes(app => {
 
       reply.html(await DiscordSettingsEntry({ steamId }))
     })
+  return Promise.resolve()
 })
