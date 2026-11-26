@@ -18,8 +18,12 @@ export function joinBlocker(
   requireDiscordLinkOrOptions: boolean | { skipSkillThreshold?: boolean } = false,
   additionalOptions: { skipSkillThreshold?: boolean } = {},
 ): string | null {
-  const requireDiscordLink = typeof requireDiscordLinkOrOptions === 'boolean' ? requireDiscordLinkOrOptions : false
-  const options = typeof requireDiscordLinkOrOptions === 'boolean' ? additionalOptions : requireDiscordLinkOrOptions
+  const requireDiscordLink =
+    typeof requireDiscordLinkOrOptions === 'boolean' ? requireDiscordLinkOrOptions : false
+  const options =
+    typeof requireDiscordLinkOrOptions === 'boolean'
+      ? additionalOptions
+      : requireDiscordLinkOrOptions
 
   if (!queue.enabled) {
     return 'This queue is disabled'
