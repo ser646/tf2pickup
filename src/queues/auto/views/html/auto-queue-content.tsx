@@ -6,6 +6,7 @@ import { PlayerRole } from '../../../../database/models/player.model'
 import type { QueueModel } from '../../../../database/models/queue.model'
 import type { QueueSlotModel } from '../../../../database/models/queue-slot.model'
 import { gamemodeConfigs } from '../../../../gamemodes/configs'
+import { GameClassIcon } from '../../../../html/components/game-class-icon'
 import { Gamemode } from '../../../../shared/types/gamemode'
 import { players } from '../../../../players'
 import { PreReadyUpButton } from '../../../../pre-ready/views/html/pre-ready-up-button'
@@ -16,6 +17,7 @@ import { IsInQueue } from '../../../views/html/is-in-queue'
 import { MapVote } from './map-vote'
 import { MapVoteSelection } from './map-vote-selection'
 import { QueueSlot } from './queue-slot'
+import { SingleClassQueueSlot } from './single-class-queue-slot'
 import { QueueSwitcher } from '../../../views/html/queue-switcher'
 import { StreamList } from '../../../views/html/stream-list'
 import { TeamPlayerCount } from './team-player-count'
@@ -100,8 +102,61 @@ async function Queue(props: {
     : undefined
   const defaultSkill = (await configuration.get('games.default_player_skill'))[props.queue.gamemode]
 
-  // fixed teams fit in rows, one per team
+  // Keep the original click-a-slot interface unless multi-class is explicitly enabled.
   const teams = teamSlots(props.queue.gamemode, props.slots)
+  if (props.queue.allowMultipleClasses !== true) {
+    if (teams.length > 0) {
+      const teamNames = ['BLU', 'RED'] as const
+      return (
+        <form
+          id="queue"
+          class="queue-compact-grid"
+          style={`--team-size: ${positions.length.toString()}`}
+          ws-send
+          data-disable-when-offline
+        >
+          <div class="queue-team-heading-spacer" aria-hidden="true"></div>
+          {positions.map(position => (
+            <h2 class="queue-class-heading">
+              <GameClassIcon gameClass={position.gameClass} size={32} />
+              <span>{position.gameClass}</span>
+            </h2>
+          ))}
+          {teamNames.map((teamName, teamIndex) => (
+            <div class="queue-team-row">
+              <div class={['queue-team-summary', teamName === 'BLU' ? 'queue-team-blu' : 'queue-team-red']}>
+                <span>{teamName}</span>
+                <TeamPlayerCount teamIndex={teamIndex} slots={teams[teamIndex] ?? []} />
+              </div>
+              {teams[teamIndex]?.map(slot => (
+                <SingleClassQueueSlot queue={props.queue} slot={slot} actor={actor} defaultSkill={defaultSkill} />
+              ))}
+            </div>
+          ))}
+        </form>
+      )
+    }
+    return (
+      <form
+        id="queue"
+        class={['queue-class-grid grid grid-cols-1 gap-4 md:grid-cols-2', gridCols]}
+        ws-send
+        data-disable-when-offline
+      >
+        {config.classes.map(gc => gc.name).map(gameClass => (
+          <div class="queue-class-column">
+            <h2 class="queue-class-heading">
+              <GameClassIcon gameClass={gameClass} size={32} />
+              <span>{gameClass}</span>
+            </h2>
+            {props.slots.filter(slot => slot.gameClass === gameClass).map(slot => (
+              <SingleClassQueueSlot queue={props.queue} slot={slot} actor={actor} defaultSkill={defaultSkill} />
+            ))}
+          </div>
+        ))}
+      </form>
+    )
+  }
   const classSelectionHint = (
     <p class="queue-class-selection-hint">
       <strong>Click a class name</strong> to join as that class. Use <strong>Also available</strong>{' '}
