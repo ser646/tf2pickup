@@ -2,23 +2,10 @@ import { collections } from '../../database/collections'
 import { GameState, type GameModel, type GameNumber } from '../../database/models/game.model'
 import { SlotStatus } from '../../database/models/game-slot.model'
 import { logger } from '../../logger'
-import { Tf2ClassName } from '../../shared/types/tf2-class-name'
 import type { SteamId64 } from '../../shared/types/steam-id-64'
 import { VoiceServerType } from '../../shared/types/voice-server-type'
 import { configuration } from '../../configuration'
 import { discord } from '../index'
-
-const classEmojis: Record<Tf2ClassName, string> = {
-  [Tf2ClassName.scout]: '🏃',
-  [Tf2ClassName.soldier]: '🚀',
-  [Tf2ClassName.pyro]: '🔥',
-  [Tf2ClassName.demoman]: '💣',
-  [Tf2ClassName.heavy]: '💪',
-  [Tf2ClassName.engineer]: '🔧',
-  [Tf2ClassName.medic]: '💉',
-  [Tf2ClassName.sniper]: '🎯',
-  [Tf2ClassName.spy]: '🕵️',
-}
 
 const activeSlotStatuses = [SlotStatus.active, SlotStatus.waitingForSubstitute]
 
@@ -30,9 +17,9 @@ type NicknameState = {
   appliedNickname: string
 }
 
-function nicknameFor(name: string, gameClass: Tf2ClassName): string {
+function nicknameFor(name: string): string {
   let nickname = ''
-  for (const character of Array.from(`${classEmojis[gameClass]} ${name}`)) {
+  for (const character of Array.from(name)) {
     if (nickname.length + character.length > 32) {
       break
     }
@@ -101,7 +88,6 @@ async function applyNickname(
     discordNickname?: NicknameState
   },
   game: GameModel,
-  gameClass: Tf2ClassName,
   guildId: string,
 ): Promise<void> {
   const client = discord.client
@@ -137,7 +123,7 @@ async function applyNickname(
     state = undefined
   }
 
-  const nickname = nicknameFor(player.name, gameClass)
+  const nickname = nicknameFor(player.name)
   if (!state) {
     state = {
       guildId,
@@ -223,15 +209,14 @@ export async function syncGameNicknames(game: GameModel): Promise<void> {
   }
 
   for (const player of playersInGame) {
-    const gameClass = slotsBySteamId.get(player.steamId)
-    if (!gameClass || !player.discordLink) {
+    if (!slotsBySteamId.has(player.steamId) || !player.discordLink) {
       if (player.discordNickname?.gameNumber === game.number) {
         await restoreNickname(player)
       }
       continue
     }
 
-    await applyNickname(player, game, gameClass, guildId)
+    await applyNickname(player, game, guildId)
   }
 }
 
