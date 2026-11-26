@@ -36,6 +36,7 @@ export async function QueueSlot(props: {
   slot: QueueSlotModel
   actor?: Actor
   defaultSkill: PlayerSkill | undefined
+  requireDiscordLink?: boolean
 }) {
   const isOwnSlot = !!props.actor && props.slot.player?.steamId === props.actor.steamId
   const isReadySlot = !!props.slot.player && props.slot.ready
@@ -44,7 +45,7 @@ export async function QueueSlot(props: {
     slotContent = <PlayerInfo {...props} />
   } else if (props.actor) {
     const disabled =
-      joinBlocker(props.actor, props.slot, props.queue, props.defaultSkill) ?? undefined
+      joinBlocker(props.actor, props.slot, props.queue, props.defaultSkill, props.requireDiscordLink) ?? undefined
     slotContent = <JoinButton slotId={props.slot.id} disabled={disabled} />
   }
 
