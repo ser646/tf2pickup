@@ -29,8 +29,9 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
       class="flex flex-col gap-3"
       hx-target="this"
       hx-swap="outerHTML"
-      hx-get={generatedCode && !player.discordLink ? '/discord/link/status' : undefined}
-      hx-trigger={generatedCode && !player.discordLink ? 'every 3s' : undefined}
+      {...(generatedCode && !player.discordLink
+        ? { 'hx-get': '/discord/link/status', 'hx-trigger': 'every 3s' }
+        : {})}
     >
       <div class="page-actions flex-row items-center gap-x-8! px-5">
         <p class="flex items-center gap-1 text-2xl font-bold">
@@ -108,10 +109,13 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
           <div class="mt-5 border-t border-zinc-700 pt-4">
             <p class="mb-2 font-semibold">Use this command in our Discord server</p>
             <p class="mb-3 text-sm text-zinc-400">
-              In Discord, type `/link`, select the command, and paste the value into its `code` field:
+              In Discord, type `/link`, select the command, and paste the value into its
+              `code` field:
             </p>
             <div class="rounded-lg border border-zinc-700 bg-[#2b2d31] p-3">
-              <code class="break-all font-mono text-base text-white" safe>/link code:{generatedCode}</code>
+              <code class="break-all font-mono text-base text-white" safe>
+                /link code:{generatedCode}
+              </code>
             </div>
           </div>
         </div>
