@@ -21,6 +21,7 @@ import { QueueSwitcher } from '../../../views/html/queue-switcher'
 import { StreamList } from '../../../views/html/stream-list'
 import { TeamPlayerCount } from './team-player-count'
 import { teamSlots } from './team-slots'
+import { VoiceServerType } from '../../../../shared/types/voice-server-type'
 
 export async function AutoQueueContent(props: { queue: QueueModel }) {
   const { queue } = props
@@ -96,9 +97,12 @@ async function Queue(props: {
         'skill',
         'verified',
         'roles',
+        'discordLink',
       ])
     : undefined
   const defaultSkill = (await configuration.get('games.default_player_skill'))[props.queue.gamemode]
+  const requireDiscordLink =
+    (await configuration.get('games.voice_server_type')) === VoiceServerType.discord
 
   // fixed teams fit in rows, one per team
   const teams = teamSlots(props.queue.gamemode, props.slots)
@@ -138,6 +142,7 @@ async function Queue(props: {
                 slot={slot}
                 actor={actor}
                 defaultSkill={defaultSkill}
+                requireDiscordLink={requireDiscordLink}
               />
             ))}
           </div>
@@ -170,6 +175,7 @@ async function Queue(props: {
                   slot={slot}
                   actor={actor}
                   defaultSkill={defaultSkill}
+                  requireDiscordLink={requireDiscordLink}
                 />
               ))}
           </div>
