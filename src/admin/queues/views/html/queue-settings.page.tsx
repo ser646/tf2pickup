@@ -69,7 +69,8 @@ export async function QueueSettingsPage(props: { queue: QueueModel }) {
                 </dt>
                 <dd class="text-zinc-200">
                   <span class="hidden group-has-checked:inline-block">
-                    Players can select additional classes and may be moved between slots automatically
+                    Players can select additional classes and may be moved between slots
+                    automatically
                   </span>
                   <span class="group-has-checked:hidden">
                     Players join by clicking an individual slot, as before
@@ -79,7 +80,7 @@ export async function QueueSettingsPage(props: { queue: QueueModel }) {
               <Switch
                 id="allowMultipleClasses"
                 name="allowMultipleClasses"
-                checked={queue.allowMultipleClasses === true}
+                checked={queue.allowMultipleClasses}
               />
             </div>
           )}
