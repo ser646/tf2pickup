@@ -53,7 +53,7 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
       const flexibleIds = [flexible1.steamId, flexible2.steamId]
       return {
         hasMedicSpecialist: assignment.medic.includes(medic.steamId),
-        flexiblePlayersInMedic: assignment.medic.filter(id => flexibleIds.includes(id ?? '')).length,
+        flexiblePlayersInMedic: assignment.medic.filter(id => flexibleIds.some(flexibleId => flexibleId === id)).length,
         flexiblePlayersInScout: assignment.scout.filter(id => flexibleIds.includes(id ?? '')).length,
       }
     })
