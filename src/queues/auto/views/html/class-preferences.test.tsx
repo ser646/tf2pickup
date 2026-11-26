@@ -138,7 +138,28 @@ describe('ClassPreferences', () => {
     expect(
       html.querySelector('input[data-class-preference-join="soldier-1"][value="scout"]'),
     ).not.toBeNull()
-    expect(html.querySelector('input[value="soldier"][disabled]')).not.toBeNull()
+
+    const primaryClassHtml = parse(
+      String(
+        ClassPreferences({
+          queue,
+          slots: [
+            slot,
+            {
+              queue: slot.queue,
+              id: 'scout-1',
+              gameClass: Tf2ClassName.scout,
+              player: null,
+              ready: false,
+            },
+          ],
+          actor: actor as never,
+          defaultSkill: undefined,
+          gameClass: Tf2ClassName.soldier,
+        }),
+      ),
+    )
+    expect(primaryClassHtml.querySelector('input[value="soldier"][disabled]')).not.toBeNull()
   })
 
   it('renders the original heading unchanged for signed-out viewers', () => {
