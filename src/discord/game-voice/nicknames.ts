@@ -45,7 +45,10 @@ async function restoreNickname(player: {
   }
 
   const client = discord.client
-  if (client?.isReady()) {
+  if (!client?.isReady()) {
+    return
+  }
+  {
     try {
       const guild = await client.guilds.fetch(state.guildId)
       const member = await guild.members.fetch(state.userId)
