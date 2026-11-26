@@ -40,24 +40,24 @@
     cursor: pointer;
 
     &::after {
-      content: '＋ Join';
+      content: '+';
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 15px;
-      padding: 0 6px;
-      border: 1px solid var(--color-zinc-600);
-      border-radius: 999px;
+      width: 17px;
+      height: 17px;
+      border: 1px solid var(--color-zinc-500);
+      border-radius: 50%;
       color: var(--color-zinc-300);
       background: var(--color-surface-raised);
-      font-size: 10px;
-      font-weight: 600;
-      line-height: 13px;
-      white-space: nowrap;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1;
       transition:
         color 120ms ease,
         border-color 120ms ease,
-        background 120ms ease;
+        background 120ms ease,
+        scale 120ms ease;
     }
 
     &:hover:not(:disabled) {
@@ -65,9 +65,10 @@
       background: var(--color-surface-hover);
 
       &::after {
-        border-color: var(--color-emerald-500);
-        color: var(--color-emerald-200);
-        background: var(--color-emerald-900);
+        scale: 1.12;
+        border-color: var(--color-emerald-400);
+        color: var(--color-zinc-950);
+        background: var(--color-emerald-400);
       }
     }
 
