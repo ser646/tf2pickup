@@ -29,6 +29,8 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
       class="flex flex-col gap-3"
       hx-target="this"
       hx-swap="outerHTML"
+      hx-get={generatedCode && !player.discordLink ? '/discord/link/status' : undefined}
+      hx-trigger={generatedCode && !player.discordLink ? 'every 3s' : undefined}
     >
       <div class="page-actions flex-row items-center gap-x-8! px-5">
         <p class="flex items-center gap-1 text-2xl font-bold">
