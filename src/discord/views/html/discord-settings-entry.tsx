@@ -54,7 +54,18 @@ export async function DiscordSettingsEntry(props: {
             The Discord server invite link has not been configured. Contact an administrator.
           </p>
         ) : props.generatedCode ? (
-          <p class="flex-1">Use the code below to link your Discord account.</p>
+          <>
+            <p class="flex-1">Your active linking code is shown below.</p>
+            <input id="discord-link-existing-code" type="hidden" name="existingCode" value={props.generatedCode} />
+            <button
+              class="button"
+              data-variant="accent"
+              hx-post="/discord/link"
+              hx-include="#discord-link-existing-code"
+            >
+              Show current code
+            </button>
+          </>
         ) : (
           <>
             <p class="flex-1">
