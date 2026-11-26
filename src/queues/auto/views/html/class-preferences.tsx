@@ -111,7 +111,7 @@ export function ClassPreferences(props: {
           {...(props.includeInForm === false ? {} : { name: 'classes' })}
           value={props.gameClass}
           checked={checked}
-          disabled={!!blocker || isPrimary || classSlots.length === 0}
+          disabled={!!blocker || !ownSlot || isPrimary || classSlots.length === 0}
           data-class-preference
           data-class-preference-join={ownSlot?.id}
           aria-label={'Also available: ' + props.gameClass}
