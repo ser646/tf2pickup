@@ -16,14 +16,11 @@ export function joinBlocker(
   queue: Pick<QueueModel, 'enabled' | 'requireVerification' | 'skillThreshold' | 'gamemode'>,
   defaultSkill: PlayerSkill | undefined,
   requireDiscordLinkOrOptions: boolean | { skipSkillThreshold?: boolean } = false,
-  additionalOptions: { skipSkillThreshold?: boolean } = {},
 ): string | null {
   const requireDiscordLink =
     typeof requireDiscordLinkOrOptions === 'boolean' ? requireDiscordLinkOrOptions : false
   const options =
-    typeof requireDiscordLinkOrOptions === 'boolean'
-      ? additionalOptions
-      : requireDiscordLinkOrOptions
+    typeof requireDiscordLinkOrOptions === 'boolean' ? {} : requireDiscordLinkOrOptions
 
   if (!queue.enabled) {
     return 'This queue is disabled'
