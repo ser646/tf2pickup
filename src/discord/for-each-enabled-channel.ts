@@ -6,8 +6,9 @@ import { client } from './client'
 import type { Configuration } from '../database/models/configuration-entry.model'
 
 type GuildConfiguration = Configuration['discord.guilds'][number]
+type GuildChannelConfiguration = Exclude<keyof GuildConfiguration, 'id' | 'voiceServer'>
 
-export async function forEachEnabledChannel<T extends Exclude<keyof GuildConfiguration, 'id'>>(
+export async function forEachEnabledChannel<T extends GuildChannelConfiguration>(
   channel: T,
   fn: (channel: TextChannel, config: NonNullable<GuildConfiguration[T]>) => Promise<void>,
 ) {

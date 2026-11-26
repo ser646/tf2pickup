@@ -17,6 +17,7 @@ export function ClassPreferences(props: {
   gameClass: Tf2ClassName
   headingId?: string
   includeInForm?: boolean
+  requireDiscordLink?: boolean
 }) {
   const classConfig = gamemodeConfigs[props.queue.gamemode].classes.find(
     item => item.name === props.gameClass,
@@ -63,6 +64,7 @@ export function ClassPreferences(props: {
     { gameClass: props.gameClass },
     props.queue,
     props.defaultSkill,
+    props.requireDiscordLink,
   )
   const checked = !isPrimary && selected.includes(props.gameClass)
 

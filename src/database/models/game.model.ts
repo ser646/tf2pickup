@@ -79,6 +79,13 @@ export interface GameModel {
   slots: GameSlotModel[]
   events: [GameCreated, ...GameEventModel[]]
   gameServer?: GameServer
+  discordVoiceChannels?: {
+    guildId: string
+    categoryId: string
+    lobbyChannelId: string
+    blu: string
+    red: string
+  }
 
   logsUrl?: string
   demoUrl?: string

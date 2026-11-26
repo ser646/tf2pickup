@@ -12,6 +12,7 @@ import { revokeChatMute } from './revoke-chat-mute'
 import { setSkill } from './set-skill'
 import { setVerified } from './set-verified'
 import { update } from './update'
+import { linkDiscordAccount } from './link-discord-account'
 import { upsert } from './upsert'
 
 export const players = {
@@ -29,5 +30,6 @@ export const players = {
   setSkill,
   setVerified,
   update,
+  linkDiscordAccount,
   upsert,
 } as const

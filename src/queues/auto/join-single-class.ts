@@ -18,6 +18,7 @@ import { get } from '../get'
 import { vacateSlot } from './vacate-slot'
 import { leavePools } from '../captain/leave-pools'
 import { assertAutoQueue } from './assert-auto-queue'
+import { VoiceServerType } from '../../shared/types/voice-server-type'
 
 export async function joinSingleClass(
   queue: QueueId,
@@ -36,6 +37,7 @@ export async function joinSingleClass(
     'name',
     'avatar.medium',
     'verified',
+    'discordLink',
   ])
 
   const slot = await collections.queueSlots.findOne({ queue, id: slotId })
@@ -44,7 +46,9 @@ export async function joinSingleClass(
   }
 
   const defaultSkill = (await configuration.get('games.default_player_skill'))[settings.gamemode]
-  const blocker = joinBlocker(player, slot, settings, defaultSkill)
+  const requireDiscordLink =
+    (await configuration.get('games.voice_server_type')) === VoiceServerType.discord
+  const blocker = joinBlocker(player, slot, settings, defaultSkill, requireDiscordLink)
   if (blocker) {
     throw errors.badRequest(blocker)
   }

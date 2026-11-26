@@ -22,6 +22,7 @@ import { QueueSwitcher } from '../../../views/html/queue-switcher'
 import { StreamList } from '../../../views/html/stream-list'
 import { TeamPlayerCount } from './team-player-count'
 import { teamSlots } from './team-slots'
+import { VoiceServerType } from '../../../../shared/types/voice-server-type'
 import { ClassPreferences } from './class-preferences'
 
 export async function AutoQueueContent(props: { queue: QueueModel }) {
@@ -98,9 +99,12 @@ async function Queue(props: {
         'skill',
         'verified',
         'roles',
+        'discordLink',
       ])
     : undefined
   const defaultSkill = (await configuration.get('games.default_player_skill'))[props.queue.gamemode]
+  const requireDiscordLink =
+    (await configuration.get('games.voice_server_type')) === VoiceServerType.discord
 
   // Keep the original click-a-slot interface unless multi-class is explicitly enabled.
   const teams = teamSlots(props.queue.gamemode, props.slots)
@@ -139,6 +143,7 @@ async function Queue(props: {
                   slot={slot}
                   actor={actor}
                   defaultSkill={defaultSkill}
+                  requireDiscordLink={requireDiscordLink}
                 />
               ))}
             </div>
@@ -169,7 +174,8 @@ async function Queue(props: {
                     slot={slot}
                     actor={actor}
                     defaultSkill={defaultSkill}
-                  />
+                  requireDiscordLink={requireDiscordLink}
+                />
                 ))}
             </div>
           ))}
@@ -205,6 +211,7 @@ async function Queue(props: {
               defaultSkill={defaultSkill}
               gameClass={position.gameClass}
               headingId={`queue-class-preference-${position.gameClass}-${position.classIndex}`}
+              requireDiscordLink={requireDiscordLink}
               includeInForm={
                 positions.findIndex(candidate => candidate.gameClass === position.gameClass) ===
                 index
@@ -259,6 +266,7 @@ async function Queue(props: {
                 actor={actor}
                 defaultSkill={defaultSkill}
                 gameClass={gameClass}
+                requireDiscordLink={requireDiscordLink}
               />
 
               {props.slots

@@ -23,6 +23,7 @@ import { assertAutoQueue } from './assert-auto-queue'
 import { gamemodeConfigs } from '../../gamemodes/configs'
 import { assignPlayersToSlots } from './assign-players-to-slots'
 import { joinSingleClass } from './join-single-class'
+import { VoiceServerType } from '../../shared/types/voice-server-type'
 
 interface QueueMember {
   player: NonNullable<QueueSlotModel['player']>
@@ -52,9 +53,12 @@ export async function join(
     'name',
     'avatar.medium',
     'verified',
+    'discordLink',
   ])
 
   const defaultSkill = (await configuration.get('games.default_player_skill'))[settings.gamemode]
+  const requireDiscordLink =
+    (await configuration.get('games.voice_server_type')) === VoiceServerType.discord
 
   return await queueCommand('join', async emit => {
     const state = await getState(queue)
@@ -79,7 +83,7 @@ export async function join(
 
     // The clicked heading is the requested primary class, so it must be playable.
     // Alternate eligibility must never silently turn a rejected primary selection into another class.
-    const primaryBlocker = joinBlocker(player, clickedSlot, settings, defaultSkill)
+    const primaryBlocker = joinBlocker(player, clickedSlot, settings, defaultSkill, requireDiscordLink)
     if (primaryBlocker) {
       throw errors.badRequest(primaryBlocker)
     }
@@ -87,7 +91,7 @@ export async function join(
     // Skill thresholds can differ by class. Keep only the classes this player is currently
     // eligible to play; the same checks are repeated here even though the UI disables them.
     const availableClasses = requestedClasses.filter(
-      gameClass => !joinBlocker(player, { gameClass }, settings, defaultSkill),
+      gameClass => !joinBlocker(player, { gameClass }, settings, defaultSkill, requireDiscordLink),
     )
     if (availableClasses.length === 0) {
       const blocker = joinBlocker(
@@ -95,6 +99,7 @@ export async function join(
         { gameClass: requestedClasses[0]! },
         settings,
         defaultSkill,
+        requireDiscordLink,
       )
       throw errors.badRequest(blocker ?? 'You are not eligible for the selected classes')
     }
@@ -103,7 +108,7 @@ export async function join(
       clickedSlot.player.steamId !== steamId &&
       !availableClasses.includes(clickedSlot.gameClass)
     ) {
-      const blocker = joinBlocker(player, clickedSlot, settings, defaultSkill)
+      const blocker = joinBlocker(player, clickedSlot, settings, defaultSkill, requireDiscordLink)
       throw errors.badRequest(blocker ?? 'You are not eligible for this class')
     }
 

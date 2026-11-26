@@ -15,6 +15,7 @@ export function DiscordConfiguration(props: { client: Client<true> }) {
 }
 
 async function GuildItem(props: { guild: Guild }) {
+  await Promise.all([props.guild.channels.fetch(), props.guild.roles.fetch()])
   const config = (await configuration.get('discord.guilds')).find(({ id }) => id === props.guild.id)
   const iconUrl = props.guild.iconURL({ size: 64 })
   let icon = <></>

@@ -8,6 +8,7 @@ import { Footer } from '../../../html/components/footer'
 import { requestContext } from '@fastify/request-context'
 import { MumbleSettingsEntry } from '../../../mumble/views/html/mumble-settings-entry'
 import { isVerificationEnabled } from '../../../mumble/is-verification-enabled'
+import { DiscordSettingsEntry } from '../../../discord/views/html/discord-settings-entry'
 
 export async function PlayerSettingsPage() {
   const user = requestContext.get('user')!
@@ -59,6 +60,7 @@ export async function PlayerSettingsPage() {
             {(await isVerificationEnabled()) && (
               <MumbleSettingsEntry steamId={user.player.steamId} />
             )}
+            <DiscordSettingsEntry steamId={user.player.steamId} />
           </div>
         </div>
       </Page>

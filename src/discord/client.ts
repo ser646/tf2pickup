@@ -14,6 +14,7 @@ async function initializeClient(): Promise<Client | null> {
       IntentsBitField.Flags.Guilds,
       IntentsBitField.Flags.GuildExpressions,
       IntentsBitField.Flags.GuildMessages,
+      IntentsBitField.Flags.GuildVoiceStates,
     ],
   })
   const ready = new Promise<void>(resolve => {

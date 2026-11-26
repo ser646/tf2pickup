@@ -25,6 +25,9 @@ const definitions: Partial<Record<keyof typeof collections, IndexDefinition[]>> 
     { spec: { preReadyUntil: 1 }, options: { sparse: true } },
     // One Mumble certificate per account; a duplicate key means it's linked elsewhere.
     { spec: { 'mumbleCertificate.hash': 1 }, options: { unique: true, sparse: true } },
+    // A Discord account and a pending verification code can each belong to only one player.
+    { spec: { 'discordLink.userId': 1 }, options: { unique: true, sparse: true } },
+    { spec: { 'discordLinkCode.hash': 1 }, options: { unique: true, sparse: true } },
   ],
   mumbleVerificationCodes: [
     { spec: { code: 1 }, options: { unique: true } },
