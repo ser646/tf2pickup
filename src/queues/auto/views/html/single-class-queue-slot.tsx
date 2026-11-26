@@ -45,7 +45,13 @@ export async function SingleClassQueueSlot(props: {
     slotContent = <PlayerInfo {...props} />
   } else if (props.actor) {
     const disabled =
-      joinBlocker(props.actor, props.slot, props.queue, props.defaultSkill, props.requireDiscordLink) ?? undefined
+      joinBlocker(
+        props.actor,
+        props.slot,
+        props.queue,
+        props.defaultSkill,
+        props.requireDiscordLink,
+      ) ?? undefined
     slotContent = <JoinButton slotId={props.slot.id} disabled={disabled} />
   }
 
