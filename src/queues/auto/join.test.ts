@@ -129,7 +129,11 @@ describe('join()', () => {
     expect(collections.queueSlots.findOne).toHaveBeenCalledWith({ queue, id: slotId })
     expect(collections.queueSlots.findOneAndUpdate).toHaveBeenCalledWith(
       { _id: slot._id, player: null },
-      expect.objectContaining({ $set: expect.objectContaining({ player: expect.objectContaining({ steamId }) }) }),
+      expect.objectContaining({
+        $set: expect.objectContaining({
+          player: expect.objectContaining({ steamId }),
+        }),
+      }),
       { returnDocument: 'after' },
     )
   })
