@@ -22,6 +22,7 @@ import { leavePools } from '../captain/leave-pools'
 import { assertAutoQueue } from './assert-auto-queue'
 import { gamemodeConfigs } from '../../gamemodes/configs'
 import { assignPlayersToSlots } from './assign-players-to-slots'
+import { joinSingleClass } from './join-single-class'
 
 interface QueueMember {
   player: NonNullable<QueueSlotModel['player']>
@@ -39,6 +40,9 @@ export async function join(
   logger.trace({ queue, steamId, slotId, selectedClasses }, 'queue.join()')
   const settings = await get(queue)
   assertAutoQueue(settings)
+  if (settings.allowMultipleClasses !== true) {
+    return await joinSingleClass(queue, slotId, steamId)
+  }
   const player = await players.bySteamId(steamId, [
     'hasAcceptedRules',
     'bans',
