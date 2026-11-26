@@ -18,7 +18,9 @@ export async function DiscordSettingsEntry(props: {
   const codeExpiresAt = player.discordLinkCode?.expiresAt
   const generatedCode =
     props.generatedCode ??
-    (player.discordLinkCode?.encryptedCode && codeExpiresAt && codeExpiresAt > new Date()
+    (player.discordLinkCode?.encryptedCode &&
+    codeExpiresAt &&
+    codeExpiresAt > new Date()
       ? await decryptLinkingCode(player.discordLinkCode.encryptedCode)
       : undefined)
   const configuredGuilds = (await configuration.get('discord.guilds')).filter(
@@ -99,7 +101,18 @@ export async function DiscordSettingsEntry(props: {
         <div class="mx-5 rounded-lg border border-zinc-700 bg-zinc-900 p-4">
           <p class="text-sm text-zinc-400">
             Your linking code
-            <span class="ml-2">· Expires in <span data-countdown-until={(codeExpiresAt ?? props.codeExpiresAt ?? new Date(Date.now() + 600_000)).getTime()}>10:00</span></span>
+            <span class="ml-2">
+              · Expires in{' '}
+              <span
+                data-countdown-until={(
+                  codeExpiresAt ??
+                  props.codeExpiresAt ??
+                  new Date(Date.now() + 600_000)
+                ).getTime()}
+              >
+                10:00
+              </span>
+            </span>
           </p>
           <p class="my-2 break-all font-mono text-2xl tracking-widest" safe>
             {generatedCode}
@@ -112,9 +125,13 @@ export async function DiscordSettingsEntry(props: {
             <p class="mb-3 font-semibold">How to link your account in Discord</p>
             <ol class="space-y-4">
               <li class="flex items-start gap-3">
-                <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold">1</span>
+                <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold">
+                  1
+                </span>
                 <div class="min-w-0 flex-1">
-                  <p class="mb-2 text-sm">Open our Discord server and type <code>/link</code> in a text channel.</p>
+                  <p class="mb-2 text-sm">
+                    Open our Discord server and type <code>/link</code> in a text channel.
+                  </p>
                   <div class="rounded-lg border border-zinc-700 bg-[#313338] p-3">
                     <p class="mb-2 text-xs text-zinc-400">MESSAGE</p>
                     <div class="inline-flex items-center gap-2 rounded bg-[#4752c4] px-3 py-2 font-mono text-sm text-white">
@@ -124,9 +141,13 @@ export async function DiscordSettingsEntry(props: {
                 </div>
               </li>
               <li class="flex items-start gap-3">
-                <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold">2</span>
+                <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold">
+                  2
+                </span>
                 <div class="min-w-0 flex-1">
-                  <p class="mb-2 text-sm">Select the <code>/link</code> command from the suggestions.</p>
+                  <p class="mb-2 text-sm">
+                    Select the <code>/link</code> command from the suggestions.
+                  </p>
                   <div class="rounded-lg border border-zinc-700 bg-[#2b2d31] p-3">
                     <div class="flex items-center gap-2 text-sm text-white">
                       <span class="rounded bg-[#4752c4] px-2 py-1 font-mono">/</span>
@@ -137,9 +158,13 @@ export async function DiscordSettingsEntry(props: {
                 </div>
               </li>
               <li class="flex items-start gap-3">
-                <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold">3</span>
+                <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-zinc-700 text-sm font-semibold">
+                  3
+                </span>
                 <div class="min-w-0 flex-1">
-                  <p class="mb-2 text-sm">Paste your code into the <code>code</code> field and send the command.</p>
+                  <p class="mb-2 text-sm">
+                    Paste your code into the <code>code</code> field and send the command.
+                  </p>
                   <div class="rounded-lg border border-zinc-700 bg-[#2b2d31] p-3">
                     <div class="mb-2 flex items-center gap-2 text-sm text-white">
                       <span class="rounded bg-[#4752c4] px-2 py-1 font-mono">/</span>
