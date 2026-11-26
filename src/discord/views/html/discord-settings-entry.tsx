@@ -105,12 +105,12 @@ export async function DiscordSettingsEntry(props: { steamId: SteamId64 }) {
           </p>
 
           <div class="mt-5 border-t border-zinc-700 pt-4">
-            <p class="mb-2 font-semibold">Run this command in our Discord server</p>
+            <p class="mb-2 font-semibold">Use this command in our Discord server</p>
             <p class="mb-3 text-sm text-zinc-400">
-              Copy the entire command below and enter it in a text channel on the server.
+              In Discord, type `/link`, select the command, and paste the value into its `code` field:
             </p>
             <div class="rounded-lg border border-zinc-700 bg-[#2b2d31] p-3">
-              <code class="break-all font-mono text-base text-white" safe>/link {generatedCode}</code>
+              <code class="break-all font-mono text-base text-white" safe>/link code:{generatedCode}</code>
             </div>
           </div>
         </div>
