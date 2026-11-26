@@ -110,15 +110,19 @@ document.addEventListener('change', event => {
   }
 })
 
-document.addEventListener('htmx:afterSwap', event => {
+function restorePendingClassPreferencesAfterSwap(event: Event) {
   const target = event.target
-  if (!(target instanceof Element)) {
-    return
-  }
-
   const form =
-    target.closest<HTMLFormElement>('#queue') ?? document.querySelector<HTMLFormElement>('#queue')
+    (target instanceof Element ? target.closest<HTMLFormElement>('#queue') : null) ??
+    document.querySelector<HTMLFormElement>('#queue')
   if (form) {
     restorePendingClassPreferences(form)
   }
-})
+}
+
+// Queue updates arrive as out-of-band WebSocket swaps. Depending on the swap path,
+// htmx emits oobAfterSwap rather than afterSwap, so restore after both and once the
+// complete WebSocket message has been processed.
+document.addEventListener('htmx:afterSwap', restorePendingClassPreferencesAfterSwap)
+document.addEventListener('htmx:oobAfterSwap', restorePendingClassPreferencesAfterSwap)
+document.addEventListener('htmx:wsAfterMessage', restorePendingClassPreferencesAfterSwap)
