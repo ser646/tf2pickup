@@ -1,11 +1,14 @@
-import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto'
-import { secrets } from '../secrets'
+import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'node:crypto'
+import { environment } from '../environment'
 
 const algorithm = 'aes-256-gcm'
-const secretName = 'discord-link-code-encryption-key'
+const key = scryptSync(
+  environment.KEY_STORE_PASSPHRASE,
+  'tf2pickup:discord-link-code:v1',
+  32,
+)
 
 export async function encryptLinkingCode(code: string): Promise<string> {
-  const key = await secrets.get(secretName)
   const iv = randomBytes(12)
   const cipher = createCipheriv(algorithm, key, iv)
   const encrypted = Buffer.concat([cipher.update(code, 'utf8'), cipher.final()])
@@ -15,7 +18,6 @@ export async function encryptLinkingCode(code: string): Promise<string> {
 }
 
 export async function decryptLinkingCode(encryptedCode: string): Promise<string> {
-  const key = await secrets.get(secretName)
   const [iv, tag, encrypted] = encryptedCode.split('.')
   if (!iv || !tag || !encrypted) {
     throw new Error('Invalid encrypted Discord linking code')
