@@ -20,18 +20,31 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
     'Click a class name',
   )
 
-  // Flexible players tick "Also available: Scout", then click Medic as their primary class.
+  // Alternate classes cannot be selected before the player has joined a slot.
   for (const page of [flexible1Page, flexible2Page]) {
-    await page.page.locator('[data-class-preference][value="scout"]').first().check()
+    await expect(
+      page.page.locator('[data-class-preference][value="scout"]').first(),
+    ).toBeDisabled()
   }
-  // Clicking the class name chooses the primary class and joins the queue.
+
+  // Join as Medic first; only then can the player opt into Scout as an alternate class.
   await flexible1Page.slot('medic-1').join()
-  // A queue update from another player must not discard this unsaved local selection.
+  await expect(
+    flexible1Page.page.locator('[data-class-preference][value="scout"]').first(),
+  ).toBeEnabled()
+  await flexible1Page.page.locator('[data-class-preference][value="scout"]').first().check()
+
+  await flexible2Page.slot('medic-2').join()
+  await expect(
+    flexible2Page.page.locator('[data-class-preference][value="scout"]').first(),
+  ).toBeEnabled()
+  await flexible2Page.page.locator('[data-class-preference][value="scout"]').first().check()
+
+  // A queue update from another player must not discard an existing alternate selection.
+  await medicPage.slot('medic-1').join()
   await expect(
     flexible2Page.page.locator('[data-class-preference][value="scout"]').first(),
   ).toBeChecked()
-  await flexible2Page.slot('medic-2').join()
-  await medicPage.slot('medic-1').join()
 
   // 6v6 has four Scout slots across both teams. The flexible assignment may use any of them.
   const readAssignment = async () => ({
