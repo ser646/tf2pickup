@@ -171,8 +171,24 @@ async function applyNickname(
 }
 
 export async function syncGameNicknames(game: GameModel): Promise<void> {
-  if ((await configuration.get('games.voice_server_type')) !== VoiceServerType.discord) {
+  const isFinished = game.state === GameState.ended || game.state === GameState.interrupted
+  if (
+    !isFinished &&
+    (await configuration.get('games.voice_server_type')) !== VoiceServerType.discord
+  ) {
     return
+  }
+
+  if (isFinished) {
+    const savedPlayers = await collections.players
+      .find({ 'discordNickname.gameNumber': game.number })
+      .toArray()
+    if (savedPlayers.length > 0 && !game.discordVoiceChannels) {
+      for (const player of savedPlayers) {
+        await restoreNickname(player)
+      }
+      return
+    }
   }
 
   const guildId =
@@ -182,10 +198,9 @@ export async function syncGameNicknames(game: GameModel): Promise<void> {
     return
   }
 
-  const activeSlots =
-    game.state === GameState.ended || game.state === GameState.interrupted
-      ? []
-      : game.slots.filter(({ status }) => activeSlotStatuses.includes(status))
+  const activeSlots = isFinished
+    ? []
+    : game.slots.filter(({ status }) => activeSlotStatuses.includes(status))
   const slotsBySteamId = new Map(activeSlots.map(slot => [slot.player, slot.gameClass]))
 
   const [playersInGame, previouslySynced] = await Promise.all([
