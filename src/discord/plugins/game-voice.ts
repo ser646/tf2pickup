@@ -36,6 +36,7 @@ export default fp(
       }
       if (game.state === GameState.ended || game.state === GameState.interrupted) {
         await gameVoice.close(game)
+        await syncGameNicknames(game)
       } else if (
         [GameState.created, GameState.configuring, GameState.launching, GameState.started].includes(
           game.state,
@@ -174,6 +175,7 @@ export default fp(
     for (const game of endedGames) {
       try {
         await gameVoice.close(game)
+        await syncGameNicknames(game)
       } catch (error) {
         logger.error(
           { error, gameNumber: game.number },
