@@ -206,11 +206,6 @@
         display: none;
       }
 
-      > .queue-class-primary-button::after {
-        content: '＋';
-        min-width: 15px;
-        padding-inline: 0;
-      }
     }
   }
 
