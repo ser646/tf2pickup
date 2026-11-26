@@ -18,7 +18,8 @@ export default routes(async app => {
       const configuredGuilds = (await configuration.get('discord.guilds')).filter(
         ({ voiceServer }) => voiceServer !== undefined,
       )
-      if (configuredGuilds.length !== 1 || !discord.client?.isReady()) {
+      const inviteLink = await configuration.get('misc.discord_invite_link')
+      if (configuredGuilds.length !== 1 || !discord.client?.isReady() || !inviteLink) {
         return reply.badRequest(
           'Discord match voice is not configured yet. Contact an administrator.',
         )
