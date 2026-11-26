@@ -124,11 +124,6 @@ async function Menu(props: { wide: boolean }) {
       <GamesLink />
       <MenuItem href="/players">Players</MenuItem>
       <MenuItem href="/rules">Rules</MenuItem>
-      {!!user && (
-        <>
-          <MenuItem href="/discord/link">Link Discord</MenuItem>
-        </>
-      )}
 
       <MenuItem href="/hall-of-fame">
         <IconCrown />
