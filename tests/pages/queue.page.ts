@@ -44,10 +44,11 @@ class QueueSlot {
     }
     const leaveQueueButton = this.page.getByRole('button', { name: 'Leave queue' })
     await expect
-      .poll(
-        async () =>
-          /games\/(\d+)/.test(this.page.url()) || (await leaveQueueButton.isVisible()),
-      )
+      .poll(async () => {
+        const onGamePage = /games\\/(\\d+)/.test(this.page.url())
+        const canLeaveQueue = await leaveQueueButton.isVisible()
+        return onGamePage || canLeaveQueue
+      })
       .toBe(true)
   }
 
