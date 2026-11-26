@@ -63,14 +63,22 @@ export async function QueueSettingsPage(props: { queue: QueueModel }) {
             <div class="group flex flex-row items-center justify-between">
               <dl>
                 <dt>
-                  <label class="text-zinc-200" for="allowMultipleClasses">Allow multiple classes</label>
+                  <label class="text-zinc-200" for="allowMultipleClasses">
+                    Allow multiple classes
+                  </label>
                 </dt>
                 <dd class="text-zinc-200">
-                  <span class="hidden group-has-checked:inline-block">Players can select additional classes and may be moved between slots automatically</span>
+                  <span class="hidden group-has-checked:inline-block">
+                    Players can select additional classes and may be moved between slots automatically
+                  </span>
                   <span class="group-has-checked:hidden">Players join by clicking an individual slot, as before</span>
                 </dd>
               </dl>
-              <Switch id="allowMultipleClasses" name="allowMultipleClasses" checked={queue.allowMultipleClasses === true} />
+              <Switch
+                id="allowMultipleClasses"
+                name="allowMultipleClasses"
+                checked={queue.allowMultipleClasses === true}
+              />
             </div>
           )}
 
