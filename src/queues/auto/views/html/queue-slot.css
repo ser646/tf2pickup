@@ -34,8 +34,8 @@
     cursor: pointer;
 
     position: relative;
-    flex-direction: column;
-    gap: 2px;
+    flex-direction: row;
+    gap: 6px;
     min-width: 0;
     cursor: pointer;
 
