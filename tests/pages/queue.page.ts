@@ -29,7 +29,9 @@ class QueueSlot {
 
   joinButton() {
     const gameClass = this.slotId.slice(0, this.slotId.lastIndexOf('-'))
-    return this.page.locator(`[data-class-primary][data-class-primary-join^="${gameClass}-"]`)
+    return this.page
+      .locator(`[data-class-primary][data-class-primary-join^="${gameClass}-"]`)
+      .filter({ visible: true })
   }
 
   async join() {
@@ -41,6 +43,7 @@ class QueueSlot {
       // The 4.25.0 upgrade fixture runs against the legacy UI, where the slot itself
       // is the join target and class headings do not expose data-class-primary.
       await this.locator.click()
+      return
     }
     const leaveQueueButton = this.page.getByRole('button', { name: 'Leave queue' })
     await expect
@@ -139,18 +142,26 @@ export class QueuePage {
     return new ReadyUpDialog(this.page)
   }
 
-  async readyUp(slot: SlotId) {
-    if (/games\/(\d+)/.test(this.page.url()) || (await this.slot(slot).isReady())) {
+  async readyUp(slot: SlotId, playerId?: string) {
+    const isPlayerReady = async () => {
+      if (playerId) {
+        const playerInfo = this.page.locator(`[data-player="${playerId}"] .player-info`)
+        return (await playerInfo.getAttribute('data-player-ready')) === 'true'
+      }
+      return await this.slot(slot).isReady()
+    }
+
+    if (/games\\/(\\d+)/.test(this.page.url()) || (await isPlayerReady())) {
       return
     }
     const readyUpButton = this.readyUpDialog().readyUpButton()
     await expect
       .poll(
         async () => {
-          if (/games\/(\d+)/.test(this.page.url())) {
+          if (/games\\/(\\d+)/.test(this.page.url())) {
             return 'game'
           }
-          if (await this.slot(slot).isReady()) {
+          if (await isPlayerReady()) {
             return 'ready'
           }
           if (await readyUpButton.isVisible()) {
@@ -162,7 +173,7 @@ export class QueuePage {
       )
       .not.toBe('waiting')
 
-    if (/games\/(\d+)/.test(this.page.url()) || (await this.slot(slot).isReady())) {
+    if (/games\\/(\\d+)/.test(this.page.url()) || (await isPlayerReady())) {
       return
     }
     await readyUpButton.click()
