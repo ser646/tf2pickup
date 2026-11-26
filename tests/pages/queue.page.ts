@@ -46,7 +46,7 @@ class QueueSlot {
     await expect
       .poll(
         async () =>
-          /games\\/(\\d+)/.test(this.page.url()) || (await leaveQueueButton.isVisible()),
+          /games\/(\d+)/.test(this.page.url()) || (await leaveQueueButton.isVisible()),
       )
       .toBe(true)
   }
@@ -146,9 +146,9 @@ export class QueuePage {
     await expect
       .poll(
         async () => {
-          if (/games\\/(\\d+)/.test(this.page.url())) {
-          return 'game'
-        }
+          if (/games\/(\d+)/.test(this.page.url())) {
+            return 'game'
+          }
           if (await this.slot(slot).isReady()) {
             return 'ready'
           }
@@ -161,7 +161,7 @@ export class QueuePage {
       )
       .not.toBe('waiting')
 
-    if (/games\\/(\\d+)/.test(this.page.url()) || (await this.slot(slot).isReady())) {
+    if (/games\/(\d+)/.test(this.page.url()) || (await this.slot(slot).isReady())) {
       return
     }
     await readyUpButton.click()
