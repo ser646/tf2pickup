@@ -12,6 +12,7 @@ export async function DiscordSettingsEntry(props: {
   const configuredGuilds = (await configuration.get('discord.guilds')).filter(
     ({ voiceServer }) => voiceServer !== undefined,
   )
+  const inviteLink = await configuration.get('misc.discord_invite_link')
   const voiceConfigured = configuredGuilds.length === 1 && !!discord.client?.isReady()
 
   return (
@@ -48,26 +49,58 @@ export async function DiscordSettingsEntry(props: {
           </p>
         ) : (
           <>
-            <p class="flex-1">Link your Discord account to join your team's private match voice channel.</p>
-            <button
-              class="button"
-              data-variant="accent"
-              hx-post="/discord/link"
-            >
-              Generate linking code
-            </button>
+            <p class="flex-1">
+              Join the Discord server, then link your account to access your team's private match voice channel.
+            </p>
+            <div class="flex flex-wrap items-center gap-2">
+              {inviteLink && (
+                <a
+                  class="button"
+                  data-variant="darker"
+                  href={inviteLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Join Discord server
+                </a>
+              )}
+              <button
+                class="button"
+                data-variant="accent"
+                hx-post="/discord/link"
+              >
+                Generate linking code
+              </button>
+            </div>
           </>
         )}
       </div>
       {props.generatedCode && !player.discordLink && voiceConfigured && (
         <div class="mx-5 rounded-lg border border-zinc-700 bg-zinc-900 p-4">
-          <p class="font-semibold">Your one-time linking code</p>
-          <p class="my-3 break-all font-mono text-2xl tracking-widest" safe>
+          <p class="font-semibold">Finish linking your Discord account</p>
+          <ol class="my-3 list-decimal space-y-2 pl-5 text-sm text-zinc-200">
+            <li>Join the Discord server using the button below, if you haven't already.</li>
+            <li>Open the server and enter <code>/link</code> in any channel where you can use bot commands.</li>
+            <li>Paste the one-time code into the command's <code>code</code> field and submit it.</li>
+          </ol>
+          {inviteLink && (
+            <a
+              class="button"
+              data-variant="darker"
+              href={inviteLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <IconBrandDiscord size={18} />
+              Join Discord server
+            </a>
+          )}
+          <p class="mt-4 text-sm text-zinc-400">Your one-time code (expires in 10 minutes):</p>
+          <p class="my-2 break-all font-mono text-2xl tracking-widest" safe>
             {props.generatedCode}
           </p>
-          <p class="text-sm text-zinc-200">
-            In the configured Discord server, run <code>/link</code> and paste this code. It expires
-            in 10 minutes and is shown only once.
+          <p class="text-xs text-zinc-400">
+            The code is shown only once and can only be used once. If it expires, generate a new one.
           </p>
         </div>
       )}
