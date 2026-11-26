@@ -144,18 +144,21 @@ export class QueuePage {
     }
     const readyUpButton = this.readyUpDialog().readyUpButton()
     await expect
-      .poll(async () => {
-        if (/games\\/(\\d+)/.test(this.page.url())) {
+      .poll(
+        async () => {
+          if (/games\\/(\\d+)/.test(this.page.url())) {
           return 'game'
         }
-        if (await this.slot(slot).isReady()) {
-          return 'ready'
-        }
-        if (await readyUpButton.isVisible()) {
-          return 'dialog'
-        }
-        return 'waiting'
-      })
+          if (await this.slot(slot).isReady()) {
+            return 'ready'
+          }
+          if (await readyUpButton.isVisible()) {
+            return 'dialog'
+          }
+          return 'waiting'
+        },
+        { timeout: secondsToMilliseconds(15) },
+      )
       .not.toBe('waiting')
 
     if (/games\\/(\\d+)/.test(this.page.url()) || (await this.slot(slot).isReady())) {
