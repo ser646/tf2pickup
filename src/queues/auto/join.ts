@@ -40,7 +40,7 @@ export async function join(
   logger.trace({ queue, steamId, slotId, selectedClasses }, 'queue.join()')
   const settings = await get(queue)
   assertAutoQueue(settings)
-  if (settings.allowMultipleClasses !== true) {
+  if (!settings.allowMultipleClasses) {
     return await joinSingleClass(queue, slotId, steamId)
   }
   const player = await players.bySteamId(steamId, [
