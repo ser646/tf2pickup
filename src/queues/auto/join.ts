@@ -114,13 +114,7 @@ export async function join(
       clickedSlot.player.steamId !== steamId &&
       !availableClasses.includes(clickedSlot.gameClass)
     ) {
-      const blocker = joinBlocker(
-        player,
-        clickedSlot,
-        settings,
-        defaultSkill,
-        requireDiscordLink,
-      )
+      const blocker = joinBlocker(player, clickedSlot, settings, defaultSkill, requireDiscordLink)
       throw errors.badRequest(blocker ?? 'You are not eligible for this class')
     }
 
