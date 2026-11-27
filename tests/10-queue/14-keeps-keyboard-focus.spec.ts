@@ -10,17 +10,17 @@ test('keeps keyboard focus on the slot after joining and leaving @6v6 @9v9', asy
   const { page } = await users.getNext().queuePage()
   await page.goto('/')
 
-  const soldierClassButton = page
-    .locator('[data-class-primary][data-class-primary-join^="soldier-"]')
-    .first()
-  await soldierClassButton.focus()
+  // Multi-class is opt-in. By default, keyboard signup must use the original
+  // per-slot join control and restore focus to that control after leaving.
+  const joinButton = page.locator('[aria-label="Queue slot soldier-1"] button[name="join"]')
+  await expect(joinButton).toBeVisible()
+  await joinButton.focus()
   await page.keyboard.press('Enter')
-  await expect(page.getByRole('button', { name: 'Leave queue' })).toBeFocused()
+  const leaveButton = page.locator('[aria-label="Queue slot soldier-1"] button[name="leave"]')
+  await expect(leaveButton).toBeFocused()
 
   await page.keyboard.press('Enter')
-  await expect(
-    page.locator('[data-class-primary][data-class-primary-join^="soldier-"]').first(),
-  ).toBeFocused()
+  await expect(joinButton).toBeFocused()
 })
 
 test('keeps focus on an online player link when the list re-renders @6v6 @9v9', async ({
