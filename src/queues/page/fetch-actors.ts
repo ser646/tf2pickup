@@ -4,7 +4,14 @@ import type { SteamId64 } from '../../shared/types/steam-id-64'
 
 export type QueuePageActor = Pick<
   PlayerModel,
-  'steamId' | 'hasAcceptedRules' | 'bans' | 'activeGame' | 'skill' | 'verified' | 'roles' | 'discordLink'
+  | 'steamId'
+  | 'hasAcceptedRules'
+  | 'bans'
+  | 'activeGame'
+  | 'skill'
+  | 'verified'
+  | 'roles'
+  | 'discordLink'
 >
 
 export async function fetchActors(steamIds: SteamId64[]): Promise<Map<SteamId64, QueuePageActor>> {
