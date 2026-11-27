@@ -174,8 +174,8 @@ async function Queue(props: {
                     slot={slot}
                     actor={actor}
                     defaultSkill={defaultSkill}
-                  requireDiscordLink={requireDiscordLink}
-                />
+                    requireDiscordLink={requireDiscordLink}
+                  />
                 ))}
             </div>
           ))}
