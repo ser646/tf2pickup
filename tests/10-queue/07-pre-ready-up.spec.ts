@@ -133,11 +133,25 @@ test('pre-ready up enables automatically after readying up @6v6 @9v9', async ({
   }
 })
 
+async function setMultiClassEnabled(users: { getAdmin: () => { page: () => Promise<import('@playwright/test').Page> } }, enabled: boolean) {
+  const admin = await users.getAdmin().page()
+  await admin.goto('/admin/queues/' + (await import('../queue-slots')).defaultQueueSlug())
+  const toggle = admin.getByLabel('Allow multiple classes')
+  if (enabled) {
+    await toggle.check()
+  } else {
+    await toggle.uncheck()
+  }
+  await admin.getByRole('button', { name: 'Save' }).click()
+  await expect(admin.getByText('Configuration saved')).toBeVisible()
+}
+
 test('does not ready up if switching classes as 11th player @6v6 @9v9', async ({
   users,
   players,
   desiredSlots,
 }) => {
+  await setMultiClassEnabled(users, true)
   const polemic = users.byName('Polemic')
   const firstSlot = desiredSlots.get('Polemic')!
   // BellBoy's slot is free, and Shadowhunter remains queued so Polemic is still the
@@ -167,4 +181,5 @@ test('does not ready up if switching classes as 11th player @6v6 @9v9', async ({
   const reassignedSlot = page.slot(secondSlot)
   await expect(reassignedSlot.locator).toHaveAttribute('data-player', polemic.steamId)
   expect(await reassignedSlot.isReady()).toBe(false)
+  await setMultiClassEnabled(users, false)
 })
