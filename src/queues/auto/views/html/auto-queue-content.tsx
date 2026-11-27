@@ -71,9 +71,7 @@ async function DiscordLinkNotice(props: { actor?: SteamId64 | undefined }) {
       role="status"
       data-testid="discord-link-required"
     >
-      <p class="text-sm">
-        To join this queue, you first need to link your Discord account.
-      </p>
+      <p class="text-sm">To join this queue, you first need to link your Discord account.</p>
       <a
         href="/settings#discord-settings-entry"
         class="button"
