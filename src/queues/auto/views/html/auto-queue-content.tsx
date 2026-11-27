@@ -50,7 +50,7 @@ export async function AutoQueueContent(props: { queue: QueueModel }) {
   )
 }
 
-async function DiscordLinkNotice(props: { actor?: SteamId64 }) {
+async function DiscordLinkNotice(props: { actor?: SteamId64 | undefined }) {
   if (!props.actor) {
     return <></>
   }
