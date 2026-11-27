@@ -40,6 +40,12 @@ export class UserContext {
     this._browserContext ??= await this._contextFactory()
     if (!this._page || this._page.isClosed()) {
       this._page = await this._browserContext.newPage()
+      await this._page.goto('/')
+      const signInLink = this._page.getByRole('link', { name: 'Sign in through Steam' })
+      if (await signInLink.isVisible()) {
+        await this._page.goto(`/auth/test?steamId=${this.steamId}`)
+        await this._page.waitForURL(url => url.pathname === '/' || url.pathname.startsWith('/q/'))
+      }
     }
     return this._page
   }
