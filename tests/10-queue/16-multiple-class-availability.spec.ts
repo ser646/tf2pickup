@@ -92,11 +92,12 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
   // Scout is represented by the occupied slot (not a checked alternate checkbox),
   // while their previous Medic availability must remain checked. Otherwise Scout
   // must remain checked as an alternate class.
-  const flexible2InScout = await Promise.all(
+  const flexible2ScoutPlayers = await Promise.all(
     (['scout-1', 'scout-2', 'scout-3', 'scout-4'] as const).map(slotId =>
       flexible2Page.slot(slotId).locator.getAttribute('data-player'),
     ),
-  ).then(players => players.includes(flexible2.steamId))
+  )
+  const flexible2InScout = flexible2ScoutPlayers.includes(flexible2.steamId)
   await expect(
     flexible2Page.page.locator(
       `[data-class-preference][value="${flexible2InScout ? 'medic' : 'scout'}"]`,
