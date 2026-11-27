@@ -134,7 +134,12 @@ test('pre-ready up enables automatically after readying up @6v6 @9v9', async ({
   }
 })
 
-async function setMultiClassEnabled(users: { getAdmin: () => { page: () => Promise<import('@playwright/test').Page> } }, enabled: boolean) {
+async function setMultiClassEnabled(
+  users: {
+    getAdmin: () => { page: () => Promise<import('@playwright/test').Page> }
+  },
+  enabled: boolean,
+) {
   const admin = await users.getAdmin().page()
   await admin.goto('/admin/queues/' + defaultQueueSlug())
   const toggle = admin.getByLabel('Allow multiple classes')
