@@ -39,8 +39,13 @@ jobs:
   unit-tests:
     name: unit
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:latest
+        ports:
+          - 27017:27017
     # Unit tests import modules that validate the application environment at load time.
-    # These are inert local test values; no external service is contacted by the unit job.
+    # The database service is used by the queue-slot component suite.
     env:
       WEBSITE_URL: 'http://localhost:3000'
       MONGODB_URI: 'mongodb://localhost:27017/tf2pickup'
