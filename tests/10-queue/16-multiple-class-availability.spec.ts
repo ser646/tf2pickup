@@ -20,9 +20,9 @@ async function setMultiClassEnabled(
   })
   const checkbox = admin.locator('#allowMultipleClasses')
   if ((await checkbox.isChecked()) !== enabled) {
-    // The checkbox is visually covered by the custom switch slider. Click the
-    // slider itself so the native label activation toggles the real checkbox.
-    await toggle.locator('.slider').click()
+    // The native checkbox overlays the custom slider and intercepts its pointer
+    // events. Force the checkbox action instead of clicking the decorative slider.
+    await checkbox.setChecked(enabled, { force: true })
   }
   if (enabled) {
     await expect(checkbox).toBeChecked()
