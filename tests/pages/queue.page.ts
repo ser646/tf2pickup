@@ -43,10 +43,8 @@ class QueueSlot {
       // Current queue UI: clicking the class heading selects the primary class.
       await primaryClassButtons.click()
     } else {
-      // The 4.25.0 upgrade fixture runs against the legacy UI, where the slot itself
-      // is the join target and class headings do not expose data-class-primary.
-      await this.locator.click()
-      return
+      // Legacy single-class UI: submit the join button inside the selected slot.
+      await this.locator.locator('button[name="join"]').click()
     }
     const leaveQueueButton = this.page.getByRole('button', { name: 'Leave queue' })
     await expect
