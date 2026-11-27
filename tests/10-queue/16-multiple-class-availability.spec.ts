@@ -87,8 +87,20 @@ test('moves flexible players when a class specialist joins @6v6', async ({ users
 
   // A queue update from another player must not discard an existing alternate selection.
   await medicPage.slot('medic-1').join()
+
+  // A flexible player may now occupy Scout as their primary class. In that case
+  // Scout is represented by the occupied slot (not a checked alternate checkbox),
+  // while their previous Medic availability must remain checked. Otherwise Scout
+  // must remain checked as an alternate class.
+  const flexible2InScout = await Promise.all(
+    (['scout-1', 'scout-2', 'scout-3', 'scout-4'] as const).map(slotId =>
+      flexible2Page.slot(slotId).locator.getAttribute('data-player'),
+    ),
+  ).then(players => players.includes(flexible2.steamId))
   await expect(
-    flexible2Page.page.locator('[data-class-preference][value="scout"]').first(),
+    flexible2Page.page.locator(
+      `[data-class-preference][value="${flexible2InScout ? 'medic' : 'scout'}"]`,
+    ).first(),
   ).toBeChecked()
 
   // 6v6 has four Scout slots across both teams. The flexible assignment may use any of them.
