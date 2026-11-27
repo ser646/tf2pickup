@@ -304,3 +304,70 @@
     }
   }
 }
+
+
+/*
+ * The legacy single-class queue must retain the original tf2pickup slot
+ * presentation. Keep these rules scoped so multi-class styling cannot leak
+ * into the opt-out experience.
+ */
+@layer components {
+  .queue-slot-legacy {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background: var(--color-surface-raised);
+
+    &:has(> .join-queue-button:disabled) {
+      border-color: transparent;
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--color-zinc-900) 0,
+        var(--color-zinc-900) 14px,
+        var(--color-zinc-850) 14px,
+        var(--color-zinc-850) 28px
+      );
+    }
+
+    &:has(> .join-queue-button:hover:enabled),
+    &:has(> .join-queue-button:focus-visible) {
+      border-color: var(--color-zinc-600);
+    }
+
+    > .join-queue-button {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      color: var(--color-zinc-200);
+      background: transparent;
+
+      > svg {
+        opacity: 0;
+      }
+
+      &:hover:enabled,
+      &:focus-visible {
+        background: linear-gradient(180deg, var(--color-zinc-700), var(--color-zinc-600));
+
+        > svg {
+          opacity: 1;
+        }
+      }
+
+      &:disabled {
+        color: var(--color-text-muted);
+        background: transparent;
+
+        > svg {
+          opacity: 1;
+        }
+      }
+    }
+
+    > .player-info {
+      grid-template-columns: 42px minmax(0, 1fr) 42px;
+    }
+  }
+}
