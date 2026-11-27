@@ -13,6 +13,7 @@ const db = vi.hoisted(() => ({
     gamemode: string
     launchMode: string
     enabled: boolean
+    allowMultipleClasses: boolean
   }[],
   slots: [] as {
     id: string
@@ -146,6 +147,7 @@ const sixes = {
   gamemode: '6v6',
   launchMode: 'auto',
   enabled: true,
+  allowMultipleClasses: true,
 }
 const ultiduo = {
   _id: new ObjectId(),
