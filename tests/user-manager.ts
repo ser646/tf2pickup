@@ -41,7 +41,7 @@ export class UserContext {
     if (!this._page || this._page.isClosed()) {
       this._page = await this._browserContext.newPage()
       await this._page.goto('/')
-      const signInLink = this._page.getByRole('link', { name: 'Sign in through Steam' })
+      const signInLink = this._page.locator('a[href="/auth/steam"]')
       if (await signInLink.isVisible()) {
         await this._page.goto(`/auth/test?steamId=${this.steamId}`)
         await this._page.waitForURL(url => url.pathname === '/' || url.pathname.startsWith('/q/'))
