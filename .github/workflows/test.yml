@@ -35,6 +35,16 @@ jobs:
   unit-tests:
     name: unit
     runs-on: ubuntu-latest
+    # Unit tests import modules that validate the application environment at load time.
+    # These are inert local test values; no external service is contacted by the unit job.
+    env:
+      WEBSITE_URL: 'http://localhost:3000'
+      MONGODB_URI: 'mongodb://localhost:27017/tf2pickup'
+      STEAM_API_KEY: 'FAKE_STEAM_API_KEY'
+      KEY_STORE_PASSPHRASE: 'a_password'
+      LOG_RELAY_ADDRESS: '127.0.0.1'
+      LOG_RELAY_PORT: '9871'
+      GAME_SERVER_SECRET: 'xxxxxx'
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: pnpm/action-setup@v6.1.1
