@@ -155,6 +155,7 @@ const ultiduo = {
   gamemode: 'ultiduo',
   launchMode: 'auto',
   enabled: true,
+  allowMultipleClasses: true,
 }
 
 function connect(currentUrl: string, steamId?: SteamId64) {
