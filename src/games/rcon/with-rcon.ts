@@ -28,14 +28,29 @@ export async function withRcon<T>(
     connectTimeout: timeout,
   })
 
+  rcon.on('disconnect', error => {
+    if (error) {
+      logger.error(error, `game #${game.number}: rcon error`)
+    }
+  })
+
+  let callbackFailed = false
   try {
-    rcon.on('disconnect', error => {
-      if (error) {
-        logger.error(error, `game #${game.number}: rcon error`)
-      }
-    })
     return await callback({ rcon })
+  } catch (error) {
+    callbackFailed = true
+    throw error
   } finally {
-    await rcon.end()
+    try {
+      await rcon.end()
+    } catch (error) {
+      // Closing an RCON socket can fail after the server has already closed it.
+      // Do not turn a successfully completed configuration into a failed attempt,
+      // or mask the original command error with a secondary cleanup error.
+      logger.warn(
+        { error, callbackFailed },
+        `game #${game.number}: failed to close rcon connection`,
+      )
+    }
   }
 }
