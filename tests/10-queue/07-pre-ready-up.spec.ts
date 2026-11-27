@@ -142,11 +142,19 @@ async function setMultiClassEnabled(
 ) {
   const admin = await users.getAdmin().page()
   await admin.goto('/admin/queues/' + defaultQueueSlug())
-  const toggle = admin.getByLabel('Allow multiple classes')
+  const toggle = admin.locator('label.switch').filter({
+    has: admin.locator('#allowMultipleClasses'),
+  })
+  const checkbox = admin.locator('#allowMultipleClasses')
+  if ((await checkbox.isChecked()) !== enabled) {
+    // The checkbox is visually covered by the custom switch slider. Click the
+    // slider itself so the native label activation toggles the real checkbox.
+    await toggle.locator('.slider').click()
+  }
   if (enabled) {
-    await toggle.check()
+    await expect(checkbox).toBeChecked()
   } else {
-    await toggle.uncheck()
+    await expect(checkbox).not.toBeChecked()
   }
   await admin.getByRole('button', { name: 'Save' }).click()
   await expect(admin.getByText('Configuration saved')).toBeVisible()
