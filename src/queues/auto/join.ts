@@ -97,8 +97,7 @@ export async function join(
     // Skill thresholds can differ by class. Keep only the classes this player is currently
     // eligible to play; the same checks are repeated here even though the UI disables them.
     const availableClasses = requestedClasses.filter(
-      gameClass =>
-        !joinBlocker(player, { gameClass }, settings, defaultSkill, requireDiscordLink),
+      gameClass => !joinBlocker(player, { gameClass }, settings, defaultSkill, requireDiscordLink),
     )
     if (availableClasses.length === 0) {
       const blocker = joinBlocker(
