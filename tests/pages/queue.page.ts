@@ -43,10 +43,15 @@ class QueueSlot {
       // Current queue UI: clicking the class heading selects the primary class.
       await primaryClassButtons.click()
     } else {
-      // Legacy single-class UI: submit the join button and wait for the slot to be filled.
+      // Current single-class UI has a submit button; older upgrade fixtures use the slot itself.
       const legacyJoinButton = this.locator.locator('button[name="join"]')
-      await legacyJoinButton.click()
-      await expect(legacyJoinButton).not.toBeVisible()
+      if (await legacyJoinButton.count()) {
+        await legacyJoinButton.click()
+        await expect(legacyJoinButton).not.toBeVisible()
+      } else {
+        await this.locator.click()
+        await expect(this.locator).toHaveAttribute('data-player', /.+/)
+      }
       return
     }
     const leaveQueueButton = this.page.getByRole('button', { name: 'Leave queue' })
