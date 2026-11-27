@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb'
 import type { QueueSlotModel } from '../../../../database/models/queue-slot.model'
 import type { QueueId } from '../../../../database/models/queue.model'
 import { Gamemode } from '../../../../shared/types/gamemode'
+import { Tf2ClassName } from '../../../../shared/types/tf2-class-name'
 import { SingleClassQueueSlot } from './single-class-queue-slot'
 
 describe('SingleClassQueueSlot', () => {
@@ -20,7 +21,7 @@ describe('SingleClassQueueSlot', () => {
           slot: {
             queue: new ObjectId() as QueueId,
             id: 'scout-1',
-            gameClass: 'scout',
+            gameClass: Tf2ClassName.scout,
             player: null,
             ready: false,
           } as QueueSlotModel,
