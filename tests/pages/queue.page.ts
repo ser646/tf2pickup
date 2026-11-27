@@ -43,8 +43,11 @@ class QueueSlot {
       // Current queue UI: clicking the class heading selects the primary class.
       await primaryClassButtons.click()
     } else {
-      // Legacy single-class UI: submit the join button inside the selected slot.
-      await this.locator.locator('button[name="join"]').click()
+      // Legacy single-class UI: submit the join button and wait for the slot to be filled.
+      const legacyJoinButton = this.locator.locator('button[name="join"]')
+      await legacyJoinButton.click()
+      await expect(legacyJoinButton).not.toBeVisible()
+      return
     }
     const leaveQueueButton = this.page.getByRole('button', { name: 'Leave queue' })
     await expect
