@@ -24,6 +24,7 @@ import { TeamPlayerCount } from './team-player-count'
 import { teamSlots } from './team-slots'
 import { VoiceServerType } from '../../../../shared/types/voice-server-type'
 import { ClassPreferences } from './class-preferences'
+import { IconBrandDiscord } from '../../../../html/components/icons'
 
 export async function AutoQueueContent(props: { queue: QueueModel }) {
   const { queue } = props
@@ -40,10 +41,48 @@ export async function AutoQueueContent(props: { queue: QueueModel }) {
         <QueueState queue={queue} actor={user} required={required} />
       </div>
       <div class="queue-content">
+        <DiscordLinkNotice actor={user?.player.steamId} />
         <Queue queue={queue} slots={slots} actor={user?.player.steamId} />
         <MapVote queue={queue._id} actor={user?.player.steamId} />
         <StreamList />
       </div>
+    </div>
+  )
+}
+
+async function DiscordLinkNotice(props: { actor?: SteamId64 }) {
+  if (!props.actor) {
+    return <></>
+  }
+
+  const voiceServerType = await configuration.get('games.voice_server_type')
+  if (voiceServerType !== VoiceServerType.discord) {
+    return <></>
+  }
+
+  const player = await players.bySteamId(props.actor, ['discordLink'])
+  if (player.discordLink) {
+    return <></>
+  }
+
+  return (
+    <div
+      class="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-zinc-700 bg-zinc-900 p-4"
+      role="status"
+      data-testid="discord-link-required"
+    >
+      <p class="text-sm">
+        To join this queue, you first need to link your Discord account.
+      </p>
+      <a
+        href="/settings#discord-settings-entry"
+        class="button"
+        data-variant="accent"
+        data-umami-event="link-discord-from-queue"
+      >
+        <IconBrandDiscord size={18} />
+        Link Discord account
+      </a>
     </div>
   )
 }
