@@ -57,7 +57,7 @@ export async function SingleClassQueueSlot(props: {
 
   return (
     <div
-      class={['queue-slot', isOwnSlot && 'queue-slot-own', isReadySlot && 'queue-slot-ready']}
+      class={['queue-slot', 'queue-slot-legacy', isOwnSlot && 'queue-slot-own', isReadySlot && 'queue-slot-ready']}
       id={`queue-slot-${props.slot.id}`}
       aria-label={`Queue slot ${props.slot.id}`}
       data-player={props.slot.player?.steamId}
