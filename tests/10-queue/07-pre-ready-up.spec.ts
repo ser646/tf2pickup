@@ -142,9 +142,6 @@ async function setMultiClassEnabled(
 ) {
   const admin = await users.getAdmin().page()
   await admin.goto('/admin/queues/' + defaultQueueSlug())
-  const toggle = admin.locator('label.switch').filter({
-    has: admin.locator('#allowMultipleClasses'),
-  })
   const checkbox = admin.locator('#allowMultipleClasses')
   if ((await checkbox.isChecked()) !== enabled) {
     // The native checkbox overlays the custom slider and intercepts its pointer
