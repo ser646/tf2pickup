@@ -29,19 +29,25 @@ class QueueSlot {
 
   joinButton() {
     const gameClass = this.slotId.slice(0, this.slotId.lastIndexOf('-'))
-    // Some gamemodes render the same class heading once per slot. The controls are
-    // intentionally class-based, so expose one representative visible heading.
+    // Support both the class-heading control and the original per-slot join button.
     return this.page
-      .locator(`[data-class-primary][data-class-primary-join^="${gameClass}-"]`)
+      .locator(
+        `[data-class-primary][data-class-primary-join^="${gameClass}-"], [aria-label="Queue slot ${this.slotId}"] button[name="join"]`,
+      )
       .filter({ visible: true })
       .first()
   }
 
   async join() {
-    const primaryClassButtons = this.joinButton()
-    if (await primaryClassButtons.count()) {
-      // Current queue UI: clicking the class heading selects the primary class.
-      await primaryClassButtons.click()
+    const primaryClassButton = this.page
+      .locator(
+        `[data-class-primary][data-class-primary-join^="${this.slotId.slice(0, this.slotId.lastIndexOf('-'))}-"]`,
+      )
+      .filter({ visible: true })
+      .first()
+    if (await primaryClassButton.count()) {
+      // Multi-class UI: clicking the class heading selects the primary class.
+      await primaryClassButton.click()
     } else {
       // Current single-class UI has a submit button; older upgrade fixtures use the slot itself.
       const legacyJoinButton = this.locator.locator('button[name="join"]')
