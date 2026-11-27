@@ -3,6 +3,7 @@ import { minutesToMilliseconds, secondsToMilliseconds } from 'date-fns'
 import { launchGame } from '../fixtures/launch-game'
 import { waitForEmptyQueue } from '../fixtures/wait-for-empty-queue'
 import { expect } from '../fixtures/expect'
+import { defaultQueueSlug } from '../queue-slots'
 
 const test = mergeTests(launchGame, waitForEmptyQueue)
 const readyUpTimeout = secondsToMilliseconds(20)
@@ -135,7 +136,7 @@ test('pre-ready up enables automatically after readying up @6v6 @9v9', async ({
 
 async function setMultiClassEnabled(users: { getAdmin: () => { page: () => Promise<import('@playwright/test').Page> } }, enabled: boolean) {
   const admin = await users.getAdmin().page()
-  await admin.goto('/admin/queues/' + (await import('../queue-slots')).defaultQueueSlug())
+  await admin.goto('/admin/queues/' + defaultQueueSlug())
   const toggle = admin.getByLabel('Allow multiple classes')
   if (enabled) {
     await toggle.check()
