@@ -272,7 +272,7 @@ export class GameServerSimulator {
 
   async run() {
     return new Promise<void>(resolve => {
-      this.server.listen(this.port, resolve)
+      this.server.listen(this.port, '0.0.0.0', resolve)
     })
   }
 
