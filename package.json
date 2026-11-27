@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "tsx --watch src/main.ts",
     "xss-scan": "xss-scan",
-    "lint": "prettier tests/10-queue/16-multiple-class-availability.spec.ts && prettier --check . && eslint .",
+    "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "test": "vitest --dir src",
     "test:e2e": "playwright test",
