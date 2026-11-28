@@ -2,16 +2,23 @@ import { z } from 'zod'
 import { environment } from '../environment'
 import { Etf2lApiError } from './errors/etf2l-api.error'
 
-const matchSchema = z.object({
-  competition: z.object({ id: z.number() }).passthrough(),
-  division: z.union([z.string(), z.object({ name: z.string() }).passthrough()]).nullable(),
-}).passthrough()
+const matchSchema = z
+  .object({
+    competition: z.object({ id: z.number() }).passthrough(),
+    division: z
+      .union([z.string(), z.object({ name: z.string() }).passthrough()])
+      .nullable()
+      .optional(),
+  })
+  .passthrough()
 
 const matchesResponseSchema = z.object({
-  results: z.object({
-    data: z.array(matchSchema),
-    last_page: z.number().int().positive(),
-  }).passthrough(),
+  results: z
+    .object({
+      data: z.array(matchSchema),
+      last_page: z.number().int().positive(),
+    })
+    .passthrough(),
 })
 
 export interface Etf2lSkillEligibility {
@@ -69,7 +76,11 @@ export async function getPlayerSkillEligibility(playerId: number): Promise<Etf2l
     .sort((a, b) => b.count - a.count)[0]
 
   if (premiership) {
-    return { maxLevel: 5, highestDivision: premiership.division, qualifyingMatches: premiership.count }
+    return {
+      maxLevel: 5,
+      highestDivision: premiership.division,
+      qualifyingMatches: premiership.count,
+    }
   }
 
   const high = qualifying
@@ -77,7 +88,11 @@ export async function getPlayerSkillEligibility(playerId: number): Promise<Etf2l
     .sort((a, b) => b.count - a.count)[0]
 
   if (high) {
-    return { maxLevel: 4, highestDivision: high.division, qualifyingMatches: high.count }
+    return {
+      maxLevel: 4,
+      highestDivision: high.division,
+      qualifyingMatches: high.count,
+    }
   }
 
   return { maxLevel: 3, qualifyingMatches: 0 }
