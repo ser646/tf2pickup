@@ -18,12 +18,12 @@ test('configure game server @6v6 @9v9', async ({ players, gameNumber, page, game
       })
 
       const connectString = page.connectString()
-      await expect(connectString).toHaveText(/^connect .+;\\s?password (.+)$/, {
+      await expect(connectString).toHaveText(/^connect .+;\s?password (.+)$/, {
         timeout: secondsToMilliseconds(15),
       })
 
       const [, password] =
-        /^connect .+;\\s?password (.+)$/.exec(await connectString.innerText()) ?? []
+        /^connect .+;\s?password (.+)$/.exec(await connectString.innerText()) ?? []
       expect(gameServer.cvar('sv_password').value).toEqual(password)
 
       await expect(page.joinGameButton()).toBeVisible()
