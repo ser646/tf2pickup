@@ -86,8 +86,8 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
               Choose your 6v6 class skills
             </h2>
             <p class="mt-2 text-sm text-zinc-300">
-              Pick one simple tag for each class. Choose <strong>Newbie</strong> only if you are
-              new to playing that class in competitive 6v6.
+              Pick one simple tag for each class. Choose <strong>Newbie</strong> only if you are new
+              to playing that class in competitive 6v6.
             </p>
           </div>
 
@@ -160,7 +160,9 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
             </button>
           </form>
           <p class="text-xs text-zinc-500">
-            Newbie means skill level 1. It will be shown next to your name only when you sign up for a class you marked Newbie. ETF2L verification unlocks Experienced and Advanced; it does not select a level for you.
+            Newbie means skill level 1. It will be shown next to your name only when you sign up for
+            a class you marked Newbie. ETF2L verification unlocks Experienced and Advanced; it does
+            not select a level for you.
           </p>
         </div>
       </dialog>
