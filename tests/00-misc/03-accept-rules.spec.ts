@@ -37,7 +37,9 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
   const skillDialog = page.locator('#skill-onboarding-dialog')
   if ((process.env.QUEUE_CONFIG ?? '6v6') === '6v6') {
     await expect(skillDialog).toBeVisible()
-    await expect(skillDialog.getByRole('heading', { name: 'Choose your 6v6 class skills' })).toBeVisible()
+    await expect(
+      skillDialog.getByRole('heading', { name: 'Choose your 6v6 class skills' }),
+    ).toBeVisible()
 
     const scout = skillDialog.getByRole('group', { name: 'Scout' })
     const soldier = skillDialog.getByRole('group', { name: 'Soldier' })
