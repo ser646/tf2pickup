@@ -13,6 +13,7 @@ setup('authenticate', async ({ browser }) => {
   const client = await MongoClient.connect(process.env['MONGODB_URI'])
   const players = client.db().collection('players')
   for (const user of users) {
+    const isNewcomer = 'hasAcceptedRules' in user
     await players.updateOne(
       { steamId: user.steamId },
       {
@@ -28,6 +29,7 @@ setup('authenticate', async ({ browser }) => {
           },
           roles: 'roles' in user ? user.roles : [],
           hasAcceptedRules: 'hasAcceptedRules' in user ? user.hasAcceptedRules : true,
+          ...(!isNewcomer ? { skillOnboardingCompletedAt: new Date() } : {}),
           cooldownLevel: 0,
           preferences: {},
           stats: {
@@ -39,6 +41,8 @@ setup('authenticate', async ({ browser }) => {
           activeGame: 1,
           skill: 1,
           mumbleCertificate: 1,
+          etf2lSkillVerification: 1,
+          ...(isNewcomer ? { skillOnboardingCompletedAt: 1 } : {}),
         },
       },
       {
