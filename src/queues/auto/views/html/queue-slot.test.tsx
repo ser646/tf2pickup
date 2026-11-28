@@ -110,6 +110,22 @@ describe('QueueSlot', () => {
       expect(root.querySelector('.player-name-text')?.text).toBe('Test Player')
     })
 
+    it('shows the Newbie badge only for the class the player marked as Newbie', async () => {
+      vi.mocked(collections.players.findOne).mockResolvedValueOnce({
+        skill: {
+          [Gamemode.sixes]: {
+            [Tf2ClassName.soldier]: 1,
+            [Tf2ClassName.scout]: 2,
+          },
+        },
+      })
+      const html = await QueueSlot({ queue, slot: occupiedSlot })
+      const root = parse(html)
+      expect(root.querySelector('.player-name-area [aria-label="Newbie on soldier"]')?.text).toBe(
+        'NEWBIE',
+      )
+    })
+
     it('identifies the viewer’s own slot', async () => {
       const ownSlot = parse(await QueueSlot({ slot: occupiedSlot, actor }))
       const anonymousSlot = parse(await QueueSlot({ slot: occupiedSlot }))
