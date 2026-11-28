@@ -4,12 +4,13 @@ import type { User } from '../../../auth/types/user'
 
 export async function SkillOnboardingDialog(props: { actor?: User | undefined }) {
   const actor = props.actor
-  if (!actor?.player.hasAcceptedRules) return <></>
+  if (!actor) return <></>
 
   const player = await collections.players.findOne(
     { steamId: actor.player.steamId },
     {
       projection: {
+        hasAcceptedRules: 1,
         skill: 1,
         skillOnboardingCompletedAt: 1,
         etf2lSkillVerification: 1,
@@ -17,7 +18,7 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
     },
   )
 
-  if (!player || player.skillOnboardingCompletedAt || player.skill?.[Gamemode.sixes]) {
+  if (!player?.hasAcceptedRules || player.skillOnboardingCompletedAt || player.skill?.[Gamemode.sixes]) {
     return <></>
   }
 
