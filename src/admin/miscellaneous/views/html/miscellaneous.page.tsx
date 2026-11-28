@@ -21,10 +21,12 @@ export async function MiscellaneousPage() {
               </dt>
               <dd class="text-zinc-200">
                 <span class="hidden group-has-checked:inline-block">
-                  Players are asked to choose their 6v6 class skill levels when they visit the pickup page
+                  Players are asked to choose their 6v6 class skill levels when they visit the
+                  pickup page
                 </span>
                 <span class="group-has-checked:hidden">
-                  The skill onboarding welcome dialog is disabled. Existing pickup behaviour is unchanged.
+                  The skill onboarding welcome dialog is disabled. Existing pickup behaviour is
+                  unchanged.
                 </span>
               </dd>
             </dl>
