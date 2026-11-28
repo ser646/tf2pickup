@@ -31,7 +31,9 @@ export async function QueuePage(props: {
   const { current, required } = await playerCounts(queue)
   const user = requestContext.get('user')
   const isDefault = (await queues.getDefault())._id.equals(queue._id)
-  const skillOnboardingEnabled = await configuration.get('players.skill_onboarding_enabled')
+  const skillOnboardingEnabled =
+    queue.gamemode === Gamemode.sixes &&
+    (await configuration.get('players.skill_onboarding_enabled'))
 
   return (
     <Layout
@@ -65,7 +67,7 @@ export async function QueuePage(props: {
       <div id="queue-notify-container"></div>
       <RunningGameSnackbar gameNumber={user?.player.activeGame} />
       <AcceptRulesDialog actor={user} gamemode={queue.gamemode} />
-      {skillOnboardingEnabled && queue.gamemode === Gamemode.sixes && (\n        <SkillOnboardingDialog actor={user} />\n      )}
+      {skillOnboardingEnabled && (\n        <SkillOnboardingDialog actor={user} />\n      )}
     </Layout>
   )
 }
