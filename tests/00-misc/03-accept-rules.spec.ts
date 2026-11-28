@@ -74,13 +74,16 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
     const client = new MongoClient(process.env.MONGODB_URI)
     try {
       await client.connect()
-      const savedPlayer = await client
+      const savedPlayer = (await client
         .db()
         .collection('players')
         .findOne(
           { steamId: newcomer.steamId },
           { projection: { 'skill.6v6': 1, skillOnboardingCompletedAt: 1 } },
-        )
+        )) as unknown as {
+        skill?: { '6v6'?: Record<string, number> }
+        skillOnboardingCompletedAt?: Date
+      } | null
       expect(savedPlayer?.skill?.['6v6']).toEqual({
         scout: 2,
         soldier: 3,
