@@ -1,5 +1,4 @@
 import { launchGame as test } from '../fixtures/launch-game'
-import { secondsToMilliseconds } from 'date-fns'
 import { GamePage } from '../pages/game.page'
 import { expect } from '../fixtures/expect'
 
@@ -9,16 +8,17 @@ test('configure game server @6v6 @9v9', async ({ players, gameNumber, page, game
       const page = await player.gamePage(gameNumber)
       await expect(page.gameEvent('Game server assigned')).toBeVisible()
 
+      // Assignment happens before the background RCON configuration finishes.
+      // Wait for initialization first to avoid racing the connect-string update.
+      await expect(page.gameEvent('Game server initialized')).toBeVisible()
+
       const connectString = page.connectString()
-      await expect(connectString).toHaveText(/^connect .+;\s?password (.+)$/, {
-        timeout: secondsToMilliseconds(30),
-      })
+      await expect(connectString).toHaveText(/^connect .+;\\s?password (.+)$/)
 
       const [, password] =
-        /^connect .+;\s?password (.+)$/.exec(await connectString.innerText()) ?? []
+        /^connect .+;\\s?password (.+)$/.exec(await connectString.innerText()) ?? []
       expect(gameServer.cvar('sv_password').value).toEqual(password)
 
-      await expect(page.gameEvent('Game server initialized')).toBeVisible()
       await expect(page.joinGameButton()).toBeVisible()
 
       await expect(gameServer).toHaveCommand(`sm_game_player_add ${player.steamId}`)
