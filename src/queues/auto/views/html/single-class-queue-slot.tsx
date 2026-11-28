@@ -110,8 +110,7 @@ async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: A
       )
     : null
   const skill = slotPlayer?.skill?.[props.queue.gamemode]
-  const isNewbie =
-    props.queue.gamemode === Gamemode.sixes && skill?.[props.slot.gameClass] === 1
+  const isNewbie = props.queue.gamemode === Gamemode.sixes && skill?.[props.slot.gameClass] === 1
 
   let slotActionButton: JSX.Element
   if (props.actor?.steamId === props.slot.player.steamId) {
