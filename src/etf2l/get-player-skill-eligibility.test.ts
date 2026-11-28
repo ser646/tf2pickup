@@ -25,7 +25,10 @@ afterEach(() => vi.unstubAllGlobals())
 
 describe('getPlayerSkillEligibility', () => {
   it('unlocks level 5 after three Premiership matches in one competition', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response(['Premiership', 'Premiership', 'Premiership'])))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(response(['Premiership', 'Premiership', 'Premiership'])),
+    )
     await expect(getPlayerSkillEligibility(123)).resolves.toEqual({
       maxLevel: 5,
       highestDivision: 'Premiership',
@@ -34,7 +37,10 @@ describe('getPlayerSkillEligibility', () => {
   })
 
   it('unlocks level 4 after three Division 1 matches in one competition', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response(['Division 1', 'Division 1', 'Division 1'])))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(response(['Division 1', 'Division 1', 'Division 1'])),
+    )
     await expect(getPlayerSkillEligibility(123)).resolves.toEqual({
       maxLevel: 4,
       highestDivision: 'Division 1',
@@ -51,7 +57,10 @@ describe('getPlayerSkillEligibility', () => {
   })
 
   it('does not combine matches from different divisions', async () => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response(['Division 1', 'Division 2', 'Division 2'])))
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(response(['Division 1', 'Division 2', 'Division 2'])),
+    )
     await expect(getPlayerSkillEligibility(123)).resolves.toEqual({
       maxLevel: 3,
       qualifyingMatches: 0,
