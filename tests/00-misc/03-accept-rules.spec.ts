@@ -47,8 +47,8 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
     const medic = skillDialog.getByRole('group', { name: 'Medic' })
     for (const classGroup of [scout, soldier, demoman, medic]) {
       await expect(classGroup).toBeVisible()
-      await expect(classGroup.getByRole('radio', { name: Experienced })).toBeDisabled()
-      await expect(classGroup.getByRole('radio', { name: Advanced })).toBeDisabled()
+      await expect(classGroup.getByRole('radio', { name: 'Experienced' })).toBeDisabled()
+      await expect(classGroup.getByRole('radio', { name: 'Advanced' })).toBeDisabled()
     }
 
     const bypass = await page.request.post('/players/' + newcomer.steamId + '/skill-onboarding', {
@@ -61,10 +61,10 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
     })
     expect(bypass.status()).toBe(403)
 
-    await scout.getByRole('radio', { name: Beginner }).check()
-    await soldier.getByRole('radio', { name: Familiar }).check()
-    await demoman.getByRole('radio', { name: Newbie }).check()
-    await medic.getByRole('radio', { name: Beginner }).check()
+    await scout.getByRole('radio', { name: 'Beginner' }).check()
+    await soldier.getByRole('radio', { name: 'Familiar' }).check()
+    await demoman.getByRole('radio', { name: 'Newbie' }).check()
+    await medic.getByRole('radio', { name: 'Beginner' }).check()
     await skillDialog.getByRole('button', { name: 'Save class skills' }).click()
     await expect(skillDialog).not.toBeVisible()
 
