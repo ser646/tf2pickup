@@ -128,7 +128,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        queue-config: ['6v6', '9v9']
+        queue-config: ${{ github.event_name == 'pull_request' && github.head_ref != 'integration/discord-voice-multi-class-v2' && fromJSON("['6v6']") || fromJSON("['6v6', '9v9']") }}
         shard: [1, 2, 3, 4, 5, 6, 7, 8]
 
     services:
@@ -284,7 +284,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        queue-config: ['6v6', '9v9']
+        queue-config: ${{ github.event_name == 'pull_request' && github.head_ref != 'integration/discord-voice-multi-class-v2' && fromJSON("['6v6']") || fromJSON("['6v6', '9v9']") }}
     steps:
       - name: Verify end-to-end shard results
         env:
@@ -321,7 +321,7 @@ jobs:
       matrix:
         # the last release before multi-queue
         upgrade-from: ['4.25.0']
-        queue-config: ['6v6', '9v9']
+        queue-config: ${{ github.event_name == 'pull_request' && github.head_ref != 'integration/discord-voice-multi-class-v2' && fromJSON("['6v6']") || fromJSON("['6v6', '9v9']") }}
 
     services:
       mongo:
