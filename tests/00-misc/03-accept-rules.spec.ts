@@ -38,10 +38,9 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
     await expect(skillDialog).toBeVisible()
     await expect(skillDialog.getByRole('radio', { name: /Level 4/ })).toBeDisabled()
     await expect(skillDialog.getByRole('radio', { name: /Level 5/ })).toBeDisabled()
-    const bypass = await page.request.post(
-      '/players/' + newcomer.steamId + '/skill-onboarding',
-      { form: { skillLevel: '4' } },
-    )
+    const bypass = await page.request.post('/players/' + newcomer.steamId + '/skill-onboarding', {
+      form: { skillLevel: '4' },
+    })
     expect(bypass.status()).toBe(403)
     await skillDialog.getByRole('radio', { name: /Level 1/ }).check()
     await skillDialog.getByRole('button', { name: 'Save skill' }).click()
