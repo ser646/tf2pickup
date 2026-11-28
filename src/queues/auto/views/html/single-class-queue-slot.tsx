@@ -14,6 +14,7 @@ import {
   IconMinus,
   IconPlus,
 } from '../../../../html/components/icons'
+import { Gamemode } from '../../../../shared/types/gamemode'
 import { Tf2ClassName } from '../../../../shared/types/tf2-class-name'
 import { GameClassIcon } from '../../../../html/components/game-class-icon'
 import { gamemodeConfigs } from '../../../../gamemodes/configs'
@@ -98,15 +99,19 @@ async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: A
     return <></>
   }
 
-  const slotPlayer = await collections.players.findOne<Pick<PlayerModel, 'skill'>>(
-    { steamId: props.slot.player.steamId },
-    { projection: { skill: 1 } },
-  )
-  const skill = slotPlayer?.skill?.[props.queue.gamemode]
-  const isNewbie = skill?.[props.slot.gameClass] === 1
   const showSkill =
     props.actor?.roles.includes(PlayerRole.admin) &&
     gamemodeConfigs[props.queue.gamemode].autoBalance
+  const shouldLoadSkill = props.queue.gamemode === Gamemode.sixes || showSkill
+  const slotPlayer = shouldLoadSkill
+    ? await collections.players.findOne<Pick<PlayerModel, 'skill'>>(
+        { steamId: props.slot.player.steamId },
+        { projection: { skill: 1 } },
+      )
+    : null
+  const skill = slotPlayer?.skill?.[props.queue.gamemode]
+  const isNewbie =
+    props.queue.gamemode === Gamemode.sixes && skill?.[props.slot.gameClass] === 1
 
   let slotActionButton: JSX.Element
   if (props.actor?.steamId === props.slot.player.steamId) {
