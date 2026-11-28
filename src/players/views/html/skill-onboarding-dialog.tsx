@@ -18,7 +18,11 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
     },
   )
 
-  if (!player?.hasAcceptedRules || player.skillOnboardingCompletedAt || player.skill?.[Gamemode.sixes]) {
+  if (
+    !player?.hasAcceptedRules ||
+    player.skillOnboardingCompletedAt ||
+    player.skill?.[Gamemode.sixes]
+  ) {
     return <></>
   }
 
@@ -35,7 +39,9 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
       >
         <div class="flex flex-col gap-5">
           <div>
-            <h2 id="skill-onboarding-title" class="text-2xl font-bold">Choose your 6v6 skill</h2>
+            <h2 id="skill-onboarding-title" class="text-2xl font-bold">
+              Choose your 6v6 skill
+            </h2>
             <p class="mt-2 text-sm text-zinc-300">
               Select the level that best represents your current 6v6 experience. Levels 1–3 are
               available to everyone. ETF2L history verification can unlock levels 4–5.
@@ -55,11 +61,15 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
             </p>
           ) : (
             <p class="text-sm text-zinc-400">
-              You can verify your ETF2L history now, or choose a level from 1–3 without verification.
+              You can verify your ETF2L history now, or choose a level from 1–3 without
+              verification.
             </p>
           )}
 
-          <form action={'/players/' + actor.player.steamId + '/skill-onboarding'} method="post">
+          <form
+            action={'/players/' + actor.player.steamId + '/skill-onboarding'}
+            method="post"
+          >
             <fieldset class="flex flex-col gap-3">
               <legend class="mb-2 font-semibold">Your skill level</legend>
               {[1, 2, 3, 4, 5].map(level => (
@@ -88,17 +98,23 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
               ))}
             </fieldset>
             <div class="mt-5">
-              <button type="submit" class="button" data-variant="accent">Save skill</button>
+              <button type="submit" class="button" data-variant="accent">
+                Save skill
+              </button>
             </div>
           </form>
 
-          <form action={'/players/' + actor.player.steamId + '/skill-onboarding/verify'} method="post">
+          <form
+            action={'/players/' + actor.player.steamId + '/skill-onboarding/verify'}
+            method="post"
+          >
             <button type="submit" class="button" data-variant="secondary">
               {verification ? 'Check ETF2L history again' : 'Verify ETF2L history'}
             </button>
           </form>
           <p class="text-xs text-zinc-500">
-            Verification checks completed ETF2L 6v6 matches. It only unlocks the levels; you choose your own level.
+            Verification checks completed ETF2L 6v6 matches. It only unlocks the levels; you choose
+            your own level.
           </p>
         </div>
       </dialog>
