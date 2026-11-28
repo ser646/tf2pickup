@@ -4,13 +4,13 @@ import { Etf2lApiError } from './errors/etf2l-api.error'
 
 const matchSchema = z
   .object({
-    competition: z.object({ id: z.number() }).passthrough(),
+    competition: z.object({ id: z.number() }).loose(),
     division: z
-      .union([z.string(), z.object({ name: z.string() }).passthrough()])
+      .union([z.string(), z.object({ name: z.string() }).loose()])
       .nullable()
       .optional(),
   })
-  .passthrough()
+  .loose()
 
 const matchesResponseSchema = z.object({
   results: z
@@ -18,7 +18,7 @@ const matchesResponseSchema = z.object({
       data: z.array(matchSchema),
       last_page: z.number().int().positive(),
     })
-    .passthrough(),
+    .loose(),
 })
 
 export interface Etf2lSkillEligibility {
@@ -51,7 +51,7 @@ export async function getPlayerSkillEligibility(playerId: number): Promise<Etf2l
     const url = environment.ETF2L_API_ENDPOINT + '/matches?' + params.toString()
     const response = await fetch(url)
     if (!response.ok) {
-      throw new Etf2lApiError(url, response, response.status + ' ' + response.statusText)
+      throw new Etf2lApiError(url, response, `${response.status} ${response.statusText}`)
     }
 
     const data = await matchesResponseSchema.parseAsync(await response.json())
@@ -65,7 +65,7 @@ export async function getPlayerSkillEligibility(playerId: number): Promise<Etf2l
       typeof match.division === 'string' ? match.division : (match.division?.name ?? '')
     if (!division) continue
 
-    const key = match.competition.id + ':' + division.toLowerCase()
+    const key = `${match.competition.id}:${division.toLowerCase()}`
     const current = counts.get(key)
     counts.set(key, { division, count: (current?.count ?? 0) + 1 })
   }
