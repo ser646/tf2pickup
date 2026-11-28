@@ -17,11 +17,31 @@ const classLabels: Record<Tf2ClassName, string> = {
 }
 
 const skillLevels = [
-  { value: 1, label: 'Newbie', color: 'border-green-500/50 bg-green-500/15 text-green-300' },
-  { value: 2, label: 'Beginner', color: 'border-lime-500/50 bg-lime-500/15 text-lime-300' },
-  { value: 3, label: 'Familiar', color: 'border-yellow-500/50 bg-yellow-500/15 text-yellow-300' },
-  { value: 4, label: 'Experienced', color: 'border-orange-500/50 bg-orange-500/15 text-orange-300' },
-  { value: 5, label: 'Advanced', color: 'border-red-500/50 bg-red-500/15 text-red-300' },
+  {
+    value: 1,
+    label: 'Newbie',
+    color: 'border-green-500/50 bg-green-500/15 text-green-300',
+  },
+  {
+    value: 2,
+    label: 'Beginner',
+    color: 'border-lime-500/50 bg-lime-500/15 text-lime-300',
+  },
+  {
+    value: 3,
+    label: 'Familiar',
+    color: 'border-yellow-500/50 bg-yellow-500/15 text-yellow-300',
+  },
+  {
+    value: 4,
+    label: 'Experienced',
+    color: 'border-orange-500/50 bg-orange-500/15 text-orange-300',
+  },
+  {
+    value: 5,
+    label: 'Advanced',
+    color: 'border-red-500/50 bg-red-500/15 text-red-300',
+  },
 ] as const
 
 export async function SkillOnboardingDialog(props: { actor?: User | undefined }) {
