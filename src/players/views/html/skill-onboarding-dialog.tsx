@@ -186,15 +186,6 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
             divisions. The division examples above are only a rough guide, not an automatic
             conversion.
           </p>
-          <p class="text-xs text-zinc-500">
-            ETF2L Rule 2.7 determines league experience and eligibility for late-joining teams or
-            playing as a default mercenary. It uses your highest division from the ongoing season
-            and previous three active seasons, with additional rules for playoffs, other gamemodes
-            and experience decay. <a class="underline hover:text-zinc-300" href="https://staging.etf2l.org/2026/10/12/rule-changes-2-7-player-experience-config-changes-ahead-of-season-53-autumn-2026-final-tiers-released/" target="_blank" rel="noreferrer">Read the current Rule 2.7 explanation</a>.
-            Newbie means skill level 1 and is shown next to your name only when you sign up for a
-            class you marked Newbie. ETF2L verification unlocks levels 4–5; it does not choose a
-            level for you.
-          </p>
         </div>
       </dialog>
       <script>{`
