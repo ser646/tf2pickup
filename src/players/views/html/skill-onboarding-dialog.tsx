@@ -147,7 +147,10 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
                         <span
                           id={'skill-tooltip-' + name + '-' + value}
                           role="tooltip"
-                          class="pointer-events-none absolute bottom-full left-1/2 z-50 mb-3 w-64 -translate-x-1/2 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-left text-xs font-normal leading-relaxed text-zinc-200 opacity-0 shadow-xl shadow-black/40 transition duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
+                          class={[
+                            "pointer-events-none absolute bottom-full z-50 mb-3 w-64 max-w-[calc(100vw-64px)] rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-left text-xs font-normal leading-relaxed text-zinc-200 opacity-0 shadow-xl shadow-black/40 transition duration-150 group-hover:opacity-100 group-focus-within:opacity-100",
+                            value <= 2 ? "left-0" : value >= 5 ? "right-0" : "left-1/2 -translate-x-1/2",
+                          ]}
                         >
                           {description}
                           <span class="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-zinc-700" />
