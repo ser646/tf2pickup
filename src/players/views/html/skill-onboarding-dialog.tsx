@@ -125,8 +125,8 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
             </h2>
             <p class="mt-2 text-sm text-zinc-300">
               Rate yourself separately on each 6v6 class. The descriptions are class-specific:
-              choose the level that best matches how you currently play that class, not your
-              overall experience.
+              choose the level that best matches how you currently play that class, not your overall
+              experience.
             </p>
           </div>
 
@@ -144,8 +144,8 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
           ) : (
             <p class="text-sm text-zinc-400">
               You can verify your ETF2L history now, or choose levels 1–3 for each class without
-              verification. Verification only unlocks levels 4–5; it does not choose your levels
-              for you.
+              verification. Verification only unlocks levels 4–5; it does not choose your levels for
+              you.
             </p>
           )}
 
@@ -153,7 +153,9 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
             <div class="flex flex-col gap-5">
               {classes.map(({ name }) => (
                 <fieldset class="rounded-md border border-zinc-700 p-4">
-                  <legend class="px-2 text-lg font-bold" safe>{classLabels[name]}</legend>
+                  <legend class="px-2 text-lg font-bold" safe>
+                    {classLabels[name]}
+                  </legend>
                   <div class="flex flex-col gap-2">
                     {[1, 2, 3, 4, 5].map(level => (
                       <label
