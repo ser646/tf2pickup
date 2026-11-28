@@ -28,6 +28,15 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
   await btn.click()
 
   await expect(dialog).not.toBeVisible()
+  const skillDialog = page.locator('#skill-onboarding-dialog')
+  if (await skillDialog.count()) {
+    await expect(skillDialog).toBeVisible()
+    await expect(skillDialog.getByRole('radio', { name: /Level 4/ })).toBeDisabled()
+    await expect(skillDialog.getByRole('radio', { name: /Level 5/ })).toBeDisabled()
+    await skillDialog.getByRole('radio', { name: /Level 1/ }).check()
+    await skillDialog.getByRole('button', { name: 'Save skill' }).click()
+    await expect(skillDialog).not.toBeVisible()
+  }
   await expect(banner).toBeVisible()
   expect(await originalBanner.evaluate(element => element.isConnected)).toBe(true)
   expect(page.url()).toBe(queueUrl)
