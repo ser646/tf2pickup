@@ -30,10 +30,14 @@ export default routes(async app => {
       }
 
       const player = await players.bySteamId(steamId, [
+        'hasAcceptedRules',
         'skill',
         'skillOnboardingCompletedAt',
         'etf2lSkillVerification',
       ])
+      if (!player.hasAcceptedRules) {
+        throw errors.forbidden('Accept the rules before setting your skill')
+      }
       if (player.skillOnboardingCompletedAt || player.skill?.[Gamemode.sixes]) {
         throw errors.badRequest('Your 6v6 skill has already been set')
       }
@@ -75,7 +79,10 @@ export default routes(async app => {
         throw errors.forbidden('You can only verify your own ETF2L history')
       }
 
-      const player = await players.bySteamId(steamId, ['etf2lProfile'])
+      const player = await players.bySteamId(steamId, ['etf2lProfile', 'hasAcceptedRules'])
+      if (!player.hasAcceptedRules) {
+        throw errors.forbidden('Accept the rules before verifying your skill')
+      }
       let profile = player.etf2lProfile
 
       if (!profile) {
