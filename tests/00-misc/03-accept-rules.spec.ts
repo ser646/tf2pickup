@@ -34,13 +34,15 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
   expect(await page.evaluate(() => Notification.permission)).toBe('default')
 
   const skillDialog = page.locator('#skill-onboarding-dialog')
-  if (await skillDialog.count()) {
+  if ((process.env.QUEUE_CONFIG ?? '6v6') === '6v6') {
     await expect(skillDialog).toBeVisible()
     await expect(skillDialog.getByRole('radio', { name: /Level 4/ })).toBeDisabled()
     await expect(skillDialog.getByRole('radio', { name: /Level 5/ })).toBeDisabled()
     await skillDialog.getByRole('radio', { name: /Level 1/ }).check()
     await skillDialog.getByRole('button', { name: 'Save skill' }).click()
     await expect(skillDialog).not.toBeVisible()
+  } else {
+    await expect(skillDialog).toHaveCount(0)
   }
   await expect(
     page.locator('button[name="join"]:not(:disabled), [data-class-primary]:not(:disabled)').first(),
