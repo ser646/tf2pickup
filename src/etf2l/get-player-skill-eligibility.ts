@@ -42,7 +42,7 @@ export async function getPlayerSkillEligibility(playerId: number): Promise<Etf2l
 
   for (let page = 1; page <= Math.min(lastPage, pagesToCheck); page++) {
     const params = new URLSearchParams({
-      players: String(playerId),
+      'players[]': String(playerId),
       team_type: '6on6',
       scheduled: '0',
       limit: String(matchesPerPage),
