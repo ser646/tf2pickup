@@ -34,7 +34,7 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
     <>
       <dialog
         id={id}
-        class="m-auto w-[min(100%-32px,560px)] max-h-[calc(100vh-48px)] overflow-y-auto rounded-lg border border-zinc-700 bg-zinc-950 p-6 text-zinc-100 shadow-2xl backdrop:bg-black/75"
+        class="m-auto max-h-[calc(100vh-48px)] w-[min(100%-32px,560px)] overflow-y-auto rounded-lg border border-zinc-700 bg-zinc-950 p-6 text-zinc-100 shadow-2xl backdrop:bg-black/75"
         aria-labelledby="skill-onboarding-title"
       >
         <div class="flex flex-col gap-5">
