@@ -67,9 +67,7 @@ export async function QueuePage(props: {
       <div id="queue-notify-container"></div>
       <RunningGameSnackbar gameNumber={user?.player.activeGame} />
       <AcceptRulesDialog actor={user} gamemode={queue.gamemode} />
-      {skillOnboardingEnabled && (
-        <SkillOnboardingDialog actor={user} />
-      )}
+      {skillOnboardingEnabled && <SkillOnboardingDialog actor={user} />}
     </Layout>
   )
 }
