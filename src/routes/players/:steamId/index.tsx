@@ -89,7 +89,8 @@ export default routes(async app => {
             { slots: 'all', captainPool: true },
             { players: [request.params.steamId] },
           )
-          return await reply.html(SkillOnboardingDialog({ actor: request.user }))
+          await reply.html(SkillOnboardingDialog({ actor: request.user }))
+          return
         }
         await reply.redirect('/')
       },
