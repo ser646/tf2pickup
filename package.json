@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "tsx --watch src/main.ts",
     "xss-scan": "xss-scan",
-    "lint": "prettier --write src/admin/miscellaneous/views/html/miscellaneous.page.tsx src/players/views/html/skill-onboarding-dialog.tsx && git diff -- src/admin/miscellaneous/views/html/miscellaneous.page.tsx src/players/views/html/skill-onboarding-dialog.tsx && prettier --check . && eslint .",
+    "lint": "prettier --check . && eslint .",
     "format": "prettier --write .",
     "test": "vitest --dir src",
     "test:e2e": "playwright test",
