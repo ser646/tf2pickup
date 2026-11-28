@@ -1,4 +1,5 @@
 import { test } from '@playwright/test'
+import { MongoClient } from 'mongodb'
 import { expect } from '../fixtures/expect'
 import { users } from '../data'
 
@@ -36,15 +37,58 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
   const skillDialog = page.locator('#skill-onboarding-dialog')
   if ((process.env.QUEUE_CONFIG ?? '6v6') === '6v6') {
     await expect(skillDialog).toBeVisible()
-    await expect(skillDialog.getByRole('radio', { name: /Level 4/ })).toBeDisabled()
-    await expect(skillDialog.getByRole('radio', { name: /Level 5/ })).toBeDisabled()
+    await expect(skillDialog.getByRole('heading', { name: 'Choose your 6v6 class skills' })).toBeVisible()
+
+    const scout = skillDialog.getByRole('group', { name: 'Scout' })
+    const soldier = skillDialog.getByRole('group', { name: 'Soldier' })
+    const demoman = skillDialog.getByRole('group', { name: 'Demoman' })
+    const medic = skillDialog.getByRole('group', { name: 'Medic' })
+    for (const classGroup of [scout, soldier, demoman, medic]) {
+      await expect(classGroup).toBeVisible()
+      await expect(classGroup.getByRole('radio', { name: /Level 4/ })).toBeDisabled()
+      await expect(classGroup.getByRole('radio', { name: /Level 5/ })).toBeDisabled()
+    }
+
     const bypass = await page.request.post('/players/' + newcomer.steamId + '/skill-onboarding', {
-      form: { skillLevel: '4' },
+      form: {
+        skill_scout: '4',
+        skill_soldier: '1',
+        skill_demoman: '1',
+        skill_medic: '1',
+      },
     })
     expect(bypass.status()).toBe(403)
-    await skillDialog.getByRole('radio', { name: /Level 1/ }).check()
-    await skillDialog.getByRole('button', { name: 'Save skill' }).click()
+
+    await scout.getByRole('radio', { name: /Level 2/ }).check()
+    await soldier.getByRole('radio', { name: /Level 3/ }).check()
+    await demoman.getByRole('radio', { name: /Level 1/ }).check()
+    await medic.getByRole('radio', { name: /Level 2/ }).check()
+    await skillDialog.getByRole('button', { name: 'Save class skills' }).click()
     await expect(skillDialog).not.toBeVisible()
+
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI is required to verify saved class skills')
+    }
+    const client = new MongoClient(process.env.MONGODB_URI)
+    try {
+      await client.connect()
+      const savedPlayer = await client
+        .db()
+        .collection('players')
+        .findOne(
+          { steamId: newcomer.steamId },
+          { projection: { 'skill.6v6': 1, skillOnboardingCompletedAt: 1 } },
+        )
+      expect(savedPlayer?.skill?.['6v6']).toEqual({
+        scout: 2,
+        soldier: 3,
+        demoman: 1,
+        medic: 2,
+      })
+      expect(savedPlayer?.skillOnboardingCompletedAt).toBeTruthy()
+    } finally {
+      await client.close()
+    }
   } else {
     await expect(skillDialog).toHaveCount(0)
   }
