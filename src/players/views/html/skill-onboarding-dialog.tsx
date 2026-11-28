@@ -20,31 +20,36 @@ const skillLevels = [
   {
     value: 1,
     label: 'Newbie',
-    description: 'You are new to this class in competitive 6v6. You are still learning its role, core responsibilities and common situations.',
+    description:
+      'You are new to this class in competitive 6v6. You are still learning its role, core responsibilities and common situations.',
     color: 'border-green-500/50 bg-green-500/15 text-green-300 peer-checked:border-green-400 peer-checked:bg-green-600 peer-checked:text-white',
   },
   {
     value: 2,
     label: 'Beginner',
-    description: 'You know the class basics and 6v6 rules, but are still learning positioning, rotations and teamplay. Roughly comparable to an entry-level league player (Open).',
+    description:
+      'You know the class basics and 6v6 rules, but are still learning positioning, rotations and teamplay. Roughly comparable to an entry-level league player (Open).',
     color: 'border-blue-500/50 bg-blue-500/15 text-blue-300 peer-checked:border-blue-400 peer-checked:bg-blue-600 peer-checked:text-white',
   },
   {
     value: 3,
     label: 'Familiar',
-    description: 'You have some pickup or scrim experience. You understand your role, basic rotations, positioning and communication. Roughly in the lower-to-mid league range.',
+    description:
+      'You have some pickup or scrim experience. You understand your role, basic rotations, positioning and communication. Roughly in the lower-to-mid league range.',
     color: 'border-yellow-500/50 bg-yellow-500/15 text-yellow-300 peer-checked:border-yellow-400 peer-checked:bg-yellow-600 peer-checked:text-white',
   },
   {
     value: 4,
     label: 'Experienced',
-    description: 'You have solid 6v6 match experience and make reliable decisions under pressure. You understand game pace, rotations and coordinated teamplay. Roughly around High / Division 1–2.',
+    description:
+      'You have solid 6v6 match experience and make reliable decisions under pressure. You understand game pace, rotations and coordinated teamplay. Roughly around High / Division 1–2.',
     color: 'border-orange-500/50 bg-orange-500/15 text-orange-300 peer-checked:border-orange-400 peer-checked:bg-orange-600 peer-checked:text-white',
   },
   {
     value: 5,
     label: 'Advanced',
-    description: 'You have extensive high-level 6v6 experience, strong gamesense and consistently effective decision-making. Roughly around Premiership level.',
+    description:
+      'You have extensive high-level 6v6 experience, strong gamesense and consistently effective decision-making. Roughly around Premiership level.',
     color: 'border-red-500/50 bg-red-500/15 text-red-300 peer-checked:border-red-400 peer-checked:bg-red-600 peer-checked:text-white',
   },
 ] as const
@@ -148,8 +153,8 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
                           id={'skill-tooltip-' + name + '-' + value}
                           role="tooltip"
                           class={[
-                            "pointer-events-none absolute bottom-full z-50 mb-3 w-64 max-w-[calc(100vw-64px)] rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-left text-xs font-normal leading-relaxed text-zinc-200 opacity-0 shadow-xl shadow-black/40 transition duration-150 group-hover:opacity-100 group-focus-within:opacity-100",
-                            value <= 2 ? "left-0" : value >= 5 ? "right-0" : "left-1/2 -translate-x-1/2",
+                            'pointer-events-none absolute bottom-full z-50 mb-3 w-64 max-w-[calc(100vw-64px)] rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2.5 text-left text-xs font-normal leading-relaxed text-zinc-200 opacity-0 shadow-xl shadow-black/40 transition duration-150 group-hover:opacity-100 group-focus-within:opacity-100',
+                            value <= 2 ? 'left-0' : value >= 5 ? 'right-0' : 'left-1/2 -translate-x-1/2',
                           ]}
                         >
                           {description}
