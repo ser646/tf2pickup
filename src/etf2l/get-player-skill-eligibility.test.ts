@@ -67,15 +67,12 @@ describe('getPlayerSkillEligibility', () => {
     })
   })
 
-
   it('does not combine matches from different competitions', async () => {
     vi.stubGlobal(
       'fetch',
-      vi
-        .fn()
-        .mockResolvedValue(
-          response(['Division 1', 'Division 1', 'Division 1'], [53, 53, 54]),
-        ),
+      vi.fn().mockResolvedValue(
+        response(['Division 1', 'Division 1', 'Division 1'], [53, 53, 54]),
+      ),
     )
     await expect(getPlayerSkillEligibility(123)).resolves.toEqual({
       maxLevel: 3,
