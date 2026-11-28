@@ -90,8 +90,7 @@ async function PlayerInfo(props: { queue?: Queue; slot: QueueSlotModel; actor?: 
   const showSkill =
     props.actor?.roles.includes(PlayerRole.admin) &&
     !!props.queue && gamemodeConfigs[props.queue.gamemode].autoBalance
-  const shouldLoadSkill =
-    props.queue?.gamemode === Gamemode.sixes || showSkill
+  const shouldLoadSkill = props.queue?.gamemode === Gamemode.sixes || showSkill
   const slotPlayer = shouldLoadSkill
     ? await collections.players.findOne<Pick<PlayerModel, 'skill'>>(
         { steamId: props.slot.player.steamId },
@@ -99,8 +98,7 @@ async function PlayerInfo(props: { queue?: Queue; slot: QueueSlotModel; actor?: 
       )
     : null
   const skill = slotPlayer?.skill?.[props.queue?.gamemode ?? Gamemode.sixes]
-  const isNewbie =
-    props.queue?.gamemode === Gamemode.sixes && skill?.[props.slot.gameClass] === 1
+  const isNewbie = props.queue?.gamemode === Gamemode.sixes && skill?.[props.slot.gameClass] === 1
 
   let slotActionButton: JSX.Element
   if (props.actor?.steamId === props.slot.player.steamId) {
