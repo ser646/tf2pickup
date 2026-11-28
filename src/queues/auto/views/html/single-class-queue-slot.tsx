@@ -98,19 +98,15 @@ async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: A
     return <></>
   }
 
-  let showSkill = false
-  let skill: PlayerSkill | undefined = undefined
-  if (
+  const slotPlayer = await collections.players.findOne<Pick<PlayerModel, 'skill'>>(
+    { steamId: props.slot.player.steamId },
+    { projection: { skill: 1 } },
+  )
+  const skill = slotPlayer?.skill?.[props.queue.gamemode]
+  const isNewbie = skill?.[props.slot.gameClass] === 1
+  const showSkill =
     props.actor?.roles.includes(PlayerRole.admin) &&
     gamemodeConfigs[props.queue.gamemode].autoBalance
-  ) {
-    const slotPlayer = await collections.players.findOne<Pick<PlayerModel, 'skill'>>(
-      { steamId: props.slot.player.steamId },
-      { projection: { skill: 1 } },
-    )
-    showSkill = true
-    skill = slotPlayer?.skill?.[props.queue.gamemode]
-  }
 
   let slotActionButton: JSX.Element
   if (props.actor?.steamId === props.slot.player.steamId) {
@@ -149,6 +145,15 @@ async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: A
           <span class="player-name-text" safe>
             {props.slot.player.name}
           </span>
+          {isNewbie && (
+            <span
+              class="ml-2 inline-flex items-center rounded-full border border-green-500/50 bg-green-500/15 px-2 py-0.5 text-[10px] font-bold leading-none text-green-300"
+              title={props.slot.gameClass + ' · Newbie'}
+              aria-label={'Newbie on ' + props.slot.gameClass}
+            >
+              NEWBIE
+            </span>
+          )}
           {showSkill && skillEntries.length === 0 && (
             <span class="fresh-player-icon">
               <IconClover size={18} />
