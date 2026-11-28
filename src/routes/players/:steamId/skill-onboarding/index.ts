@@ -2,7 +2,6 @@ import { z } from 'zod'
 import { Etf2lApiError } from '../../../../etf2l/errors/etf2l-api.error'
 import { etf2l } from '../../../../etf2l'
 import { errors } from '../../../../errors'
-import { gamemodeConfigs } from '../../../../gamemodes/configs'
 import { players } from '../../../../players'
 import type { PlayerSkill } from '../../../../database/models/player.model'
 import { Gamemode } from '../../../../shared/types/gamemode'
@@ -18,18 +17,6 @@ const skillBodySchema = z.object({
   skill_demoman: z.coerce.number().int().min(1).max(5),
   skill_medic: z.coerce.number().int().min(1).max(5),
 })
-
-const classSkillFields: Record<Tf2ClassName, keyof z.infer<typeof skillBodySchema>> = {
-  [Tf2ClassName.scout]: 'skill_scout',
-  [Tf2ClassName.soldier]: 'skill_soldier',
-  [Tf2ClassName.demoman]: 'skill_demoman',
-  [Tf2ClassName.medic]: 'skill_medic',
-  [Tf2ClassName.pyro]: 'skill_soldier',
-  [Tf2ClassName.heavy]: 'skill_soldier',
-  [Tf2ClassName.engineer]: 'skill_soldier',
-  [Tf2ClassName.sniper]: 'skill_soldier',
-  [Tf2ClassName.spy]: 'skill_soldier',
-}
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export default routes(async app => {
@@ -66,12 +53,12 @@ export default routes(async app => {
         throw errors.forbidden('Verify your ETF2L history before selecting level 4 or 5')
       }
 
-      const skill = Object.fromEntries(
-        gamemodeConfigs[Gamemode.sixes].classes.map(({ name }) => [
-          name,
-          request.body[classSkillFields[name]],
-        ]),
-      ) as PlayerSkill
+      const skill: PlayerSkill = {
+        [Tf2ClassName.scout]: request.body.skill_scout,
+        [Tf2ClassName.soldier]: request.body.skill_soldier,
+        [Tf2ClassName.demoman]: request.body.skill_demoman,
+        [Tf2ClassName.medic]: request.body.skill_medic,
+      }
       await players.setSkill({
         steamId,
         gamemode: Gamemode.sixes,
