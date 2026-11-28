@@ -83,14 +83,17 @@ describe('getPlayerSkillEligibility', () => {
     })
   })
 
-  it.each(['High', 'Division 2a'])('recognizes the legacy/current high tier name %s', async division => {
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response([division, division, division])))
-    await expect(getPlayerSkillEligibility(123)).resolves.toEqual({
-      maxLevel: 4,
-      highestDivision: division,
-      qualifyingMatches: 3,
-    })
-  })
+  it.each(['High', 'Division 2a'])(
+    'recognizes the legacy/current high tier name %s',
+    async division => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response([division, division, division])))
+      await expect(getPlayerSkillEligibility(123)).resolves.toEqual({
+        maxLevel: 4,
+        highestDivision: division,
+        qualifyingMatches: 3,
+      })
+    },
+  )
 
   it('uses the player ID and only requests completed 6v6 matches', async () => {
     const fetch = vi.fn().mockResolvedValue(response([]))
