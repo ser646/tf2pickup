@@ -28,6 +28,11 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
   await btn.click()
 
   await expect(dialog).not.toBeVisible()
+  await expect(banner).toBeVisible()
+  expect(await originalBanner.evaluate(element => element.isConnected)).toBe(true)
+  expect(page.url()).toBe(queueUrl)
+  expect(await page.evaluate(() => Notification.permission)).toBe('default')
+
   const skillDialog = page.locator('#skill-onboarding-dialog')
   if (await skillDialog.count()) {
     await expect(skillDialog).toBeVisible()
@@ -37,10 +42,6 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
     await skillDialog.getByRole('button', { name: 'Save skill' }).click()
     await expect(skillDialog).not.toBeVisible()
   }
-  await expect(banner).toBeVisible()
-  expect(await originalBanner.evaluate(element => element.isConnected)).toBe(true)
-  expect(page.url()).toBe(queueUrl)
-  expect(await page.evaluate(() => Notification.permission)).toBe('default')
   await expect(
     page.locator('button[name="join"]:not(:disabled), [data-class-primary]:not(:disabled)').first(),
   ).toBeEnabled()
