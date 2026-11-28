@@ -73,6 +73,13 @@ export type PlayerSkillByGamemode = Partial<Record<Gamemode, PlayerSkill>>
 
 export type PlayerEloByGamemode = Partial<Record<Gamemode, PlayerElo>>
 
+export interface Etf2lSkillVerification {
+  checkedAt: Date
+  maxLevel: 3 | 4 | 5
+  highestDivision?: string
+  qualifyingMatches: number
+}
+
 export interface PlayerModel {
   name: string
   steamId: SteamId64
@@ -83,6 +90,8 @@ export interface PlayerModel {
   hasAcceptedRules: boolean
   etf2lProfile?: Etf2lProfile
   etf2lProfileLastSyncedAt?: Date
+  etf2lSkillVerification?: Etf2lSkillVerification
+  skillOnboardingCompletedAt?: Date
   cooldownLevel: number
   // when the cooldown level last changed; the point the decay back down to zero is measured from
   cooldownLevelUpdatedAt?: Date
