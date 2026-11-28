@@ -11,6 +11,7 @@ import { routes } from '../../../../utils/routes'
 
 const paramsSchema = z.object({ steamId: steamId64 })
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export default routes(async app => {
   app.post(
     '/',
