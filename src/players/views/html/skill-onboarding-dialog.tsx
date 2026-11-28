@@ -16,71 +16,13 @@ const classLabels: Record<Tf2ClassName, string> = {
   [Tf2ClassName.spy]: 'Spy',
 }
 
-const classLevelDescriptions: Record<Tf2ClassName, [string, string, string, string, string]> = {
-  [Tf2ClassName.scout]: [
-    'You are still learning Scout movement, double-jumps and close-range tracking. You often need help with positioning and choosing when to take a fight.',
-    'You understand the flank role, can use your movement to take and leave fights, and can follow up on your team. Your aim and timing are still inconsistent.',
-    'You are a dependable pickup Scout: you hit a reasonable amount of your shots, know when to pressure or protect the flank, and coordinate your fights with your team.',
-    'You have strong tracking and movement, take favourable fights consistently, deny space and heals, and know how to time bombs and clean-ups with your combo.',
-    'You perform at a top competitive level: you control the flank, create openings without unnecessary deaths, and consistently turn small advantages into round-winning pressure.',
-  ],
-  [Tf2ClassName.soldier]: [
-    'You are learning rocket-jump routes, basic rocket aim and how to stay useful without taking isolated fights.',
-    'You can perform basic bombs, hold space with spam and support your combo, but your jumps, timing and damage are not yet consistent.',
-    'You are a reliable pickup Soldier: you land useful spam, coordinate bombs, protect your Medic and understand when to hold or give space.',
-    'You have strong rocket mechanics and rollout knowledge, time bombs well, pressure key targets and create space while keeping deaths under control.',
-    'You play Soldier at a top competitive level: your jumps, damage and timing consistently break holds, force resources and shape the pace of the game.',
-  ],
-  [Tf2ClassName.demoman]: [
-    'You are learning basic pipe aim, sticky placement, traps and how to stay with your team instead of getting caught alone.',
-    'You can provide useful spam, set simple traps and follow your combo, but your damage, trap timing and positioning are inconsistent.',
-    'You are a dependable pickup Demoman: you control doors and key areas, build useful traps, deal consistent damage and coordinate with your Medic.',
-    'You have strong pipe and sticky mechanics, excellent area control, smart trap timing and the ability to punish pushes or create openings.',
-    'You play Demoman at a top competitive level: your damage, prediction and area control consistently dictate where the enemy can move.',
-  ],
-  [Tf2ClassName.medic]: [
-    'You are learning heal priorities, staying out of danger, building ÜberCharge and using it without losing your life.',
-    'You usually keep the right players alive, understand basic Über timing and stay with your combo, but positioning and decisions can be inconsistent.',
-    'You are a reliable pickup Medic: you build and use ÜberCharge sensibly, communicate advantages, avoid unnecessary deaths and support your team.',
-    'You have excellent positioning and survival, manage Über exchanges and advantages well, and make fast decisions under pressure.',
-    'You play Medic at a top competitive level: exceptional survival, positioning, Über management and decision-making consistently give your team the initiative.',
-  ],
-  [Tf2ClassName.pyro]: [
-    'You are learning basic positioning, airblasts and how to protect teammates from projectiles.',
-    'You can support your team with airblasts and close-range pressure, but your timing and positioning are inconsistent.',
-    'You understand your support role, protect key teammates and use airblast and damage at the right moments.',
-    'You consistently deny projectiles and bombs, protect your combo and recognise when to switch between support and aggression.',
-    'You make high-impact defensive and offensive plays, repeatedly denying key enemy pushes while creating opportunities for your team.',
-  ],
-  [Tf2ClassName.heavy]: [
-    'You are learning when to spin up, where to position and how to avoid being caught away from your team.',
-    'You can hold useful positions and protect teammates, but your movement, timing and target choices need work.',
-    'You reliably anchor positions, protect your team and choose good moments to commit to fights.',
-    'You have strong positioning and target priority, deny pushes and coordinate your presence with your team.',
-    'You consistently control space and key fights through excellent positioning, timing and high-impact decisions.',
-  ],
-  [Tf2ClassName.engineer]: [
-    'You are learning building placement, maintenance and how to avoid losing your setup unnecessarily.',
-    'You can maintain a useful nest and support your team, but setup choices and rotation timing are inconsistent.',
-    'You build dependable setups, manage resources and adapt your buildings to the needs of the team.',
-    'You anticipate pushes, rotate and rebuild efficiently, and make strong decisions about when to protect or abandon a setup.',
-    'You consistently maximise team value through exceptional setup placement, timing, adaptation and survival.',
-  ],
-  [Tf2ClassName.sniper]: [
-    'You are learning sightlines, basic aim and how to avoid exposing yourself unnecessarily.',
-    'You can hold useful sightlines and land occasional picks, but your consistency and positioning need work.',
-    'You are a reliable pick threat, understand sightlines and coordinate your pressure with the team.',
-    'You consistently threaten key targets, reposition intelligently and create space through accurate, timely picks.',
-    'You exert top-level control over sightlines and key targets, forcing the enemy to change its plans around you.',
-  ],
-  [Tf2ClassName.spy]: [
-    'You are learning disguise, cloak management and when an approach is safe.',
-    'You can find occasional opportunities, but your timing, target selection and survival are inconsistent.',
-    'You recognise useful pick opportunities, communicate information and avoid low-value attempts.',
-    'You choose high-impact targets, time picks around fights and use information to create advantages for your team.',
-    'You consistently create decisive openings through exceptional timing, target selection, information and execution.',
-  ],
-}
+const skillLevels = [
+  { value: 1, label: 'Newbie', color: 'border-green-500/50 bg-green-500/15 text-green-300' },
+  { value: 2, label: 'Beginner', color: 'border-lime-500/50 bg-lime-500/15 text-lime-300' },
+  { value: 3, label: 'Familiar', color: 'border-yellow-500/50 bg-yellow-500/15 text-yellow-300' },
+  { value: 4, label: 'Experienced', color: 'border-orange-500/50 bg-orange-500/15 text-orange-300' },
+  { value: 5, label: 'Advanced', color: 'border-red-500/50 bg-red-500/15 text-red-300' },
+] as const
 
 export async function SkillOnboardingDialog(props: { actor?: User | undefined }) {
   const actor = props.actor
@@ -124,9 +66,8 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
               Choose your 6v6 class skills
             </h2>
             <p class="mt-2 text-sm text-zinc-300">
-              Rate yourself separately on each 6v6 class. The descriptions are class-specific:
-              choose the level that best matches how you currently play that class, not your overall
-              experience.
+              Pick one simple tag for each class. Choose <strong>Newbie</strong> only if you are
+              new to playing that class in competitive 6v6.
             </p>
           </div>
 
@@ -156,37 +97,26 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
                   <legend class="px-2 text-lg font-bold" safe>
                     {classLabels[name]}
                   </legend>
-                  <div class="flex flex-col gap-2">
-                    {[1, 2, 3, 4, 5].map(level => (
-                      <label
-                        class={[
-                          'flex cursor-pointer items-start gap-3 rounded-md border border-zinc-800 bg-zinc-900 p-3',
-                          level > maxLevel && 'cursor-not-allowed opacity-40',
-                        ]}
-                      >
+                  <div class="flex flex-wrap gap-2">
+                    {skillLevels.map(({ value, label, color }) => (
+                      <label class="cursor-pointer">
                         <input
-                          class="mt-1"
+                          class="peer sr-only"
                           type="radio"
                           name={'skill_' + name}
-                          value={String(level)}
-                          disabled={level > maxLevel}
+                          value={String(value)}
+                          disabled={value > maxLevel}
                           required
                         />
-                        <span class="flex flex-col gap-1">
-                          <span class="font-semibold">Level {level}</span>
-                          <span class="text-sm text-zinc-300" safe>
-                            {classLevelDescriptions[name][level - 1]}
-                          </span>
-                          {level === 4 && (
-                            <span class="text-xs text-zinc-500">
-                              Requires ETF2L High / Division 1–2 verification
-                            </span>
-                          )}
-                          {level === 5 && (
-                            <span class="text-xs text-zinc-500">
-                              Requires ETF2L Premiership verification
-                            </span>
-                          )}
+                        <span
+                          class={[
+                            'inline-flex min-w-24 justify-center rounded-full border px-4 py-2 text-sm font-semibold transition',
+                            color,
+                            'peer-checked:ring-2 peer-checked:ring-white peer-checked:ring-offset-2 peer-checked:ring-offset-zinc-950',
+                            value > maxLevel && 'cursor-not-allowed opacity-30',
+                          ]}
+                        >
+                          {label}
                         </span>
                       </label>
                     ))}
@@ -210,8 +140,7 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
             </button>
           </form>
           <p class="text-xs text-zinc-500">
-            ETF2L verification checks completed 6v6 matches and unlocks higher choices for each
-            class. Your selected skill remains your own assessment.
+            Newbie means skill level 1. It will be shown next to your name only when you sign up for a class you marked Newbie. ETF2L verification unlocks Experienced and Advanced; it does not select a level for you.
           </p>
         </div>
       </dialog>
