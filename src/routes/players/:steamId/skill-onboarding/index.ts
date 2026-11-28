@@ -6,10 +6,30 @@ import { gamemodeConfigs } from '../../../../gamemodes/configs'
 import { players } from '../../../../players'
 import type { PlayerSkill } from '../../../../database/models/player.model'
 import { Gamemode } from '../../../../shared/types/gamemode'
+import { Tf2ClassName } from '../../../../shared/types/tf2-class-name'
 import { steamId64 } from '../../../../shared/schemas/steam-id-64'
 import { routes } from '../../../../utils/routes'
 
 const paramsSchema = z.object({ steamId: steamId64 })
+
+const skillBodySchema = z.object({
+  skill_scout: z.coerce.number().int().min(1).max(5),
+  skill_soldier: z.coerce.number().int().min(1).max(5),
+  skill_demoman: z.coerce.number().int().min(1).max(5),
+  skill_medic: z.coerce.number().int().min(1).max(5),
+})
+
+const classSkillFields: Record<Tf2ClassName, keyof z.infer<typeof skillBodySchema>> = {
+  [Tf2ClassName.scout]: 'skill_scout',
+  [Tf2ClassName.soldier]: 'skill_soldier',
+  [Tf2ClassName.demoman]: 'skill_demoman',
+  [Tf2ClassName.medic]: 'skill_medic',
+  [Tf2ClassName.pyro]: 'skill_soldier',
+  [Tf2ClassName.heavy]: 'skill_soldier',
+  [Tf2ClassName.engineer]: 'skill_soldier',
+  [Tf2ClassName.sniper]: 'skill_soldier',
+  [Tf2ClassName.spy]: 'skill_soldier',
+}
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export default routes(async app => {
@@ -19,9 +39,7 @@ export default routes(async app => {
       config: { authenticate: true },
       schema: {
         params: paramsSchema,
-        body: z.object({
-          skillLevel: z.coerce.number().int().min(1).max(5),
-        }),
+        body: skillBodySchema,
       },
     },
     async (request, reply) => {
@@ -44,12 +62,15 @@ export default routes(async app => {
       }
 
       const maxLevel = player.etf2lSkillVerification?.maxLevel ?? 3
-      if (request.body.skillLevel > maxLevel) {
+      if (Object.values(request.body).some(level => level > maxLevel)) {
         throw errors.forbidden('Verify your ETF2L history before selecting level 4 or 5')
       }
 
       const skill = Object.fromEntries(
-        gamemodeConfigs[Gamemode.sixes].classes.map(({ name }) => [name, request.body.skillLevel]),
+        gamemodeConfigs[Gamemode.sixes].classes.map(({ name }) => [
+          name,
+          request.body[classSkillFields[name]],
+        ]),
       ) as PlayerSkill
       await players.setSkill({
         steamId,
@@ -63,7 +84,7 @@ export default routes(async app => {
         {},
         steamId,
       )
-      request.flash('success', 'Your 6v6 skill has been saved')
+      request.flash('success', 'Your 6v6 class skills have been saved')
       await reply.redirect('/')
     },
   )
