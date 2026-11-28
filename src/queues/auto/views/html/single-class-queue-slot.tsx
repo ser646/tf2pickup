@@ -151,7 +151,7 @@ async function PlayerInfo(props: { queue: Queue; slot: QueueSlotModel; actor?: A
           </span>
           {isNewbie && (
             <span
-              class="ml-2 inline-flex items-center rounded-full border border-green-500/50 bg-green-500/15 px-2 py-0.5 text-[10px] font-bold leading-none text-green-300"
+              class="ml-2 inline-flex items-center rounded-full border border-green-500/50 bg-green-500/15 px-2 py-0.5 text-[10px] leading-none font-bold text-green-300"
               title={props.slot.gameClass + ' · Newbie'}
               aria-label={'Newbie on ' + props.slot.gameClass}
             >
