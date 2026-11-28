@@ -9,6 +9,7 @@ import { collections } from '../../../database/collections'
 import { Gamemode } from '../../../shared/types/gamemode'
 import { Tf2ClassName } from '../../../shared/types/tf2-class-name'
 import { queuePage } from '../../../queues/page'
+import { SkillOnboardingDialog } from '../../../players/views/html/skill-onboarding-dialog'
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export default routes(async app => {
@@ -88,7 +89,7 @@ export default routes(async app => {
             { slots: 'all', captainPool: true },
             { players: [request.params.steamId] },
           )
-          return await reply.send('')
+          return await reply.html(SkillOnboardingDialog({ actor: request.user }))
         }
         await reply.redirect('/')
       },
