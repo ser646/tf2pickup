@@ -8,6 +8,7 @@ import { Gamemode } from '../../../../shared/types/gamemode'
 import { Tf2ClassName } from '../../../../shared/types/tf2-class-name'
 import { steamId64 } from '../../../../shared/schemas/steam-id-64'
 import { routes } from '../../../../utils/routes'
+import { SkillOnboardingDialog } from '../../../../players/views/html/skill-onboarding-dialog'
 
 const paramsSchema = z.object({ steamId: steamId64 })
 
@@ -111,6 +112,10 @@ export default routes(async app => {
               ? 'No ETF2L profile is linked to this Steam account'
               : 'ETF2L is unavailable. You can still choose a level from 1–3.',
           )
+          if (request.isHtmx()) {
+            await reply.html(SkillOnboardingDialog({ actor: request.user }))
+            return
+          }
           await reply.redirect('/')
           return
         }
@@ -133,10 +138,18 @@ export default routes(async app => {
         )
       } catch {
         request.flash('error', 'ETF2L is unavailable. You can still choose a level from 1–3.')
+        if (request.isHtmx()) {
+          await reply.html(SkillOnboardingDialog({ actor: request.user }))
+          return
+        }
         return await reply.redirect('/')
       }
 
       request.flash('success', 'ETF2L history checked')
+      if (request.isHtmx()) {
+        await reply.html(SkillOnboardingDialog({ actor: request.user }))
+        return
+      }
       await reply.redirect('/')
     },
   )
