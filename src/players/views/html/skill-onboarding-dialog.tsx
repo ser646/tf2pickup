@@ -20,27 +20,27 @@ const skillLevels = [
   {
     value: 1,
     label: 'Newbie',
-    color: 'border-green-500/50 bg-green-500/15 text-green-300',
+    color: 'border-green-500/50 bg-green-500/15 text-green-300 peer-checked:border-green-400 peer-checked:bg-green-600 peer-checked:text-white',
   },
   {
     value: 2,
     label: 'Beginner',
-    color: 'border-lime-500/50 bg-lime-500/15 text-lime-300',
+    color: 'border-blue-500/50 bg-blue-500/15 text-blue-300 peer-checked:border-blue-400 peer-checked:bg-blue-600 peer-checked:text-white',
   },
   {
     value: 3,
     label: 'Familiar',
-    color: 'border-yellow-500/50 bg-yellow-500/15 text-yellow-300',
+    color: 'border-yellow-500/50 bg-yellow-500/15 text-yellow-300 peer-checked:border-yellow-400 peer-checked:bg-yellow-600 peer-checked:text-white',
   },
   {
     value: 4,
     label: 'Experienced',
-    color: 'border-orange-500/50 bg-orange-500/15 text-orange-300',
+    color: 'border-orange-500/50 bg-orange-500/15 text-orange-300 peer-checked:border-orange-400 peer-checked:bg-orange-600 peer-checked:text-white',
   },
   {
     value: 5,
     label: 'Advanced',
-    color: 'border-red-500/50 bg-red-500/15 text-red-300',
+    color: 'border-red-500/50 bg-red-500/15 text-red-300 peer-checked:border-red-400 peer-checked:bg-red-600 peer-checked:text-white',
   },
 ] as const
 
@@ -132,7 +132,7 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
                           class={[
                             'inline-flex min-w-24 justify-center rounded-full border px-4 py-2 text-sm font-semibold transition',
                             color,
-                            'peer-checked:ring-2 peer-checked:ring-white peer-checked:ring-offset-2 peer-checked:ring-offset-zinc-950',
+                            'peer-checked:shadow-md',
                             value > maxLevel && 'cursor-not-allowed opacity-30',
                           ]}
                         >
@@ -154,6 +154,9 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
           <form
             action={'/players/' + actor.player.steamId + '/skill-onboarding/verify'}
             method="post"
+            hx-post={'/players/' + actor.player.steamId + '/skill-onboarding/verify'}
+            hx-target="#skill-onboarding-dialog"
+            hx-swap="outerHTML"
           >
             <button type="submit" class="button" data-variant="secondary">
               {verification ? 'Check ETF2L history again' : 'Verify ETF2L history'}
