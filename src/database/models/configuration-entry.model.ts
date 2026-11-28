@@ -246,6 +246,10 @@ export const configurationSchema = z.discriminatedUnion('key', [
     value: z.url().nullable().default(null),
   }),
   z.object({
+    key: z.literal('players.skill_onboarding_enabled'),
+    value: z.boolean().default(false),
+  }),
+  z.object({
     key: z.literal('players.etf2l_account_required'),
     value: z.boolean().default(false),
   }),

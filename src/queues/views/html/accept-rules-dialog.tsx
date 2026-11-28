@@ -3,8 +3,9 @@ import type { User } from '../../../auth/types/user'
 import { collections } from '../../../database/collections'
 import { logger } from '../../../logger'
 import { nanoid } from 'nanoid'
+import type { Gamemode } from '../../../shared/types/gamemode'
 
-export async function AcceptRulesDialog(props: { actor?: User | undefined }) {
+export async function AcceptRulesDialog(props: { actor?: User | undefined; gamemode: Gamemode }) {
   if (!props.actor) {
     return <></>
   }
@@ -44,11 +45,11 @@ export async function AcceptRulesDialog(props: { actor?: User | undefined }) {
 
           <div class="flex flex-row justify-center">
             <form
-              action={`/players/${props.actor.player.steamId}/accept-rules`}
+              action={`/players/${props.actor.player.steamId}/accept-rules?gamemode=${props.gamemode}`}
               method="post"
-              hx-post={`/players/${props.actor.player.steamId}/accept-rules`}
+              hx-post={`/players/${props.actor.player.steamId}/accept-rules?gamemode=${props.gamemode}`}
               hx-target="closest dialog"
-              hx-swap="delete"
+              hx-swap="outerHTML"
             >
               <button
                 type="submit"

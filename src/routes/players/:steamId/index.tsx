@@ -3,12 +3,14 @@ import { PlayerGameList, PlayerPage } from '../../../players/views/html/player.p
 import { steamId64 } from '../../../shared/schemas/steam-id-64'
 import { players } from '../../../players'
 import { routes } from '../../../utils/routes'
+import { errors } from '../../../errors'
 import { tasks } from '../../../tasks'
 import { shouldSyncEtf2lProfile } from '../../../etf2l/should-sync-etf2l-profile'
 import { collections } from '../../../database/collections'
 import { Gamemode } from '../../../shared/types/gamemode'
 import { Tf2ClassName } from '../../../shared/types/tf2-class-name'
 import { queuePage } from '../../../queues/page'
+import { SkillOnboardingDialog } from '../../../players/views/html/skill-onboarding-dialog'
 
 // eslint-disable-next-line @typescript-eslint/require-await
 export default routes(async app => {
@@ -71,13 +73,18 @@ export default routes(async app => {
     .post(
       '/accept-rules',
       {
+        config: { authenticate: true },
         schema: {
           params: z.object({
             steamId: steamId64,
           }),
+          querystring: z.object({ gamemode: z.enum(Gamemode).optional() }),
         },
       },
       async (request, reply) => {
+        if (request.params.steamId !== request.user!.player.steamId) {
+          throw errors.forbidden('You can only accept rules for your own account')
+        }
         await collections.players.updateOne(
           { steamId: request.params.steamId },
           { $set: { hasAcceptedRules: true } },
@@ -88,7 +95,12 @@ export default routes(async app => {
             { slots: 'all', captainPool: true },
             { players: [request.params.steamId] },
           )
-          return await reply.send('')
+          if (request.query.gamemode === Gamemode.sixes) {
+            await reply.html(SkillOnboardingDialog({ actor: request.user }))
+            return
+          }
+          await reply.send('')
+          return
         }
         await reply.redirect('/')
       },
