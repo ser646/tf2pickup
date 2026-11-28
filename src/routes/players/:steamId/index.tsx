@@ -76,6 +76,7 @@ export default routes(async app => {
           params: z.object({
             steamId: steamId64,
           }),
+          querystring: z.object({ gamemode: z.enum(Gamemode).optional() }),
         },
       },
       async (request, reply) => {
@@ -89,7 +90,11 @@ export default routes(async app => {
             { slots: 'all', captainPool: true },
             { players: [request.params.steamId] },
           )
-          await reply.html(SkillOnboardingDialog({ actor: request.user }))
+          if (request.query.gamemode === Gamemode.sixes) {
+            await reply.html(SkillOnboardingDialog({ actor: request.user }))
+            return
+          }
+          await reply.send('')
           return
         }
         await reply.redirect('/')
