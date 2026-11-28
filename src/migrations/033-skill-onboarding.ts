@@ -1,3 +1,4 @@
+import { logger } from '../logger'
 import { collections } from '../database/collections'
 
 // Existing players keep their current skill and are not forced through onboarding.
@@ -7,5 +8,5 @@ export async function up() {
     { skillOnboardingCompletedAt: { $exists: false } },
     { $set: { skillOnboardingCompletedAt: new Date() } },
   )
-  console.info('marked existing players as skill-onboarding complete:', result.modifiedCount)
+  logger.info(`marked ${result.modifiedCount} existing players as skill-onboarding complete`)
 }
