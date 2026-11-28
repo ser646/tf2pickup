@@ -66,10 +66,7 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
             </p>
           )}
 
-          <form
-            action={'/players/' + actor.player.steamId + '/skill-onboarding'}
-            method="post"
-          >
+          <form action={'/players/' + actor.player.steamId + '/skill-onboarding'} method="post">
             <fieldset class="flex flex-col gap-3">
               <legend class="mb-2 font-semibold">Your skill level</legend>
               {[1, 2, 3, 4, 5].map(level => (
@@ -91,9 +88,7 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
                   {level === 4 && (
                     <span class="text-sm text-zinc-400">ETF2L High / Division 1–2</span>
                   )}
-                  {level === 5 && (
-                    <span class="text-sm text-zinc-400">ETF2L Premiership</span>
-                  )}
+                  {level === 5 && <span class="text-sm text-zinc-400">ETF2L Premiership</span>}
                 </label>
               ))}
             </fieldset>
