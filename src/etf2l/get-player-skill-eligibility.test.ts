@@ -5,13 +5,13 @@ vi.mock('../environment', () => ({
   environment: { ETF2L_API_ENDPOINT: 'https://api.etf2l.org' },
 }))
 
-function response(divisions: string[]) {
+function response(divisions: string[], competitionIds?: number[]) {
   return new Response(
     JSON.stringify({
       results: {
         data: divisions.map((division, index) => ({
           id: index + 1,
-          competition: { id: 53 },
+          competition: { id: competitionIds?.[index] ?? 53 },
           division,
         })),
         last_page: 1,
@@ -64,6 +64,31 @@ describe('getPlayerSkillEligibility', () => {
     await expect(getPlayerSkillEligibility(123)).resolves.toEqual({
       maxLevel: 3,
       qualifyingMatches: 0,
+    })
+  })
+
+
+  it('does not combine matches from different competitions', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi
+        .fn()
+        .mockResolvedValue(
+          response(['Division 1', 'Division 1', 'Division 1'], [53, 53, 54]),
+        ),
+    )
+    await expect(getPlayerSkillEligibility(123)).resolves.toEqual({
+      maxLevel: 3,
+      qualifyingMatches: 0,
+    })
+  })
+
+  it.each(['High', 'Division 2a'])('recognizes the legacy/current high tier name %s', async division => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response([division, division, division])))
+    await expect(getPlayerSkillEligibility(123)).resolves.toEqual({
+      maxLevel: 4,
+      highestDivision: division,
+      qualifyingMatches: 3,
     })
   })
 
