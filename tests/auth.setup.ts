@@ -13,7 +13,7 @@ setup('authenticate', async ({ browser }) => {
   const client = await MongoClient.connect(process.env['MONGODB_URI'])
   const players = client.db().collection('players')
   for (const user of users) {
-    const isNewcomer = 'hasAcceptedRules' in user
+    const isNewcomer = 'hasAcceptedRules' in user && user.hasAcceptedRules === false
     await players.updateOne(
       { steamId: user.steamId },
       {
