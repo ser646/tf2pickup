@@ -5,6 +5,37 @@ import { users } from '../data'
 
 const newcomer = users.find(({ name }) => name === 'Newcomer')!
 
+async function setSkillOnboardingEnabled(enabled: boolean) {
+  if (!process.env.MONGODB_URI) {
+    throw new Error('MONGODB_URI is required to configure skill onboarding for this test')
+  }
+
+  const client = new MongoClient(process.env.MONGODB_URI)
+  try {
+    await client.connect()
+    const configuration = client.db().collection('configuration')
+    if (enabled) {
+      await configuration.updateOne(
+        { key: 'players.skill_onboarding_enabled' },
+        { $set: { value: true } },
+        { upsert: true },
+      )
+    } else {
+      await configuration.deleteOne({ key: 'players.skill_onboarding_enabled' })
+    }
+  } finally {
+    await client.close()
+  }
+}
+
+test.beforeEach(async () => {
+  await setSkillOnboardingEnabled(true)
+})
+
+test.afterEach(async () => {
+  await setSkillOnboardingEnabled(false)
+})
+
 test('accept rules @6v6 @9v9', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 600 })
   const errors: Error[] = []
