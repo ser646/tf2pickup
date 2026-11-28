@@ -4,7 +4,9 @@ import { SaveButton } from '../../../views/html/save-button'
 import { Admin } from '../../../views/html/admin'
 
 export async function MiscellaneousPage() {
-  const skillOnboardingEnabled = await configuration.get('players.skill_onboarding_enabled')
+  const skillOnboardingEnabled = await configuration.get(
+    'players.skill_onboarding_enabled',
+  )
 
   return (
     <Admin activePage="miscellaneous">
