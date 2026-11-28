@@ -172,7 +172,7 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
                         />
                         <span class="flex flex-col gap-1">
                           <span class="font-semibold">Level {level}</span>
-                          <span class="text-sm text-zinc-300">
+                          <span class="text-sm text-zinc-300" safe>
                             {classLevelDescriptions[name][level - 1]}
                           </span>
                           {level === 4 && (
