@@ -10,6 +10,7 @@ vi.mock('rcon-client', () => ({ Rcon: { connect: mockConnect } }))
 const mockLogger = vi.hoisted(() => ({
   trace: vi.fn(),
   error: vi.fn(),
+  warn: vi.fn(),
 }))
 vi.mock('../../logger', () => ({
   logger: mockLogger,
@@ -75,4 +76,31 @@ it('logs disconnect errors and closes the connection after a failed command', as
   expect(mockRcon.send).toHaveBeenCalledOnce()
   expect(mockLogger.error).toHaveBeenCalledExactlyOnceWith(error, 'game #42: rcon error')
   expect(mockRcon.end).toHaveBeenCalledOnce()
+})
+
+it('keeps a successful command result when closing the connection fails', async () => {
+  const closeError = new Error('Socket already closed')
+  mockRcon.end.mockRejectedValueOnce(closeError)
+
+  const response = await withRcon(mockGame, async ({ rcon }) => await rcon.send('status'))
+
+  expect(response).toBe('server status')
+  expect(mockRcon.end).toHaveBeenCalledOnce()
+  expect(mockLogger.warn).toHaveBeenCalledExactlyOnceWith(
+    { error: closeError, callbackFailed: false },
+    'game #42: failed to close rcon connection',
+  )
+})
+
+it('preserves the command error when closing the connection also fails', async () => {
+  const commandError = new Error('Command failed')
+  mockRcon.send.mockRejectedValueOnce(commandError)
+  mockRcon.end.mockRejectedValueOnce(new Error('Socket already closed'))
+
+  await expect(withRcon(mockGame, async ({ rcon }) => await rcon.send('status'))).rejects.toBe(
+    commandError,
+  )
+
+  expect(mockRcon.end).toHaveBeenCalledOnce()
+  expect(mockLogger.warn).toHaveBeenCalledOnce()
 })

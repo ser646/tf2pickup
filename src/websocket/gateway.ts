@@ -3,6 +3,7 @@ import EventEmitter from 'node:events'
 import { WebSocket } from 'ws'
 import { z } from 'zod'
 import type { SteamId64 } from '../shared/types/steam-id-64'
+import { Tf2ClassName } from '../shared/types/tf2-class-name'
 import { assertIsError } from '../utils/assert-is-error'
 import { logger } from '../logger'
 import type { QueueSlotId } from '../queues/types/queue-slot-id'
@@ -15,7 +16,7 @@ export interface ClientToServerEvents {
   connected: (ipAddress: string, userAgent?: string) => void
   ready: () => void
   navigated: (url: string, previousUrl: string) => void
-  'queue:join': (slotId: QueueSlotId) => void
+  'queue:join': (slotId: QueueSlotId, classes: Tf2ClassName[]) => void
   'queue:leave': () => void
   'queue:votemap': (mapName: string) => void
   'queue:readyup': () => void
@@ -40,8 +41,15 @@ const htmxHeaders = z.object({
   'HX-Current-URL': z.string(),
 })
 
+const classes = z.preprocess(
+  (value: unknown) =>
+    value === undefined ? [] : Array.isArray(value) ? value.map((item: unknown) => item) : [value],
+  z.array(z.enum(Tf2ClassName)),
+)
+
 const joinQueue = z.object({
   join: z.string().regex(/^\w+-\d$/),
+  classes,
   HEADERS: htmxHeaders,
 })
 
@@ -244,7 +252,7 @@ class BroadcastOperator {
   send(message: MessageFn, options: { key?: string } = {}) {
     const recipients = this.sockets()
     for (const socket of recipients) {
-      // lets the client drop messages addressed to a page it has already left
+      // lets the host drop messages addressed to a page it has already left
       void send(socket, message, this.filters.urls ? pageTag(socket) : '', options.key)
     }
     broadcastRecipients.record(recipients.length)
@@ -324,7 +332,7 @@ export class Gateway extends EventEmitter implements Broadcaster {
 
       // all the other calls are for authenticated clients only
       if ('join' in parsed) {
-        this.emit('queue:join', socket, parsed.join)
+        this.emit('queue:join', socket, parsed.join, parsed.classes)
       } else if ('leave' in parsed) {
         this.emit('queue:leave', socket)
       } else if ('ready' in parsed) {
@@ -349,7 +357,7 @@ export class Gateway extends EventEmitter implements Broadcaster {
         this.emit('queue:audiostatus', socket, parsed.audioReady)
       }
     } catch (error) {
-      logger.error({ error }, `failed to parse message: ${message}`)
+      logger.error({ error }, 'failed to parse message: ' + message)
     }
   }
 }

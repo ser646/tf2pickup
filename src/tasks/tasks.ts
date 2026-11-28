@@ -36,6 +36,18 @@ export const tasksSchema = z.discriminatedUnion('name', [
     }),
   }),
   z.object({
+    name: z.literal('discord.cleanupGameVoice'),
+    args: z.object({
+      gameNumber,
+    }),
+  }),
+  z.object({
+    name: z.literal('discord.syncGameVoice'),
+    args: z.object({
+      gameNumber,
+    }),
+  }),
+  z.object({
     name: z.literal('preReady:cancel'),
     args: z.object({
       player: steamId64,

@@ -7,6 +7,8 @@ export interface QueueSlotModel {
   queue: QueueId
   id: QueueSlotId
   gameClass: Tf2ClassName
+  // Classes the player is willing and eligible to play; absent on legacy queue memberships.
+  availableClasses?: Tf2ClassName[]
   player: null | {
     steamId: SteamId64
     name: string

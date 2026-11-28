@@ -2,7 +2,7 @@ import { secondsToMilliseconds } from 'date-fns'
 import { formatCountdown } from '../../shared/format-countdown.js'
 import htmx from './htmx.js'
 
-const attrName = 'data-countdown'
+const attrName = 'data-countdown-until'
 
 interface HtmxNodeInternalData {
   countdownInterval?: ReturnType<typeof setInterval>
@@ -19,16 +19,20 @@ function maybeInit(element: Element) {
   const internalData = api.getInternalData(element)
   if (internalData.countdownInterval !== undefined) return
 
-  const initialMs = Number(element.getAttribute(attrName))
-  const startedAt = Date.now()
-  internalData.countdownInterval = setInterval(() => {
-    const ms = Math.max(initialMs - (Date.now() - startedAt), 0)
+  const expiresAt = Number(element.getAttribute(attrName))
+  const update = () => {
+    const ms = Math.max(expiresAt - Date.now(), 0)
     element.textContent = formatCountdown(ms)
-    if (ms <= 0) {
+    if (ms <= 0 && internalData.countdownInterval !== undefined) {
       clearInterval(internalData.countdownInterval)
       delete internalData.countdownInterval
     }
-  }, secondsToMilliseconds(1))
+  }
+
+  update()
+  if (expiresAt > Date.now()) {
+    internalData.countdownInterval = setInterval(update, secondsToMilliseconds(1))
+  }
 }
 
 htmx.defineExtension('countdown', {

@@ -27,6 +27,22 @@ describe('joinBlocker()', () => {
     expect(joinBlocker(player, slot, queue, defaultSkill)).toBeNull()
   })
 
+  it('requires a linked Discord account when Discord is the voice provider', () => {
+    const reason =
+      'Link your Discord account in Settings → Integrations → Discord to join this queue'
+    expect(joinBlocker(player, slot, queue, defaultSkill, true)).toBe(reason)
+    expect(
+      joinBlocker(
+        { ...player, discordLink: { userId: 'discord-user', linkedAt: new Date() } },
+        slot,
+        queue,
+        defaultSkill,
+        true,
+      ),
+    ).toBeNull()
+    expect(joinBlocker(player, slot, queue, defaultSkill, false)).toBeNull()
+  })
+
   it('blocks a disabled queue', () => {
     expect(joinBlocker(player, slot, { ...queue, enabled: false }, defaultSkill)).toBe(
       'This queue is disabled',
@@ -100,6 +116,21 @@ describe('joinBlocker()', () => {
       expect(
         joinBlocker(player, slot, { ...thresholdQueue, gamemode: Gamemode.ultiduo }, defaultSkill),
       ).toBeNull()
+    })
+
+    it('can skip only the class skill check for a multi-class join control', () => {
+      expect(
+        joinBlocker(player, slot, thresholdQueue, { soldier: 1 }, { skipSkillThreshold: true }),
+      ).toBeNull()
+      expect(
+        joinBlocker(
+          { hasAcceptedRules: false },
+          slot,
+          thresholdQueue,
+          { soldier: 1 },
+          { skipSkillThreshold: true },
+        ),
+      ).toBe('You have not accepted the rules')
     })
   })
 

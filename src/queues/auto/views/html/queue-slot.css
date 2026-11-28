@@ -1,9 +1,120 @@
 @reference '../../../../html/styles/main.css';
 
 @layer components {
+  .queue-class-heading-selectable {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    border-radius: 6px;
+    transition:
+      color 120ms ease,
+      opacity 120ms ease;
+
+    &.queue-class-heading-primary {
+      color: var(--color-emerald-300);
+    }
+
+    &.queue-class-heading-selected {
+      color: var(--color-emerald-200);
+    }
+
+    &.queue-class-heading-disabled {
+      opacity: 0.35;
+    }
+  }
+
+  .queue-class-primary-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+    padding: 3px 6px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition:
+      color 120ms ease,
+      border-color 120ms ease,
+      background 120ms ease;
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-zinc-600);
+      color: var(--color-zinc-50);
+      background: var(--color-surface-hover);
+
+      .queue-class-join-icon {
+        color: var(--color-emerald-300);
+        translate: 2px 0;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-zinc-200);
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  .queue-class-join-icon {
+    flex-shrink: 0;
+    color: var(--color-zinc-400);
+    transition:
+      color 120ms ease,
+      translate 120ms ease;
+  }
+
+  .queue-class-also-available {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-zinc-400);
+    font-size: 11px;
+    line-height: 14px;
+    cursor: pointer;
+
+    input {
+      width: 13px;
+      height: 13px;
+      accent-color: var(--color-emerald-500);
+      cursor: pointer;
+
+      &:disabled {
+        cursor: not-allowed;
+      }
+
+      &:focus-visible {
+        outline: 2px solid var(--color-zinc-200);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .queue-class-selection-hint {
+    margin: 0 0 12px;
+    color: var(--color-zinc-400);
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+
+    strong {
+      color: var(--color-zinc-200);
+      font-weight: 600;
+    }
+  }
+
+  .queue-class-preferences-submit {
+    display: none;
+  }
+
   .queue-slot {
     position: relative;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     min-height: 58px;
     overflow: visible;
@@ -30,58 +141,10 @@
       background: var(--color-emerald-700);
     }
 
-    &:has(> .join-queue-button:disabled) {
-      border-color: transparent;
-      background: repeating-linear-gradient(
-        -45deg,
-        var(--color-zinc-900) 0,
-        var(--color-zinc-900) 14px,
-        var(--color-zinc-850) 14px,
-        var(--color-zinc-850) 28px
-      );
-    }
-
-    &:has(> .join-queue-button:hover:enabled),
-    &:has(> .join-queue-button:focus-visible) {
-      border-color: var(--color-zinc-600);
-    }
-
-    .join-queue-button {
-      display: flex;
-      flex: 1;
-      align-items: center;
-      justify-content: center;
-      border-radius: 7px;
-      color: var(--color-zinc-200);
-      background: transparent;
-
-      > svg {
-        opacity: 0;
-      }
-
-      &:hover:enabled,
-      &:focus-visible {
-        background: linear-gradient(180deg, var(--color-zinc-700), var(--color-zinc-600));
-
-        > svg {
-          opacity: 1;
-        }
-      }
-
-      &:disabled {
-        color: var(--color-text-muted);
-        background: transparent;
-
-        > svg {
-          opacity: 1;
-        }
-      }
-    }
-
     .player-info {
       display: grid;
       flex: 1;
-      grid-template-columns: 42px minmax(0, 1fr) 42px;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
       align-items: center;
       gap: 8px;
       min-width: 0;
@@ -159,16 +222,10 @@
       background: var(--color-surface-hover);
     }
 
-    &.queue-slot-ready .leave-queue-button,
-    &.queue-slot-ready .mark-as-friend-button .mark {
-      background: var(--color-emerald-900);
-
-      &:hover {
-        background: var(--color-emerald-800);
-      }
-    }
-
     .mark-as-friend-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       position: relative;
       width: 42px;
       height: 42px;
@@ -193,6 +250,123 @@
     .mark-as-friend-button input:focus-visible ~ .mark {
       outline: 2px solid var(--color-zinc-100);
       outline-offset: 2px;
+    }
+
+    .queue-slot-alternates {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 5px 8px 7px;
+      border-top: 1px dashed var(--color-zinc-600);
+    }
+
+    .queue-slot-alternates-label {
+      color: var(--color-zinc-400);
+      font-size: 10px;
+      font-weight: 600;
+      line-height: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .queue-slot-alternates-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .queue-slot-alternate {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 100%;
+      padding: 2px 5px 2px 2px;
+      border: 1px dashed var(--color-zinc-500);
+      border-radius: 5px;
+      color: var(--color-zinc-300);
+      opacity: 0.5;
+
+      > img {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        border-radius: 3px;
+        object-fit: cover;
+      }
+
+      > span {
+        overflow: hidden;
+        font-size: 11px;
+        line-height: 16px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+}
+
+/*
+ * The legacy single-class queue must retain the original tf2pickup slot
+ * presentation. Keep these rules scoped so multi-class styling cannot leak
+ * into the opt-out experience.
+ */
+@layer components {
+  .queue-slot-legacy {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    background: var(--color-surface-raised);
+
+    &:has(> .join-queue-button:disabled) {
+      border-color: transparent;
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--color-zinc-900) 0,
+        var(--color-zinc-900) 14px,
+        var(--color-zinc-850) 14px,
+        var(--color-zinc-850) 28px
+      );
+    }
+
+    &:has(> .join-queue-button:hover:enabled),
+    &:has(> .join-queue-button:focus-visible) {
+      border-color: var(--color-zinc-600);
+    }
+
+    > .join-queue-button {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      color: var(--color-zinc-200);
+      background: transparent;
+
+      > svg {
+        opacity: 0;
+      }
+
+      &:hover:enabled,
+      &:focus-visible {
+        background: linear-gradient(180deg, var(--color-zinc-700), var(--color-zinc-600));
+
+        > svg {
+          opacity: 1;
+        }
+      }
+
+      &:disabled {
+        color: var(--color-text-muted);
+        background: transparent;
+
+        > svg {
+          opacity: 1;
+        }
+      }
+    }
+
+    > .player-info {
+      grid-template-columns: 42px minmax(0, 1fr) 42px;
     }
   }
 }

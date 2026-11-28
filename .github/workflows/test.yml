@@ -8,9 +8,14 @@ on:
       - '*.*.*'
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   pull-requests: write
+  packages: read
 
 env:
   REGISTRY: ghcr.io
@@ -34,6 +39,21 @@ jobs:
   unit-tests:
     name: unit
     runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+    # Unit tests import modules that validate the application environment at load time.
+    # The database service is used by the queue-slot component suite.
+    env:
+      WEBSITE_URL: 'http://localhost:3000'
+      MONGODB_URI: 'mongodb://localhost:27017/tf2pickup'
+      STEAM_API_KEY: 'FAKE_STEAM_API_KEY'
+      KEY_STORE_PASSPHRASE: 'a_password'
+      LOG_RELAY_ADDRESS: '127.0.0.1'
+      LOG_RELAY_PORT: '9871'
+      GAME_SERVER_SECRET: 'xxxxxx'
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: pnpm/action-setup@v6.1.1
@@ -108,7 +128,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        queue-config: ['6v6', '9v9']
+        queue-config: ${{ github.event_name == 'pull_request' && github.head_ref != 'integration/discord-voice-multi-class-v2' && fromJSON('["6v6"]') || fromJSON('["6v6", "9v9"]') }}
         shard: [1, 2, 3, 4, 5, 6, 7, 8]
 
     services:
@@ -264,7 +284,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        queue-config: ['6v6', '9v9']
+        queue-config: ${{ github.event_name == 'pull_request' && github.head_ref != 'integration/discord-voice-multi-class-v2' && fromJSON('["6v6"]') || fromJSON('["6v6", "9v9"]') }}
     steps:
       - name: Verify end-to-end shard results
         env:
@@ -301,7 +321,7 @@ jobs:
       matrix:
         # the last release before multi-queue
         upgrade-from: ['4.25.0']
-        queue-config: ['6v6', '9v9']
+        queue-config: ${{ github.event_name == 'pull_request' && github.head_ref != 'integration/discord-voice-multi-class-v2' && fromJSON('["6v6"]') || fromJSON('["6v6", "9v9"]') }}
 
     services:
       mongo:
@@ -312,6 +332,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
       - uses: pnpm/action-setup@v6.1.1
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v4.8.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v7.1.0
         with:
@@ -352,7 +379,7 @@ jobs:
           sudo echo "127.0.0.1 www.localhost" | sudo tee -a /etc/hosts
 
       - name: Start ${{ matrix.upgrade-from }}
-        run: tests/upgrade/start-app.sh ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ matrix.upgrade-from }}
+        run: tests/upgrade/start-app.sh ghcr.io/tf2pickup-org/tf2pickup:${{ matrix.upgrade-from }}
         env:
           MONGODB_URI: 'mongodb://mongo:27017/tf2pickup'
           NETWORK: ${{ job.services.mongo.network }}

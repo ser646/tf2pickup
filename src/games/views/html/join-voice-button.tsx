@@ -1,4 +1,6 @@
 import { SlotStatus } from '../../../database/models/game-slot.model'
+import { configuration } from '../../../configuration'
+import { VoiceServerType } from '../../../shared/types/voice-server-type'
 import type { GameModel } from '../../../database/models/game.model'
 import { IconHeadset } from '../../../html/components/icons'
 import { isVerificationEnabled } from '../../../mumble/is-verification-enabled'
@@ -33,8 +35,29 @@ async function JoinVoiceButtonContent(props: {
     return <></>
   }
 
-  const { mumbleCertificate } = await players.bySteamId(props.actor, ['mumbleCertificate'])
-  const needsVerification = !mumbleCertificate && (await isVerificationEnabled())
+  const [player, voiceServerType] = await Promise.all([
+    players.bySteamId(props.actor, ['mumbleCertificate', 'discordLink']),
+    configuration.get('games.voice_server_type'),
+  ])
+
+  if (voiceServerType === VoiceServerType.discord && !player.discordLink) {
+    return (
+      <a
+        href="/discord/link"
+        class="button"
+        data-umami-event="link-discord"
+        data-umami-event-game-number={props.game.number}
+      >
+        <IconHeadset size={24} />
+        link Discord
+      </a>
+    )
+  }
+
+  const needsVerification =
+    voiceServerType === VoiceServerType.mumble &&
+    !player.mumbleCertificate &&
+    (await isVerificationEnabled())
 
   return (
     <>

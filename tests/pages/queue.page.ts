@@ -28,14 +28,46 @@ class QueueSlot {
   }
 
   joinButton() {
-    return this.locator.getByRole('button', {
-      name: `Join queue on slot ${this.slotId}`,
-    })
+    const gameClass = this.slotId.slice(0, this.slotId.lastIndexOf('-'))
+    // Support both the class-heading control and the original per-slot join button.
+    return this.page
+      .locator(
+        `[data-class-primary][data-class-primary-join^="${gameClass}-"], [aria-label="Queue slot ${this.slotId}"] button[name="join"]`,
+      )
+      .filter({ visible: true })
+      .first()
   }
 
   async join() {
-    await this.joinButton().click()
-    await expect(this.joinButton()).not.toBeVisible()
+    const primaryClassButton = this.page
+      .locator(
+        `[data-class-primary][data-class-primary-join^="${this.slotId.slice(0, this.slotId.lastIndexOf('-'))}-"]`,
+      )
+      .filter({ visible: true })
+      .first()
+    if (await primaryClassButton.count()) {
+      // Multi-class UI: clicking the class heading selects the primary class.
+      await primaryClassButton.click()
+    } else {
+      // Current single-class UI has a submit button; older upgrade fixtures use the slot itself.
+      const legacyJoinButton = this.locator.locator('button[name="join"]')
+      if (await legacyJoinButton.count()) {
+        await legacyJoinButton.click()
+        await expect(legacyJoinButton).not.toBeVisible()
+      } else {
+        await this.locator.click()
+        await expect(this.locator).toHaveAttribute('data-player', /.+/)
+      }
+      return
+    }
+    const leaveQueueButton = this.page.getByRole('button', { name: 'Leave queue' })
+    await expect
+      .poll(async () => {
+        const onGamePage = /games\/(\d+)/.test(this.page.url())
+        const canLeaveQueue = await leaveQueueButton.isVisible()
+        return onGamePage || canLeaveQueue
+      })
+      .toBe(true)
   }
 
   markAsFriendButton() {
@@ -125,11 +157,41 @@ export class QueuePage {
     return new ReadyUpDialog(this.page)
   }
 
-  async readyUp(slot: SlotId) {
-    if (/games\/(\d+)/.test(this.page.url()) || (await this.slot(slot).isReady())) {
+  async readyUp(slot: SlotId, playerId?: string) {
+    const isPlayerReady = async () => {
+      if (playerId) {
+        const playerInfo = this.page.locator(`[data-player="${playerId}"] .player-info`)
+        return (await playerInfo.getAttribute('data-player-ready')) === 'true'
+      }
+      return await this.slot(slot).isReady()
+    }
+
+    if (/games\/(\d+)/.test(this.page.url()) || (await isPlayerReady())) {
       return
     }
-    await this.readyUpDialog().readyUp()
+    const readyUpButton = this.readyUpDialog().readyUpButton()
+    await expect
+      .poll(
+        async () => {
+          if (/games\/(\d+)/.test(this.page.url())) {
+            return 'game'
+          }
+          if (await isPlayerReady()) {
+            return 'ready'
+          }
+          if (await readyUpButton.isVisible()) {
+            return 'dialog'
+          }
+          return 'waiting'
+        },
+        { timeout: secondsToMilliseconds(15) },
+      )
+      .not.toBe('waiting')
+
+    if (/games\/(\d+)/.test(this.page.url()) || (await isPlayerReady())) {
+      return
+    }
+    await readyUpButton.click()
   }
 
   gamesLink() {

@@ -3,7 +3,10 @@ import type { QueueModel } from '../../database/models/queue.model'
 import type { QueueSlotModel } from '../../database/models/queue-slot.model'
 import type { SteamId64 } from '../../shared/types/steam-id-64'
 import { configuration } from '../../configuration'
+import { gamemodeConfigs } from '../../gamemodes/configs'
 import { QueueSlot } from '../auto/views/html/queue-slot'
+import { SingleClassQueueSlot } from '../auto/views/html/single-class-queue-slot'
+import { ClassPreferences } from '../auto/views/html/class-preferences'
 import { CurrentPlayerCount } from '../views/html/current-player-count'
 import { TeamPlayerCount } from '../auto/views/html/team-player-count'
 import { teamSlots } from '../auto/views/html/team-slots'
@@ -14,6 +17,7 @@ import { QueueSwitcher } from '../views/html/queue-switcher'
 import { MapResult, MapVote } from '../auto/views/html/map-vote'
 import { PreReadyUpButton } from '../../pre-ready/views/html/pre-ready-up-button'
 import { captainQueueParts } from '../captain/captain-queue-parts'
+import { VoiceServerType } from '../../shared/types/voice-server-type'
 import type { Fragment } from './send-to-pages'
 
 export interface QueueParts {
@@ -42,14 +46,80 @@ export async function queueParts(queue: QueueModel, parts: QueueParts): Promise<
 
   const fragments: Fragment[] = []
 
+  const allSlots = parts.slots
+    ? await collections.queueSlots.find({ queue: queue._id }).toArray()
+    : undefined
   const slots = await pickSlots(queue, parts)
   if (slots.length > 0) {
     const defaultSkill = (await configuration.get('games.default_player_skill'))[queue.gamemode]
+    const requireDiscordLink =
+      (await configuration.get('games.voice_server_type')) === VoiceServerType.discord
     fragments.push(
       ...slots.map(
         (slot): Fragment =>
           async ({ actor }) =>
-            QueueSlot({ queue, slot, actor: await actor(), defaultSkill }),
+            queue.allowMultipleClasses
+              ? QueueSlot({
+                  queue,
+                  slot,
+                  allSlots: allSlots ?? slots,
+                  actor: await actor(),
+                  defaultSkill,
+                })
+              : SingleClassQueueSlot({
+                  queue,
+                  slot,
+                  actor: await actor(),
+                  defaultSkill,
+                  requireDiscordLink,
+                }),
+      ),
+    )
+  }
+
+  // Refresh every class heading when membership changes, keeping the inline
+  // availability toggles in sync with the player's saved classes and current slot.
+  if (parts.slots && queue.allowMultipleClasses) {
+    const requireDiscordLink =
+      (await configuration.get('games.voice_server_type')) === VoiceServerType.discord
+    const currentSlots =
+      allSlots ?? (await collections.queueSlots.find({ queue: queue._id }).toArray())
+    const defaultSkill = (await configuration.get('games.default_player_skill'))[queue.gamemode]
+    const config = gamemodeConfigs[queue.gamemode]
+    const positions = config.classes.flatMap(gameClass =>
+      Array.from({ length: gameClass.count }, (_, classIndex) => ({
+        gameClass: gameClass.name,
+        classIndex,
+      })),
+    )
+    const hasTeamLayout = teamSlots(queue.gamemode, currentSlots).length > 0
+    const headings = hasTeamLayout
+      ? positions.map((position, index) => ({
+          ...position,
+          headingId: `queue-class-preference-${position.gameClass}-${position.classIndex}`,
+          includeInForm:
+            positions.findIndex(candidate => candidate.gameClass === position.gameClass) === index,
+        }))
+      : config.classes.map(({ name: gameClass }) => ({
+          gameClass,
+          headingId: 'queue-class-preference-' + gameClass,
+          includeInForm: true,
+        }))
+
+    fragments.push(
+      ...headings.map(
+        ({ gameClass, headingId, includeInForm }): Fragment =>
+          async ({ actor }) =>
+            ClassPreferences({
+              queue,
+              slots: currentSlots,
+              actor: await actor(),
+              defaultSkill,
+              gameClass,
+              headingId,
+              includeInForm,
+              requireDiscordLink,
+            }),
       ),
     )
   }

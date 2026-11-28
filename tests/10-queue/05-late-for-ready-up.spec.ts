@@ -25,7 +25,7 @@ test('player is late for ready up @6v6', async ({ players, desiredSlots, users, 
       .filter(player => player.playerName !== 'MoonMan')
       .map(async player => {
         const page = await player.queuePage()
-        await page.readyUp(desiredSlots.get(player.playerName)!)
+        await page.readyUp(desiredSlots.get(player.playerName)!, player.steamId)
       }),
   )
 
@@ -34,7 +34,7 @@ test('player is late for ready up @6v6', async ({ players, desiredSlots, users, 
     timeout: 60000,
   })
 
-  await expect(lateUserPage.slot('soldier-1').joinButton()).toBeVisible()
+  await expect(lateUserPage.page.getByRole('button', { name: 'Leave queue' })).not.toBeVisible()
 
   // expect the ready up dialog to close
   await expect(lateUserPage.readyUpDialog().readyUpButton()).not.toBeVisible()

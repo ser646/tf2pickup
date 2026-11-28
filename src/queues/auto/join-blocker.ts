@@ -7,7 +7,7 @@ import { hasActiveBan } from '../../players/has-active-ban'
 
 export type JoinBlockerPlayer = Pick<
   PlayerModel,
-  'hasAcceptedRules' | 'bans' | 'activeGame' | 'verified' | 'skill'
+  'hasAcceptedRules' | 'bans' | 'activeGame' | 'verified' | 'skill' | 'discordLink'
 >
 
 export function joinBlocker(
@@ -15,7 +15,13 @@ export function joinBlocker(
   slot: Pick<QueueSlotModel, 'gameClass'>,
   queue: Pick<QueueModel, 'enabled' | 'requireVerification' | 'skillThreshold' | 'gamemode'>,
   defaultSkill: PlayerSkill | undefined,
+  requireDiscordLinkOrOptions: boolean | { skipSkillThreshold?: boolean } = false,
 ): string | null {
+  const requireDiscordLink =
+    typeof requireDiscordLinkOrOptions === 'boolean' ? requireDiscordLinkOrOptions : false
+  const options =
+    typeof requireDiscordLinkOrOptions === 'boolean' ? {} : requireDiscordLinkOrOptions
+
   if (!queue.enabled) {
     return 'This queue is disabled'
   }
@@ -32,14 +38,22 @@ export function joinBlocker(
     return 'You are already in a game'
   }
 
+  if (requireDiscordLink && !player.discordLink) {
+    return 'Link your Discord account in Settings → Integrations → Discord to join this queue'
+  }
+
   if (queue.requireVerification && !player.verified) {
     return 'You are not verified to join the queue'
   }
 
-  if (queue.skillThreshold !== null && gamemodeConfigs[queue.gamemode].autoBalance) {
+  if (
+    !options.skipSkillThreshold &&
+    queue.skillThreshold !== null &&
+    gamemodeConfigs[queue.gamemode].autoBalance
+  ) {
     const skill = effectiveSkill(player.skill?.[queue.gamemode], defaultSkill, slot.gameClass)
     if (skill < queue.skillThreshold) {
-      return `You do not meet skill requirements to play ${slot.gameClass}`
+      return 'You do not meet skill requirements to play ' + slot.gameClass
     }
   }
 

@@ -8,6 +8,10 @@ on:
       - '*.*.*'
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   pull-requests: write
@@ -18,7 +22,10 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  # Pull requests already build this Docker image in test.yml for the E2E suite.
+  # Publish/build it here only for pushes and tags to avoid a duplicate PR build.
   docker:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
 
     steps:

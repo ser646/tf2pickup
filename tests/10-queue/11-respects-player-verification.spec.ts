@@ -56,7 +56,7 @@ test.describe('when player verification is required @6v6 @9v9', () => {
       await expect(page.slot('medic-1').joinButton()).not.toBeDisabled()
 
       await page.joinQueue('scout-1')
-      await expect(page.slot('scout-1').joinButton()).not.toBeVisible()
+      await expect(page.page.getByRole('button', { name: 'Leave queue' })).toBeVisible()
     })
   })
 })

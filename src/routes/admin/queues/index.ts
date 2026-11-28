@@ -87,6 +87,7 @@ export default routes(async app => {
           body: z.object({
             name: z.string(),
             requireVerification: z.coerce.boolean().default(false),
+            allowMultipleClasses: z.coerce.boolean().default(false),
             skillThresholdEnabled: z.literal('enabled').optional(),
             skillThreshold: z.coerce.number().optional(),
             readyUpTimeout: z.coerce.number(),
@@ -106,6 +107,7 @@ export default routes(async app => {
             {
               name: body.name,
               requireVerification: body.requireVerification,
+              allowMultipleClasses: body.allowMultipleClasses,
               skillThreshold: body.skillThresholdEnabled ? (body.skillThreshold ?? 0) : null,
               readyUpTimeout: secondsToMilliseconds(body.readyUpTimeout),
               readyStateTimeout: secondsToMilliseconds(body.readyStateTimeout),

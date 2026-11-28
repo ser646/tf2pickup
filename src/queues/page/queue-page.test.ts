@@ -13,6 +13,7 @@ const db = vi.hoisted(() => ({
     gamemode: string
     launchMode: string
     enabled: boolean
+    allowMultipleClasses: boolean
   }[],
   slots: [] as {
     id: string
@@ -98,6 +99,10 @@ vi.mock('../auto/views/html/queue-slot', () => ({
   QueueSlot: (props: { slot: { id: string }; actor?: { steamId: string } }) =>
     tag(`queue-slot-${props.slot.id}`)({ actor: props.actor?.steamId }),
 }))
+vi.mock('../auto/views/html/class-preferences', () => ({
+  ClassPreferences: (props: { actor?: { steamId: string } }) =>
+    props.actor ? tag('queue-class-preferences')() : undefined,
+}))
 vi.mock('../views/html/set-title', () => ({ SetTitle: () => tag('set-title')() }))
 vi.mock('../views/html/is-in-queue', () => ({ IsInQueue: tag('is-in-queue') }))
 vi.mock('../auto/views/html/map-vote-selection', () => ({
@@ -142,6 +147,7 @@ const sixes = {
   gamemode: '6v6',
   launchMode: 'auto',
   enabled: true,
+  allowMultipleClasses: true,
 }
 const ultiduo = {
   _id: new ObjectId(),
@@ -149,6 +155,7 @@ const ultiduo = {
   gamemode: 'ultiduo',
   launchMode: 'auto',
   enabled: true,
+  allowMultipleClasses: true,
 }
 
 function connect(currentUrl: string, steamId?: SteamId64) {
@@ -204,6 +211,14 @@ describe('queuePage.update', () => {
     expect(await received(onSixes)).toEqual(['queue-slot-soldier-0', 'queue-slot-soldier-1'])
     expect(await received(onUltiduo)).toEqual([])
     expect(await received(onGame)).toEqual([])
+  })
+
+  it('refreshes class preferences when slots change', async () => {
+    const socket = connect('/q/6v6', alice)
+
+    await queuePage.update(gateway, sixes._id as never, { slots: 'all' })
+
+    expect(await received(socket)).toContain('queue-class-preferences')
   })
 
   it('renders each slot for the player viewing it', async () => {
@@ -276,7 +291,12 @@ describe('queuePage.updateAll', () => {
 
     await queuePage.updateAll(gateway, { banAlerts: true, slots: 'all' }, { players: [alice] })
 
-    expect(await received(aliceOnUltiduo)).toEqual(['ban-alerts', 'queue-slot-soldier-0'])
+    expect(await received(aliceOnUltiduo)).toEqual([
+      'ban-alerts',
+      'queue-slot-soldier-0',
+      'queue-class-preferences',
+      'queue-class-preferences',
+    ])
     expect(await received(bobOnUltiduo)).toEqual([])
   })
 })
@@ -290,6 +310,10 @@ describe('queuePage.render', () => {
     expect(await received(socket)).toEqual([
       'queue-slot-soldier-0',
       'queue-slot-soldier-1',
+      'queue-class-preferences',
+      'queue-class-preferences',
+      'queue-class-preferences',
+      'queue-class-preferences',
       'pre-ready-up-button',
       'queue-current-player-count',
       'set-title',

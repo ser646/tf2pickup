@@ -67,12 +67,15 @@ export default fp(
     events.on('queue:playerKicked', async ({ player }) => {
       const close = await ReadyUpDialog.close()
       app.gateway.to({ player }).send(() => close)
+      await queuePage.updateAll(app.gateway, { membership: true }, { players: [player] })
     })
 
     events.on(
       'queue/slots:updated',
-      safe(async ({ queue, slots }) => {
-        await queuePage.update(app.gateway, queue, { slots, counts: true })
+      safe(async ({ queue }) => {
+        // Alternative candidates can appear on several class slots, so a membership or
+        // availability change must refresh every slot in the queue, not only changed slots.
+        await queuePage.update(app.gateway, queue, { slots: 'all', counts: true })
       }),
     )
 

@@ -3,6 +3,7 @@ import { minutesToMilliseconds, secondsToMilliseconds } from 'date-fns'
 import { launchGame } from '../fixtures/launch-game'
 import { waitForEmptyQueue } from '../fixtures/wait-for-empty-queue'
 import { expect } from '../fixtures/expect'
+import { defaultQueueSlug } from '../queue-slots'
 
 const test = mergeTests(launchGame, waitForEmptyQueue)
 const readyUpTimeout = secondsToMilliseconds(20)
@@ -133,18 +134,44 @@ test('pre-ready up enables automatically after readying up @6v6 @9v9', async ({
   }
 })
 
+async function setMultiClassEnabled(
+  users: {
+    getAdmin: () => { page: () => Promise<import('@playwright/test').Page> }
+  },
+  enabled: boolean,
+) {
+  const admin = await users.getAdmin().page()
+  await admin.goto('/admin/queues/' + defaultQueueSlug())
+  const checkbox = admin.locator('#allowMultipleClasses')
+  if ((await checkbox.isChecked()) !== enabled) {
+    // The native checkbox overlays the custom slider and intercepts its pointer
+    // events. Force the checkbox action instead of clicking the decorative slider.
+    await checkbox.setChecked(enabled, { force: true })
+  }
+  if (enabled) {
+    await expect(checkbox).toBeChecked()
+  } else {
+    await expect(checkbox).not.toBeChecked()
+  }
+  await admin.getByRole('button', { name: 'Save' }).click()
+  await expect(admin.getByText('Configuration saved')).toBeVisible()
+}
+
 test('does not ready up if switching classes as 11th player @6v6 @9v9', async ({
   users,
   players,
   desiredSlots,
 }) => {
+  await setMultiClassEnabled(users, true)
   const polemic = users.byName('Polemic')
   const firstSlot = desiredSlots.get('Polemic')!
-  const secondSlot = desiredSlots.get('Shadowhunter')!
+  // BellBoy's slot is free, and Shadowhunter remains queued so Polemic is still the
+  // 11th player in 6v6. Shadowhunter's slot is the same class as Polemic's in both modes.
+  const secondSlot = desiredSlots.get('BellBoy')!
 
   await Promise.all(
     players
-      .filter(p => p.playerName !== 'Shadowhunter')
+      .filter(p => p.playerName !== 'BellBoy')
       .filter(p => p.playerName !== 'Polemic')
       .map(async user => {
         const page = await user.queuePage()
@@ -157,7 +184,13 @@ test('does not ready up if switching classes as 11th player @6v6 @9v9', async ({
   const page = await polemic.queuePage()
   await page.goto()
   await page.slot(firstSlot).join()
-  const slot = page.slot(secondSlot)
-  await slot.join()
-  expect(await slot.isReady()).toBe(false)
+
+  // Clicking the second class heading changes the primary class without a separate
+  // availability form or an explicit "Update availability" action.
+  await page.slot(secondSlot).join()
+
+  const reassignedSlot = page.slot(secondSlot)
+  await expect(reassignedSlot.locator).toHaveAttribute('data-player', polemic.steamId)
+  expect(await reassignedSlot.isReady()).toBe(false)
+  await setMultiClassEnabled(users, false)
 })

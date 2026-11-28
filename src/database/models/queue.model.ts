@@ -12,6 +12,8 @@ export const queueConfigurationSchema = z.object({
   name: z.string().trim().min(1),
   skillThreshold: z.number().nullable().default(null),
   requireVerification: z.boolean().default(false),
+  // Multi-class signup is opt-in; missing values on existing queues behave as false.
+  allowMultipleClasses: z.boolean().default(false),
   readyUpTimeout: z
     .number()
     .positive()
