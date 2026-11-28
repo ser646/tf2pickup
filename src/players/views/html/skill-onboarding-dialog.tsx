@@ -79,7 +79,7 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
                   <input
                     type="radio"
                     name="skillLevel"
-                    value={level}
+                    value={String(level)}
                     checked={level === 1}
                     disabled={level > maxLevel}
                     required
