@@ -18,6 +18,7 @@ import { AcceptRulesDialog } from './accept-rules-dialog'
 import { Sidebar } from './sidebar'
 import { requestContext } from '@fastify/request-context'
 import { Announcements } from './announcements'
+import { Gamemode } from '../../../shared/types/gamemode'
 import { SkillOnboardingDialog } from '../../../players/views/html/skill-onboarding-dialog'
 
 export async function QueuePage(props: {
@@ -61,8 +62,8 @@ export async function QueuePage(props: {
 
       <div id="queue-notify-container"></div>
       <RunningGameSnackbar gameNumber={user?.player.activeGame} />
-      <AcceptRulesDialog actor={user} />
-      <SkillOnboardingDialog actor={user} />
+      <AcceptRulesDialog actor={user} gamemode={queue.gamemode} />
+      {queue.gamemode === Gamemode.sixes && <SkillOnboardingDialog actor={user} />}
     </Layout>
   )
 }
