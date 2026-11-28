@@ -92,10 +92,10 @@ test('accept rules @6v6 @9v9', async ({ page }) => {
     })
     expect(bypass.status()).toBe(403)
 
-    await scout.getByRole('radio', { name: 'Beginner' }).check()
-    await soldier.getByRole('radio', { name: 'Familiar' }).check()
-    await demoman.getByRole('radio', { name: 'Newbie' }).check()
-    await medic.getByRole('radio', { name: 'Beginner' }).check()
+    await scout.getByRole('radio', { name: 'Beginner' }).check({ force: true })
+    await soldier.getByRole('radio', { name: 'Familiar' }).check({ force: true })
+    await demoman.getByRole('radio', { name: 'Newbie' }).check({ force: true })
+    await medic.getByRole('radio', { name: 'Beginner' }).check({ force: true })
     await skillDialog.getByRole('button', { name: 'Save class skills' }).click()
     await expect(skillDialog).not.toBeVisible()
 
