@@ -89,10 +89,13 @@ export default routes(async app => {
             steamId,
           )
         } catch (error) {
-          if (error instanceof Etf2lApiError && error.response.status === 404) {
-            throw errors.badRequest('No ETF2L profile is linked to this Steam account')
-          }
-          throw errors.serviceUnavailable('ETF2L is unavailable. Please try again later.')
+          request.flash(
+            'error',
+            error instanceof Etf2lApiError && error.response.status === 404
+              ? 'No ETF2L profile is linked to this Steam account'
+              : 'ETF2L is unavailable. You can still choose a level from 1–3.',
+          )
+          return await reply.redirect('/')
         }
       }
 
@@ -112,7 +115,8 @@ export default routes(async app => {
           steamId,
         )
       } catch {
-        throw errors.serviceUnavailable('ETF2L is unavailable. Please try again later.')
+        request.flash('error', 'ETF2L is unavailable. You can still choose a level from 1–3.')
+        return await reply.redirect('/')
       }
 
       request.flash('success', 'ETF2L history checked')
