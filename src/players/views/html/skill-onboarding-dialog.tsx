@@ -153,7 +153,7 @@ export async function SkillOnboardingDialog(props: { actor?: User | undefined })
             <div class="flex flex-col gap-5">
               {classes.map(({ name }) => (
                 <fieldset class="rounded-md border border-zinc-700 p-4">
-                  <legend class="px-2 text-lg font-bold">{classLabels[name]}</legend>
+                  <legend class="px-2 text-lg font-bold" safe>{classLabels[name]}</legend>
                   <div class="flex flex-col gap-2">
                     {[1, 2, 3, 4, 5].map(level => (
                       <label
