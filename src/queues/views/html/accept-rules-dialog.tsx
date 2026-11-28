@@ -5,10 +5,7 @@ import { logger } from '../../../logger'
 import { nanoid } from 'nanoid'
 import type { Gamemode } from '../../../shared/types/gamemode'
 
-export async function AcceptRulesDialog(props: {
-  actor?: User | undefined
-  gamemode: Gamemode
-}) {
+export async function AcceptRulesDialog(props: { actor?: User | undefined; gamemode: Gamemode }) {
   if (!props.actor) {
     return <></>
   }
