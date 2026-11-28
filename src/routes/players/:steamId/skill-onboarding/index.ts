@@ -103,7 +103,8 @@ export default routes(async app => {
               ? 'No ETF2L profile is linked to this Steam account'
               : 'ETF2L is unavailable. You can still choose a level from 1–3.',
           )
-          return await reply.redirect('/')
+          await reply.redirect('/')
+          return
         }
       }
 
